@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { isIndexable, siteConfig } from "@/config/site";
-export function pageMetadata(
+import { isIndexable } from "@/config/site";
+import { getSiteConfig } from "@/lib/content";
+export async function pageMetadata(
   title: string,
   description: string,
   path: string,
   noindex = false,
-): Metadata {
+): Promise<Metadata> {
+  const siteConfig = (await getSiteConfig());
   const url = siteConfig.url
     ? new URL(path, siteConfig.url).toString()
     : undefined;
@@ -34,11 +36,12 @@ export function StructuredData({ data }: { data: Record<string, unknown> }) {
     />
   );
 }
-export function BreadcrumbData({
+export async function BreadcrumbData({
   items,
 }: {
   items: { name: string; path: string }[];
 }) {
+  const siteConfig = (await getSiteConfig());
   if (!isIndexable || !siteConfig.url) return null;
   return (
     <StructuredData

@@ -6,7 +6,7 @@ Next.js App Router, TypeScript strict ve Tailwind CSS ile geliştirilmiş Türk�
 
 ## Kurulum ve çalıştırma
 
-Node.js 20.9+ gerekir; çalışma Node.js 24.18.0 ile doğrulandı. Paket yöneticisi npm; `package-lock.json` korunmalıdır.
+Node.js 24+ gerekir (yerelde SQLite, Vercel’de Neon Postgres); çalışma Node.js 24.18.0 ile doğrulandı. Paket yöneticisi npm; `package-lock.json` korunmalıdır.
 
 ```powershell
 npm ci
@@ -14,7 +14,7 @@ npm ci
 npm run dev -- --hostname 127.0.0.1
 ```
 
-Yerel adres: http://127.0.0.1:3000. Mevcut çalışma alanında `.env.local` oluşturulmuştur. Geliştirme sunucusu kod değişikliklerini otomatik yeniler. Firma bilgisi veya ortam değişkeni değişikliklerinden sonra sunucuyu yeniden başlatın; üretim için yeniden build alın.
+Yerel adres: http://127.0.0.1:3000. Mevcut çalışma alanında `.env.local` oluşturulmuştur. Geliştirme sunucusu kod değişikliklerini otomatik yeniler. Panelden kaydedilen içerik değişiklikleri yeniden build gerektirmeden görünür. Ortam değişkeni değişikliklerinde sunucuyu yeniden başlatın; kod değişiklikleri için üretim build alın.
 
 ```powershell
 npm run lint
@@ -55,6 +55,7 @@ npm run test:performance
 | `/hakkimizda` | Yalnızca verilen işletme bilgileri |
 | `/blog` | Üç kullanım ve bakım yazısının listesi |
 | `/blog/[slug]` | Yazı, içindekiler, kaynak bağlantıları ve diğer rehberler |
+| `/admin` | Giriş, içerik yönetimi, görsel yükleme ve site ayarları |
 | `/iletisim` | WhatsApp numarası ve doğrudan sohbet bağlantısı |
 | `/teklif-al?urun=...` | Ürün seçili WhatsApp mesajı hazırlama |
 | `/gizlilik`, `/aydinlatma` | Onaylı içerik için altyapı; mevcut durumda eksik metin bildirimi |
@@ -63,35 +64,62 @@ npm run test:performance
 
 Ürün listesinde `q`, `kategori`, `kullanim`, `siralama=az|za` ve `sayfa` sorgu parametreleri kullanılır. Geri/ileri ve yenileme bunları korur. Türkçe İ/ı ve aksan normalizasyonu uygulanır; `araç` ve `arac` aynı sonucu verir. Sayfa başına 9 ürün gösterilir. Verisi olmayan renk/ölçü ve fiyat/popülerlik filtreleri eklenmemiştir.
 
+## Yönetici paneli
+
+Panel `/admin` adresindedir. İlk hesabı oluşturmak için sunucuda `npm run admin:setup` çalıştırın. Komut, 24 saat geçerli ve tek kullanımlık bir kurulum bağlantısı üretir. Bağlantıyı açıp kullanıcı adınızı ve en az 12 karakterli şifrenizi belirleyin. Önceden tanımlanmış şifre veya herkese açık hesap açma yolu yoktur. İlk hesabın kurulmasından sonra normal giriş ekranı görünür.
+
+- **Ürünler:** Ekleme, düzenleme, kaldırma, kategori, teknik bilgiler, kullanım alanları, öne çıkarma, taslak/yayın ve 8 fotoğrafa kadar galeri.
+- **Kategoriler:** Ad, kısa ad, açıklama, kullanım alanı, görsel ve yayın durumu. Ürünü olan kategori doğrudan silinemez.
+- **Blog:** Başlık, özet, tarih, kapak, giriş metni; sıralanabilir yazı bölümleri, maddeler ve kaynaklar.
+- **Sayfalar:** Ana sayfa, hakkımızda, ürün listesi, blog, iletişim, teklif, alt bilgi ve iletişim bandındaki metinler. Her alana görsel ve sıralanabilir metin/görsel/buton bölümleri eklenebilir.
+- **Görseller:** Bilgisayardan JPG, PNG veya WebP yükleme, önizleme ve ortak kütüphaneden tekrar kullanma. En fazla 8 MB/25 megapiksel dosya seçilebilir. 4 MB üzerindeki dosyalar tarayıcıda küçültülür; sunucu en fazla 4 MB kabul eder, gerçek dosya türünü kontrol edip metadata bilgisini kaldırarak en fazla 2400 px WebP üretir. SVG kabul edilmez; görseller tek kare olarak saklanır.
+- **Ayarlar:** Firma adı, alt başlık, tüm butonlarda kullanılan WhatsApp numarası, yasal metinler ve şifre değiştirme.
+
+İçerik değişiklikleri üstteki **Değişiklikleri kaydet** düğmesiyle kaydedilir. Taslak kayıtlar doğrudan adresleriyle de ziyaretçilere görünmez. Taslak kategorinin ürünleri gizlenir. Görsel yükleme dosyayı kütüphaneye hemen kaydeder; siteye eklemek için bir içerikte seçip içeriği de kaydedin. Başka sekmede daha yeni bir kayıt varsa panel eski verinin üzerine yazmaz; çalışmanızı kopyalayıp **Güncel içeriği yükle** ile tekrar düzenleyin.
+
+### Kalıcı veri ve barındırma
+
+**Vercel:** `DATABASE_URL` (veya öncelikli `CMS_DATABASE_URL`) varsa Neon Postgres kullanılır. İçerikler, yönetici hesabı, oturumlar ve optimize edilmiş görsel baytları aynı kalıcı veritabanında tutulur. Yeniden yayınlama ve sunucu değişimi verileri silmez. Vercel’de bağlantı yoksa uygulama geçici diske yazmayı reddeder.
+
+**Yerel geliştirme:** Bağlantı adresi yoksa `data/cms.sqlite` kullanılır. `CMS_DATA_DIR` yazılabilir yerel disk dizini olmalıdır; `public/` altında olamaz. Yerel testler geçici ve ayrı SQLite veritabanlarında çalışır; canlı Neon veritabanını kullanmaz.
+
+Yeni uzak veritabanında `DATABASE_URL` güvenli ortam değişkeni olarak tanımlandıktan sonra:
+
+```powershell
+npm run cms:migrate
+npm run admin:setup
+```
+
+Migration mevcut içerikleri veya hesabı değiştirmez. Tablo oluşturma ziyaretçi isteklerinde çalışmaz. Vercel projesinde `SITE_URL` ve `ADMIN_ORIGIN` değerlerini panelin HTTPS kök adresine ayarlayın. Canlı bağlantıyı yalnızca Production ortamına ekleyin; Preview için ayrı veritabanı/Neon dalı kullanın. `vercel.json` Next.js preset’ini ve veritabanıyla aynı `iad1` bölgesini sabitler.
+
+Şifreler scrypt ile özetlenir; 12 saatlik oturumlar HTTPS’te Secure/HttpOnly/SameSite=Strict çerez kullanır. Mutasyonlar oturum, Origin ve özel istek başlığıyla korunur. Kurulum, kayıt revizyonu ve deneme sınırları atomik veritabanı sorgularıyla korunur; birden fazla sunucu aynı durumu paylaşır.
+
+Yerel yedek için uygulamayı durdurup veri dizininin tamamını kopyalayın. Neon yedekleri ve veri dışa aktarımı sağlayıcının konsolundan yönetilir. Paneldeki JSON indirme metinleri, ayarları ve görsel referanslarını içerir; hesapları veya görsel baytlarını içermez. Ortam dosyaları, veritabanları ve `.vercel/` dizini Git’e ve sunucu paketlerine dahil edilmez.
+
 ## Blog içeriklerini güncelleme
 
-Blog içerikleri `src/data/blog.ts` dosyasından yönetilir. Başlık, özet, görsel, yayın tarihi ve kaynaklı bölümler burada tutulur. Eklenen yazılar blog listesine, ana sayfadaki ilk üç yazıya, statik sayfa üretimine ve canlı ortamdaki sitemap'e otomatik katılır. Liste sırası dosyadaki sıradır. Düzenleme sonrasında üretim için yeniden build alın. Blog, mevcut demo/önizleme `noindex` kuralını korur. Görseller mevcut temsilî varlıklardır; kaynakları `ASSETS.md` içindedir.
+Blog içerikleri panelde **Blog yazıları** sekmesinden yönetilir. `src/data/blog.ts` yalnızca ilk kurulumun üç yazılık başlangıç verisidir. Yeni yazılar listenin başına, ana sayfadaki ilk üç yazıya ve indekslemeye izin verilen ortamda sitemap’e yansır. Yayınlanmış yazılar dinamik olarak sunulur; yeniden build gerekmez. Demo/önizleme `noindex` kuralı korunur.
 
 ## Ürün ve kategori güncelleme
 
 Mevcut on bez çeşidinin her birine ayrı görsel atanmıştır. Görsel yolları ve alt metinleri `src/data/product-images.ts`, web için hazırlanmış dosyaları `public/images/products/` içindedir. Beş kategori kapağı kendi ürün grubundan seçilir. Tam üretim istemleri ve kaynak eşleştirmeleri için `ASSETS.md` dosyasına bakın.
 
-Merkezî dosya: `src/data/catalog.ts`. Tipler ve çalışma zamanı doğrulaması `src/lib/catalog.ts` içindedir. Sayfa bileşeni değiştirmeniz gerekmez.
-
-1. Kategori için benzersiz `id`, Türkçe karakter içermeyen `slug`, isimler, açıklama, izinli yerel görsel ve kullanım alanı ekleyin.
-2. Gerçek ürün için `Product` tipine uygun kayıt ekleyin. `categoryId` mevcut kategoriye bağlanmalı.
-3. `id` ve `slug` benzersiz olmalı. İzinli fotoğrafları `public/images/` altına koyup açık alt metin ekleyin. Ürün görselleri `object-contain` ile korunur.
-4. `useCases` listesini gerçek ürün bilgisine göre doldurun. `featured: true` ana sayfa seçimini yönetir.
-5. Bilinmeyen teknik alanı yazmayın. `specifications` isteğe bağlıdır: `Ürün kodu`, `Ölçüler`, `Gramaj`, `Malzeme bileşimi`, `Renk seçenekleri`, `Paket içeriği`, `Bakım bilgileri`. Yalnızca dolu alanlar gösterilir.
-6. Onaylanmış gerçek kaydı `isDemo: false`, `isPublished: true` olarak işaretleyin. Mevcut 10 temsilî kayıt `isDemo: true`, `isPublished: false` durumundadır.
-7. `npm test` ve `npm run build` çalıştırın. Yinelenen slug, eksik görsel/alt metin ve geçersiz kategori ilişkileri hata verir.
+Ürün ve kategorileri panelden yönetin. `src/data/catalog.ts` ilk kurulumun başlangıç verisidir; veritabanı oluştuktan sonra bu dosyayı değiştirmek kayıtlı içerikleri değiştirmez. Şema ve sınırlar `src/lib/cms-model.ts`, kayıt katmanı `src/server/cms-store.ts` içindedir. Bilinmeyen teknik alanlar boş bırakılabilir; yalnızca dolu bilgiler sitede gösterilir.
 
 Canlı modda demo ve yayımlanmamış ürünler hem listeden hem doğrudan ürün adresinden çıkarılır. Gerçek ürün bulunmayan kategori sitemap'e girmez. Geçersiz ürün/kategori gerçek HTTP 404 verir. Galeriye ikinci görsel eklendiğinde küçük görsel kontrolleri otomatik açılır. Görsel hatasında tekrar yükleme döngüsü yerine sabit boyutlu fallback vardır.
 
 ## Firma ve ortam ayarları
 
-`src/config/site.ts`: tam isim, marka, alt satır, WhatsApp, site URL, tanıtım görseli, hukuki içerik ve kapalı faaliyet bayrakları. Renk/ölçü tasarım tokenları `src/app/globals.css` içindeki CSS değişkenleridir. Görsel kaynakları ve tam üretim istemleri `ASSETS.md` içerisindedir.
+Firma, WhatsApp, tanıtım görseli ve yasal metinler panelden yönetilir. `src/config/site.ts` ilk kurulumun varsayılanları ile URL, demo/önizleme ve faaliyet bayraklarını tutar. Renk/ölçü tasarım tokenları `src/app/globals.css` içindeki CSS değişkenleridir. Görsel kaynakları ve tam üretim istemleri `ASSETS.md` içerisindedir.
 
 | Değişken | Açıklama |
 | --- | --- |
 | `SITE_MODE` | Varsayılan demo; `live` yalnızca gerçek içerik hazırken |
 | `SITE_PREVIEW` | Varsayılan true; canlı indeksleme için false |
-| `SITE_WHATSAPP` | Kullanıcıdan alınmış numarayı ortam bazında değiştirebilir |
+| `SITE_WHATSAPP` | İlk kurulumda kaydedilecek numara; sonrasında paneldeki numara kullanılır |
+| `DATABASE_URL` / `CMS_DATABASE_URL` | Neon Postgres bağlantısı; yalnızca sunucuda tutulur |
+| `CMS_DATA_DIR` | Yerel SQLite dizini; boşsa `./data` |
+| `ADMIN_ORIGIN` | Yönetici panelinin HTTPS kaynağı; boşsa `SITE_URL` |
 | `SITE_URL` | Doğrulanmış HTTPS kök alan adı; bilinmiyorsa boş |
 | `SITE_DOMAIN_VERIFIED` | Alan adı gerçekten doğrulandıktan sonra true |
 | `CONTENT_APPROVED` | İşletme ve ürün içeriği onaylandıktan sonra true |
@@ -117,7 +145,7 @@ Demo/önizleme `noindex, follow` kullanır; robots sayfaları taramaya kapatmaz,
 npm run validate:release
 ```
 
-Bu kontrol demo modu, yanlış alan adı, WhatsApp eksikliği, gerçek ürün/görsel yokluğu, yayımlanmış demo kayıtları ve onaysız hukuki metinlerde hata koduyla durur. Mevcut durumda **beklendiği üzere başarısızdır**. Yerel build ile canlı yayına hazır olmak ayrı şeylerdir. `CONTENT_CHECKLIST.md` tamamlanmalı; onay bayrakları bunu atlatmak için kullanılmamalıdır. Bu çalışma yayımlanmadı; yayın için ayrıca açık izin gerekir.
+Bu kontrol demo modu, yanlış alan adı, WhatsApp eksikliği, gerçek ürün/görsel yokluğu, yayımlanmış demo kayıtları ve onaysız hukuki metinlerde hata koduyla durur. Mevcut durumda **beklendiği üzere başarısızdır**. `CONTENT_CHECKLIST.md` tamamlanmalı; onay bayrakları bunu atlatmak için kullanılmamalıdır. Katalog kullanıcının isteğiyle Vercel’de yayımlandı; demo/noindex ve içerik onayı denetimleri korunur.
 
 ## Mimari ve referanslar
 

@@ -1,6 +1,6 @@
 # Doğrulama raporu — 8 Eylül 2026
 
-Son kapsam: Türkçe ürün kataloğu, üç yazılı blog ve **yalnızca WhatsApp** iletişim/teklif akışı. Telefon/e-posta alanı veya e-posta sağlayıcısı yok. +90 530 548 26 60 kullanıcıdan alındı. Hiçbir gerçek kişiye test mesajı gönderilmedi.
+Son kapsam: kalıcı içerik ve görsel yönetimine sahip yönetici paneli, Türkçe ürün kataloğu, üç başlangıç yazılı blog ve **yalnızca WhatsApp** iletişim/teklif akışı. Telefon/e-posta alanı veya e-posta sağlayıcısı yok. +90 530 548 26 60 kullanıcıdan alındı. Hiçbir gerçek kişiye test mesajı gönderilmedi.
 
 ## Çalıştırılan komutlar
 
@@ -8,13 +8,26 @@ Son kapsam: Türkçe ürün kataloğu, üç yazılı blog ve **yalnızca WhatsAp
 | --- | --- |
 | `npm run lint` | Başarılı, hata/uyarı yok |
 | `npm run typecheck` | Başarılı; Next route typegen ve strict TypeScript |
-| `npm test` | 14/14 birim testi başarılı |
-| `npm run build` | Başarılı üretim build'i; blog listesi ve üç statik yazı, mevcut katalog/iletişim sayfaları, SEO uçları ve mesaj hazırlama endpoint'i |
-| `npm run test:e2e` | Blog sonrası tam koşu: 27/27 başarılı. Görsel güncellemesi sonrası hedefli arama/gezinme/görsel/axe koşusu: 4/4 başarılı, Chromium, üretim sunucusu |
-| `npm run test:performance` | 3 mobil Lighthouse raporu üretildi |
+| `npm test` | 16/16 birim testi başarılı |
+| `npm run build` | Başarılı; dinamik katalog/blog/sayfalar, yönetici paneli, yetkili CMS API’si ve görsel sunumu |
+| `npm run test:e2e` | Tam koşu 34/34; büyük dosya testi eklendikten sonra yönetim testleri 8/8 (toplam 35 farklı senaryo) |
+| `npm run test:performance` | Önceki katalog sürümünde 3 mobil Lighthouse raporu üretildi; admin sonrası tekrar ölçülmedi |
 | `npm run validate:release` | Beklenen hata kodu 1: demo/önizleme, gerçek alan adı/ürün/görsel ve hukuki onaylar eksik |
 
-Kurulumda `npm install` bağımlılık denetimi 0 güvenlik açığı bildirdi. Uygulama ilk kez boş Git deposuna kuruldu; önceden mevcut kullanıcı kaynak dosyası yoktu. Bu rapordaki kontroller yerel geliştirme ve üretim sunucularında gerçekleştirildi; canlı dağıtım yapılmadı.
+Kurulumda `npm install` bağımlılık denetimi 0 güvenlik açığı bildirdi. Uygulama ilk kez boş Git deposuna kuruldu; önceden mevcut kullanıcı kaynak dosyası yoktu. Yerel üretim testlerine ek olarak Neon Postgres üzerinde kalıcılık ve eşzamanlılık kontrolleri yapıldı.
+
+## Yönetici paneli doğrulamaları
+
+- İlk kurulum tek kullanımlık anahtar gerektirir; yanlış anahtar, ikinci kurulum, hatalı şifre, yetkisiz API ve farklı Origin reddedilir. Oturum HttpOnly ve SameSite=Strict özellikleri doğrulandı.
+- Gerçek dosya seçimiyle görsel yükleme; ürün ekleme, taslak adresinin 404 olması, yayımlama, sayfa yenileme, düzenleme ve silme uçtan uca geçti.
+- Kategori, blog yazısı ve ek sayfa bölümü panel formlarından oluşturuldu ve ziyaretçi sayfalarında doğrulandı. WhatsApp numarası değişince sabit sohbet bağlantısının güncellendiği kontrol edildi.
+- SVG/sahte görsel, sunucuya doğrudan gönderilen 4 MB üstü dosya, geçersiz ilişki, yinelenen adres, JavaScript bağlantısı ve eski revizyonla kayıt reddedildi.
+- İçerik ve görsel verisinin ayrı bir Node sürecinde tekrar okunabildiği birim testiyle doğrulandı.
+- 390/1440 px panel ekran görüntüleri incelendi; temel sekmelerde taşma yok. Genel bakış, site ayarları ve sayfa düzenleme ekranlarında axe WCAG 2 A/AA ve 2.1 AA ihlali yok.
+- Next build’in 19 sunucu izleme manifestinde çalışma veritabanı, test veritabanları ve ortam dosyalarının bulunmadığı kontrol edildi.
+- Testler her koşuda ayrı `artifacts/cms-e2e-*` veritabanı kullandı; asıl yönetici hesabı oluşturulmadı ve katalog değiştirilmedi.
+
+Şifre değiştirme ekranı ve sunucu doğrulaması uygulanmıştır; tam şifre değiştirip tüm oturumları sonlandırma akışı ayrı bir tarayıcı testine dahil edilmedi. Yük ve yedekten dönüş testi yapılmadı. Vercel’de kalıcı Neon Postgres, yerelde SQLite kullanılır.
 
 ## Birim testi kapsamı
 
@@ -67,6 +80,13 @@ SEO 95+ hedefi bu demo ortamında elde edilmedi: üç raporda da başarısız SE
 
 ## Kalan yayın koşulları
 
-`CONTENT_CHECKLIST.md` içindeki gerçek ürün/fotoğraf/özellik, logo, alan adı, faaliyet/marka ve hukuki metin onayları bekliyor. WhatsApp numarası dışında verilmemiş işletme bilgisi uydurulmadı. Ürün sayfasına dışarıdan paylaşılabilir bağlantı ancak SITE_URL doğrulanıp eklendiğinde mesaja katılır. Kayıt/servis/ücretli kaynak veya izin dışı dağıtım yapılmadı.
+`CONTENT_CHECKLIST.md` içindeki gerçek ürün/fotoğraf/özellik, logo, alan adı, faaliyet/marka ve hukuki metin onayları bekliyor. WhatsApp numarası dışında verilmemiş işletme bilgisi uydurulmadı. Ürün sayfasına dışarıdan paylaşılabilir bağlantı ancak SITE_URL doğrulanıp eklendiğinde mesaja katılır. Kullanıcının isteğiyle Vercel dağıtımı ve ücretsiz Neon kaynağı kuruldu. Ücretli kaynak oluşturulmadı.
 
 İstek sınırı yardımcı tek süreç belleği kullanır; çok sunuculu dağıtımda bütüncül koruma değildir. Site mesaj göndermediği için haricî mesajlaşma altyapısı gerektirmez. Yoğun trafik kontrolü dağıtım katmanında yapılandırılabilir. WhatsApp uygulamasında gerçek teslim/alınma durumu bu çalışma kapsamında doğrulanmadı.
+
+## Neon ve Vercel uyarlaması
+
+- Neon HTTP sürücüsü, parametreli sorgular ve açık migration komutu eklendi. Veritabanı bağlantısı bulunmayan Vercel süreci yerel/geçici diske yazmaz.
+- Gerçek Neon üzerinde eşzamanlı iki kurulumun yalnızca birinin başarılı olması, giriş, kalıcı oturum, eski revizyonun reddi, ikili görsel verisinin kayıpsız dönmesi ve paralel istek sınırı doğrulandı. İçerik/görsel/oturum ayrı Node sürecinden tekrar okundu. Geçici doğrulama hesabı ve görseli temizlendi.
+- 5 MB üzerindeki gerçek PNG dosyası tarayıcıdan seçildi, 4 MB altına WebP olarak küçültülüp sunucuya yüklendi ve adresinden tekrar okundu.
+- SITE_URL ve ADMIN_ORIGIN canlı HTTPS adresine ayarlandı; Neon yalnızca Production ortamına bağlandı.

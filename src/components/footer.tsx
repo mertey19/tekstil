@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
-import { getCategories } from "@/lib/content";
-export function Footer() {
+import { getSiteConfig } from "@/lib/content";
+import { CmsSections } from "./cms-sections";
+import { getPageContent, getCategories } from "@/lib/content";
+export async function Footer() {
+  const siteConfig = (await getSiteConfig());
+  const fields = (await getPageContent("footer")).fields;
   return (
     <footer className="site-footer">
       <div className="container footer-main">
@@ -11,15 +14,11 @@ export function Footer() {
             <span>.</span>
           </Link>
           <p>{siteConfig.subtitle}</p>
-          <p className="muted">
-            Mikrofiber bez ve tekstil ürünlerini
-            <br />
-            kullanım alanlarına göre keşfedin.
-          </p>
+          <p className="muted preserve-lines">{fields.description}</p>
         </div>
         <div>
           <h2>Ürün grupları</h2>
-          {getCategories().map((c) => (
+          {(await getCategories()).map((c) => (
             <Link key={c.id} href={`/kategori/${c.slug}`}>
               {c.shortName}
             </Link>
@@ -32,6 +31,9 @@ export function Footer() {
           <Link href="/iletisim">İletişim</Link>
           <Link href="/teklif-al">Bilgi ve Teklif Al</Link>
         </div>
+      </div>
+      <div className="container">
+        <CmsSections page="footer" />
       </div>
       <div className="container footer-bottom">
         <span>

@@ -2270,7 +2270,8 @@ main:focus {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  box-shadow: 0 0 0 6px rgb(37 211 102 / 14%),
+  box-shadow:
+    0 0 0 6px rgb(37 211 102 / 14%),
     0 0 24px 8px rgb(37 211 102 / 42%);
   pointer-events: none;
   animation: whatsapp-glow 2.4s ease-in-out infinite;
@@ -2643,5 +2644,48 @@ body:has(.floating-whatsapp) .site-footer {
   .floating-whatsapp::before {
     opacity: 0.25;
     transform: none;
+  }
+}
+.preserve-lines {
+  white-space: pre-line;
+}
+.cms-page-image {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-radius: 8px;
+  margin: 42px 0;
+}
+.cms-section {
+  padding: 55px 0;
+  border-top: 1px solid #e3e7ed;
+}
+.cms-section.with-image {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.cms-section-image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.cms-section h2 {
+  font-size: clamp(24px, 3vw, 38px);
+  margin: 0 0 20px;
+}
+.cms-section p {
+  line-height: 1.85;
+  margin: 0 0 24px;
+}
+@media (max-width: 767px) {
+  .cms-section.with-image {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .cms-section {
+    padding: 32px 0;
   }
 }

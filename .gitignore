@@ -19,6 +19,10 @@
 /test-results/
 /playwright-report/
 /artifacts/
+/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 # production
 /build

@@ -99,9 +99,9 @@ test("Yalnızca yapılandırılmış WhatsApp bağlantısı var; sitemap demo ü
   ).toHaveAttribute("href", /wa.me\/905305482660/);
   const sitemap = await (await request.get("/sitemap.xml")).text();
   expect(sitemap).not.toContain("<loc>");
-  expect(await (await request.get("/robots.txt")).text()).not.toContain(
-    "Disallow: /",
-  );
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).not.toMatch(/^Disallow:\s*\/\s*$/m);
+  expect(robots).toContain("Disallow: /admin");
 });
 async function fillForm(page: import("@playwright/test").Page) {
   await page.getByLabel("Ad soyad").fill("Test Kullanıcısı");
@@ -136,11 +136,17 @@ test("Form hataları ve gerçek API ile WhatsApp mesajı hazırlanması", async 
     .getByRole("link", { name: "WhatsApp’ta Aç" })
     .getAttribute("href");
   const url = new URL(href!);
-  await expect(page.getByRole("link", { name: "Ana içeriğe atla" })).toHaveCSS("opacity", "0");
+  await expect(page.getByRole("link", { name: "Ana içeriğe atla" })).toHaveCSS(
+    "opacity",
+    "0",
+  );
   expect(url.pathname).toBe("/905305482660");
   expect(url.searchParams.get("text")).toContain("Mikrofiber Cam Bezi");
   expect(url.searchParams.get("text")).toContain("Tahmini adet: 2");
-  await page.screenshot({ path: "artifacts/screenshots/whatsapp-390.png", fullPage: true });
+  await page.screenshot({
+    path: "artifacts/screenshots/whatsapp-390.png",
+    fullPage: true,
+  });
   await page.getByLabel(/Tahmini adet/).fill("3");
   await expect(page.getByRole("link", { name: "WhatsApp’ta Aç" })).toHaveCount(
     0,

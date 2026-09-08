@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { getCategories, getProducts } from "@/lib/content";
+import { getCategories, getProducts, getPageContent } from "@/lib/content";
 import { filterCatalog, type CatalogQuery, type Category } from "@/lib/catalog";
 import { Breadcrumbs, ContactCta, EmptyState, ProductGrid } from "./catalog-ui";
 import { CatalogToolbar, ProductFilters } from "./product-filters";
 import { Icon } from "./icon";
+import { CmsSections } from "./cms-sections";
 import { BreadcrumbData } from "@/lib/seo";
 
 export type SearchParams = Record<string, string | string[] | undefined>;
@@ -15,15 +16,16 @@ export function parseQuery(params: SearchParams): CatalogQuery {
     ]),
   );
 }
-export function CatalogPage({
+export async function CatalogPage({
   query,
   category,
 }: {
   query: CatalogQuery;
   category?: Category;
 }) {
-  const products = getProducts();
-  const categories = getCategories();
+  const fields = (await getPageContent("products")).fields;
+  const products = (await getProducts());
+  const categories = (await getCategories());
   const result = filterCatalog(products, categories, {
     ...query,
     kategori: category?.slug ?? query.kategori,
@@ -60,12 +62,9 @@ export function CatalogPage({
         }
       />
       <div className="page-heading">
-        <span className="eyebrow">MİKROFİBER & TEKSTİL KATALOĞU</span>
-        <h1>{category?.name || "Ürünlerimizi keşfedin."}</h1>
-        <p>
-          {category?.description ||
-            "Camdan araca, mutfaktan günlük temizliğe. İhtiyacınıza uygun ürün grubunu inceleyin."}
-        </p>
+        <span className="eyebrow">{fields.eyebrow}</span>
+        <h1>{category?.name || fields.title}</h1>
+        <p>{category?.description || fields.description}</p>
       </div>
       <div className="catalog-layout">
         <ProductFilters
@@ -121,6 +120,7 @@ export function CatalogPage({
           )}
         </div>
       </div>
+      {!category && <CmsSections page="products" />}
       <ContactCta />
       <BreadcrumbData
         items={

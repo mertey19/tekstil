@@ -2,6 +2,20 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Runtime content, accounts and test databases belong on the persistent disk,
+  // never in a deployment bundle assembled from this checkout.
+  outputFileTracingExcludes: {
+    "/*": [
+      "./data/**/*",
+      "./artifacts/**/*",
+      "./tests/**/*",
+      "./.env*",
+      "./.vercel/**/*",
+      "**/*.sqlite",
+      "**/*.sqlite-wal",
+      "**/*.sqlite-shm",
+    ],
+  },
   images: { formats: ["image/avif", "image/webp"] },
   // Wait for metadata before flushing so unknown dynamic routes retain an HTTP 404.
   htmlLimitedBots: /.*/,

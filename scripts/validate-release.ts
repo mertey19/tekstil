@@ -1,8 +1,12 @@
 import { loadEnvConfig } from "@next/env";
 loadEnvConfig(process.cwd());
 async function main() {
-  const { siteConfig } = await import("../src/config/site");
-  const { products, categories } = await import("../src/data/catalog");
+  const { getSiteConfig, getProducts, getAllCategories } = await import(
+    "../src/lib/content"
+  );
+  const siteConfig = (await getSiteConfig()),
+    products = (await getProducts()),
+    categories = (await getAllCategories());
   const { releaseIssues } = await import("../src/lib/release");
   const issues = releaseIssues(siteConfig, products, categories, process.env);
   if (issues.length) {

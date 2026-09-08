@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { type Product } from "@/lib/catalog";
-import { categories } from "@/data/catalog";
+import { getAllCategories, getSiteConfig, getPageContent } from "@/lib/content";
+import { CmsSections } from "./cms-sections";
 import { Icon } from "./icon";
 import { ProductImage } from "./product-image";
-import { siteConfig } from "@/config/site";
+
 import { whatsappLink } from "@/lib/contact";
-export function ProductCard({ product, eager = false }: { product: Product; eager?: boolean }) {
-  const category = categories.find((c) => c.id === product.categoryId)!;
+export async function ProductCard({
+  product,
+  eager = false,
+}: {
+  product: Product;
+  eager?: boolean;
+}) {
+  const category = (await getAllCategories()).find((c) => c.id === product.categoryId)!;
   return (
     <article className="product-card">
       <Link
@@ -36,7 +43,13 @@ export function ProductCard({ product, eager = false }: { product: Product; eage
     </article>
   );
 }
-export function ProductGrid({ products, eagerFirst = false }: { products: Product[]; eagerFirst?: boolean }) {
+export function ProductGrid({
+  products,
+  eagerFirst = false,
+}: {
+  products: Product[];
+  eagerFirst?: boolean;
+}) {
   return (
     <div className="product-grid">
       {products.map((p, index) => (
@@ -92,35 +105,37 @@ export function Breadcrumbs({
     </nav>
   );
 }
-export function ContactCta() {
+export async function ContactCta() {
+  const siteConfig = (await getSiteConfig());
+  const fields = (await getPageContent("cta")).fields;
   const whatsapp = whatsappLink(siteConfig.whatsapp);
   return (
-    <section className="contact-cta">
-      <div>
-        <span className="eyebrow">Birlikte doğru ürünü bulalım</span>
-        <h2>
-          İhtiyacınıza uygun ürün
-          <br />
-          hakkında bilgi alın.
-        </h2>
-      </div>
-      <div className="cta-buttons">
-        <Link href="/teklif-al" className="button primary">
-          Bilgi ve Teklif Al
-          <Icon size={18} />
-        </Link>
-        {whatsapp && (
-          <a
-            className="text-link whatsapp-link"
-            href={whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            WhatsApp’tan Yazın
-            <Icon size={16} />
-          </a>
-        )}
-      </div>
-    </section>
+    <>
+      {" "}
+      <CmsSections page="cta" />
+      <section className="contact-cta">
+        <div>
+          <span className="eyebrow">{fields.eyebrow}</span>
+          <h2 className="preserve-lines">{fields.title}</h2>
+        </div>
+        <div className="cta-buttons">
+          <Link href="/teklif-al" className="button primary">
+            Bilgi ve Teklif Al
+            <Icon size={18} />
+          </Link>
+          {whatsapp && (
+            <a
+              className="text-link whatsapp-link"
+              href={whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp’tan Yazın
+              <Icon size={16} />
+            </a>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

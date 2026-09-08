@@ -1,7 +1,8 @@
-import { siteConfig } from "@/config/site";
+import { getSiteConfig } from "@/lib/content";
 import { whatsappLink } from "@/lib/contact";
 
-export function FloatingWhatsApp() {
+export async function FloatingWhatsApp() {
+  const siteConfig = (await getSiteConfig());
   const href = whatsappLink(siteConfig.whatsapp);
   if (!href) return null;
 
