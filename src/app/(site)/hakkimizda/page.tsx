@@ -40,9 +40,6 @@ export default async function AboutPage() {
               priority
               sizes="(max-width: 767px) 100vw, 50vw"
             />
-            {siteConfig.visuals.hero.isDemo && (
-              <span className="image-label">Temsilî görsel</span>
-            )}
           </div>
         )}
       </div>

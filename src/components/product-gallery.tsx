@@ -4,10 +4,8 @@ import type { Product } from "@/lib/catalog";
 import { ProductImage } from "./product-image";
 export function ProductGallery({
   images,
-  demo,
 }: {
   images: Product["images"];
-  demo: boolean;
 }) {
   const [selected, setSelected] = useState(0);
   return (
@@ -20,7 +18,6 @@ export function ProductGallery({
           priority
           sizes="(max-width: 767px) 100vw, 50vw"
         />
-        {demo && <span className="image-label">Temsilî ürün görseli</span>}
       </div>
       {images.length > 1 && (
         <div className="gallery-thumbs" aria-label="Ürün görselleri">

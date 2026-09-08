@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
     publishedAt: "2026-09-08",
     image: {
       src: "/images/hero.webp",
-      alt: "Katlanmış renkli mikrofiber bezlerden oluşan temsilî kompozisyon",
+      alt: "Katlanmış renkli mikrofiber bezlerden oluşan kompozisyon",
     },
     introduction:
       "Temizlik bittiğinde kullandığınız beze ayıracağınız birkaç dakika, bir sonraki kullanıma hazırlanmayı kolaylaştırır. Mikrofiber bezlerin hepsi aynı bakım koşullarına sahip değildir. Bu nedenle yıkamaya başlamadan önce ürünün etiketini okumak, rutin oluşturmanın ilk adımıdır. Günlük bakımınızı yıkama, kurutma ve saklama olarak üç aşamada düşünebilirsiniz.",
@@ -86,7 +86,7 @@ export const blogPosts: BlogPost[] = [
     publishedAt: "2026-09-08",
     image: {
       src: "/images/glass.webp",
-      alt: "Cam temizliği konusuna eşlik eden temsilî mikrofiber bez görseli",
+      alt: "Cam temizliği konusuna eşlik eden mikrofiber bez görseli",
     },
     introduction:
       "Camı sildikten sonra farklı bir açıdan bakınca fark edilen izler can sıkıcı olabilir. Daha düzenli bir çalışma için temizlik ve son kurulama aşamalarını ayrı planlayın. Başlamadan önce camın veya aynanın bakım bilgisine bakın; özellikle kaplamalı yüzeylerde, yüzey üreticisinin önerdiği bez ve temizleyiciyi seçin.",

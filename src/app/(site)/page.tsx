@@ -71,9 +71,6 @@ export default async function Home() {
                 <Icon size={22} />
               </span>
             </div>
-            {siteConfig.visuals.hero.isDemo && (
-              <span className="hero-image-note">Temsilî görsel</span>
-            )}
           </div>
         )}
       </section>
@@ -110,7 +107,7 @@ export default async function Home() {
                 <div className="category-visual">
                   <ProductImage
                     src={c.image}
-                    alt={`${c.name} için temsilî bez görseli`}
+                    alt={`${c.name} için bez görseli`}
                     sizes="(max-width: 600px) 50vw, 20vw"
                   />
                   <span className="category-number">0{i + 1}</span>

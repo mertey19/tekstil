@@ -10,7 +10,6 @@ export function BlogGrid({ posts, related = false }: { posts: BlogPost[]; relate
         <article className="blog-card" key={post.slug}>
           <Link href={`/blog/${post.slug}`} className="blog-card-image" tabIndex={-1} aria-hidden="true">
             <ProductImage src={post.image.src} alt="" sizes="(max-width: 650px) 100vw, (max-width: 1000px) 50vw, 33vw" />
-            <span className="image-label">Temsilî görsel</span>
           </Link>
           <div className="blog-card-copy">
             <div className="blog-card-meta">

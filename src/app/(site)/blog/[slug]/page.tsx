@@ -70,7 +70,6 @@ export default async function BlogPostPage({ params }: Props) {
             priority
             sizes="(max-width: 1100px) 100vw, 1080px"
           />
-          <figcaption className="image-label">Temsilî görsel</figcaption>
         </figure>
         <div className="blog-reading-layout">
           <nav className="blog-contents" aria-label="Yazı içindekiler">

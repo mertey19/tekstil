@@ -59,7 +59,6 @@ export default async function QuotePage({
           products={products.map((p) => ({ id: p.id, name: p.name }))}
           initialProduct={product?.id || ""}
           invalidProduct={!!params.urun && !product}
-          demo={siteConfig.demo}
           available={!!normalizePhone(siteConfig.whatsapp)}
         />
       </div>

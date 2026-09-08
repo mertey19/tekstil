@@ -24,14 +24,12 @@ export function QuoteForm({
   products,
   initialProduct,
   invalidProduct,
-  demo,
   available,
   profile,
 }: {
   products: { id: string; name: string }[];
   initialProduct: string;
   invalidProduct: boolean;
-  demo: boolean;
   available: boolean;
   profile?: {name:string; company:string};
 }) {
@@ -153,12 +151,6 @@ export function QuoteForm({
             İletişim numarası henüz eklenmedi. Bu aşamada mesaj gönderilemez.
           </p>
         </div>
-      )}
-      {demo && (
-        <p className="form-demo-note">
-          Önizleme kataloğundaki ürünler temsilîdir. Bu bilgi hazırlanacak
-          mesaja da eklenir.
-        </p>
       )}
       {invalidProduct && (
         <p className="field-error">

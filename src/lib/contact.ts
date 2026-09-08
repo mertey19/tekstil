@@ -10,12 +10,12 @@ export function normalizePhone(phone: string | null): string | null {
 }
 export function whatsappLink(
   phone: string | null,
-  product?: { name: string; url?: string; isDemo?: boolean },
+  product?: { name: string; url?: string },
 ): string | null {
   const digits = normalizePhone(phone);
   if (!digits) return null;
   const text = product
-    ? `Merhaba, ${product.name} hakkında bilgi ve teklif almak istiyorum.${product.url ? ` Ürün bağlantısı: ${product.url}` : ""}${product.isDemo ? " Not: İncelediğim ürün önizleme kataloğundaki temsilî bir üründür." : ""}`
+    ? `Merhaba, ${product.name} hakkında bilgi ve teklif almak istiyorum.${product.url ? ` Ürün bağlantısı: ${product.url}` : ""}`
     : "Merhaba, mikrofiber ürünler hakkında bilgi ve teklif almak istiyorum.";
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }

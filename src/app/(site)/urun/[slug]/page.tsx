@@ -47,7 +47,6 @@ export default async function ProductPage({ params }: Props) {
   const whatsapp = whatsappLink(siteConfig.whatsapp, {
     name: product.name,
     url: url || undefined,
-    isDemo: product.isDemo,
   });
   const similar = (await getProducts())
     .filter(
@@ -68,7 +67,7 @@ export default async function ProductPage({ params }: Props) {
         ]}
       />
       <div className="product-detail">
-        <ProductGallery images={product.images} demo={product.isDemo} />
+        <ProductGallery images={product.images} />
         <div className="product-detail-copy">
           <Link className="eyebrow" href={`/kategori/${category.slug}`}>
             {category.name}

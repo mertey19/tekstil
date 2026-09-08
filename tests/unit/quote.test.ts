@@ -124,7 +124,7 @@ test("Hazır mesaj ürün, adet, kişi ve kodlanmış bağlantıyı içerir; dı
   assert.match(body.message, /Mikrofiber Cam Bezi/);
   assert.match(body.message, /Tahmini adet: 5/);
   assert.match(body.message, /https:\/\/fixture.test\/urun\/cam-bezi/);
-  assert.match(body.message, /temsilî/);
+  assert.doesNotMatch(body.message, /temsil[iî]|önizleme/i);
   assert.equal(response.headers.get("Cache-Control"), "no-store");
 });
 test("Genel mesaj ve doğrulanmamış URL güvenli biçimde hazırlanır", () => {

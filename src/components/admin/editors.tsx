@@ -201,7 +201,7 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           onChange={(v) => update("featured", v)}
         />
         <Check
-          label="Temsilî ürün olarak işaretle"
+          label="Demo katalog ürünü"
           value={product.isDemo}
           onChange={(v) => update("isDemo", v)}
         />
@@ -658,7 +658,7 @@ export function PagesEditor({
             }
           />
           <Check
-            label="Temsilî görsel etiketi göster"
+            label="Demo görsel olarak sınıflandır"
             value={props.content.settings.hero.isDemo}
             onChange={(v) =>
               props.change((d) => {

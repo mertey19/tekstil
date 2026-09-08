@@ -7,11 +7,9 @@ import { useCustomer } from "./customer/session";
 export function Header({
   name,
   subtitle,
-  demo,
 }: {
   name: string;
   subtitle: string;
-  demo: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -30,15 +28,6 @@ export function Header({
   };
   return (
     <>
-      {demo && (
-        <div className="preview-notice">
-          <span className="preview-dot" />
-          Önizleme kataloğu{" "}
-          <span className="notice-detail">
-            — Ürünler ve görseller temsilîdir.
-          </span>
-        </div>
-      )}
       <header
         className="site-header"
         onKeyDown={(e) => {

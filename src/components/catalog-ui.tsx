@@ -23,7 +23,6 @@ export async function ProductCard({
         aria-hidden="true"
       >
         <ProductImage src={product.images[0].src} alt="" eager={eager} />
-        {product.isDemo && <span className="image-label">Temsilî ürün</span>}
       </Link>
       <div className="product-info">
         <span className="eyebrow">{category.shortName}</span>

@@ -141,7 +141,7 @@ SITE_URL boşken canonical veya ürün mesajına uydurma alan adı yazılmaz. Ge
 
 ## WhatsApp akışı ve veri işleme
 
-Form ad soyad, isteğe bağlı firma/ürün/adet ve mesaj alır. İstemci ve sunucuda aynı Zod şeması kullanılır. Ürün kimliği sunucuda görünür katalogla tekrar doğrulanır. POST isteği yalnızca geçerli `wa.me` bağlantısı ve önizleme metni döndürür. Kullanıcı **WhatsApp’ta Aç** bağlantısıyla kendi WhatsApp uygulamasında gönderimi tamamlar. Site “mesaj gönderildi/okundu” iddiasında bulunmaz. Demo ürünün temsilî olduğu mesaja eklenir.
+Form ad soyad, isteğe bağlı firma/ürün/adet ve mesaj alır. İstemci ve sunucuda aynı Zod şeması kullanılır. Ürün kimliği sunucuda görünür katalogla tekrar doğrulanır. POST isteği yalnızca geçerli `wa.me` bağlantısı ve önizleme metni döndürür. Kullanıcı **WhatsApp’ta Aç** bağlantısıyla kendi WhatsApp uygulamasında gönderimi tamamlar. Site “mesaj gönderildi/okundu” iddiasında bulunmaz.
 
 Sunucu WhatsApp'a ağ isteği yapmaz. Form verileri veritabanına, localStorage'a veya uygulama loglarına kaydedilmez. Barındırma sağlayıcısında istek gövdesi loglamasını etkinleştirmeyin. WhatsApp açıldığında bağlantıdaki mesaj metni WhatsApp'a aktarılır.
 

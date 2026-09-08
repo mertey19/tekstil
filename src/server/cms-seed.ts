@@ -17,7 +17,7 @@ export function initialContent() {
       about: siteConfig.about,
       hero: {
         ...siteConfig.visuals.hero,
-        alt: "Mavi, açık yeşil ve beyaz katlanmış mikrofiber bezlerden oluşan temsilî ürün kompozisyonu",
+        alt: "Mavi, açık yeşil ve beyaz katlanmış mikrofiber bezlerden oluşan ürün kompozisyonu",
       },
       legal: {
         privacy: { approved: false, text: "" },

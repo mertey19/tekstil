@@ -13,9 +13,6 @@ export function prepareWhatsAppQuote(
     product
       ? `Merhaba, ${product.name} hakkında bilgi ve teklif almak istiyorum.`
       : "Merhaba, mikrofiber ürünler hakkında bilgi ve teklif almak istiyorum.",
-    product?.isDemo
-      ? "Not: İncelediğim ürün önizleme kataloğundaki temsilî bir üründür."
-      : "",
     `Ad soyad: ${data.name}`,
     data.company ? `Firma: ${data.company}` : "",
     data.quantity ? `Tahmini adet: ${data.quantity}` : "",

@@ -22,7 +22,6 @@ export default async function SiteLayout({
       <Header
         name={siteConfig.name}
         subtitle={siteConfig.subtitle}
-        demo={siteConfig.demo}
       />
       <main id="main" tabIndex={-1}>
         {children}

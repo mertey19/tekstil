@@ -49,7 +49,7 @@ Kurulumda `npm install` bağımlılık denetimi 0 güvenlik açığı bildirdi. 
 - Form alan sınırları, pozitif tam sayı kontrolü, gönderilmeyen eski e-posta alanının reddi.
 - Origin, Fetch Metadata, içerik türü, honeypot, 16 KiB gövde sınırı ve sunucuda ürün kimliği doğrulaması.
 - Eksik/bozuk numarada hazır ya da gönderildi sonucu oluşmaması.
-- Hazırlanan mesajda ürün, adet, isim, temsilî ürün notu ve yalnızca doğrulanmış site URL'si.
+- Hazırlanan mesajda ürün, adet, isim, ürün bilgileri ve yalnızca doğrulanmış site URL'si.
 - İstek sınırı, limiter hata durumu ve release kontrolü.
 
 ## Tarayıcı ve görsel kontrol
@@ -104,3 +104,7 @@ SEO 95+ hedefi bu demo ortamında elde edilmedi: üç raporda da başarısız SE
 ## Canlı admin doğrulaması
 
 `https://tekstil-sigma.vercel.app` üzerinde ilk hesap kurma, giriş/çıkış, yetkisiz erişim engeli ve Secure/HttpOnly/SameSite=Strict çerez doğrulandı. Bilgisayardan gerçek WebP seçilerek yüklendi; içerik kaydı, eski revizyonun 409 ile reddi ve yeni görselin ziyaretçi ürün sayfasına yansıması kontrol edildi. 390 ve 1440 px panel görüntüleri alındı; mobil yatay taşma yok. Ana sayfa, katalog, blog, hakkında, teklif ve admin 200; bulunmayan ürün 404 döndürdü. Test hesabı ve test yüklemesi teslim öncesi temizlenir; kullanıcı hesabı için tek kullanımlık kurulum bağlantısı hazırlanır.
+
+## Görsel uyarılarının kaldırılması
+
+Kullanıcının isteğiyle üstteki önizleme bandı, ana sayfa/hakkımızda/blog/ürün görsel etiketleri ve WhatsApp formu ile hazırlanan mesajlardaki temsilî ürün notu kaldırıldı. Başlangıç içerikleri ile yerel ve Neon CMS'deki 33 metin alanı güncellendi; görsel alt metinleri ürünün görünümünü açıklamaya devam ediyor. Demo/indeksleme bayrakları değiştirilmedi. İlgili WhatsApp testi notun bulunmamasını doğrulayacak şekilde güncellendi.
