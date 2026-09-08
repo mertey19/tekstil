@@ -71,7 +71,10 @@ test("İlk kurulum anahtarla korunur; hesap ve oturum oluşturulur", async ({
     ).status(),
   ).toBe(403);
   await page.goto(`/admin#setup=${setupToken}`);
-  await expect(page.getByLabel("Kurulum anahtarı")).toHaveValue(setupToken);
+  await expect(page.getByLabel("Kurulum anahtarı")).toHaveCount(0);
+  await expect(page.locator('input[name="token"]')).toBeHidden();
+  await expect(page.locator('input[name="token"]')).toHaveValue(setupToken);
+  await expect(page.getByText(/Kurulum bağlantısındaki anahtar/)).toHaveCount(0);
   await expect(page).toHaveURL(/\/admin$/);
   await page
     .getByLabel("Kullanıcı adı", { exact: true })

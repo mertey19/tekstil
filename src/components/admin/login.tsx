@@ -116,21 +116,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
                       required
                     />
                   </label>
-                  <label className="admin-field">
-                    <span>Kurulum anahtarı</span>
-                    <input
-                      ref={tokenInput}
-                      name="token"
-                      type="password"
-                      autoComplete="off"
-                      required
-                    />
-                    <small>
-                      Kurulum bağlantısındaki anahtar otomatik doldurulur. Yeni
-                      bağlantı için sunucuda <code>npm run admin:setup</code>{" "}
-                      çalıştırın.
-                    </small>
-                  </label>
+                  <input ref={tokenInput} name="token" type="hidden" />
                 </>
               )}
               {error && (
