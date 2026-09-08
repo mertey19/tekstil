@@ -1,0 +1,66 @@
+{
+  "generator": "Built-in Imagegen",
+  "date": "2026-09-08",
+  "images": [
+    {
+      "slug": "cam-bezi",
+      "name": "Mikrofiber Cam Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-e9bb4d8c-11df-42c4-88e0-22289b57f786.png",
+      "destination": "public/images/products/cam-bezi.webp"
+    },
+    {
+      "slug": "dokuma-cam-bezi",
+      "name": "Dokuma Cam Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-b821906a-7122-4f07-9dd0-7612ebf2850a.png",
+      "destination": "public/images/products/dokuma-cam-bezi.webp"
+    },
+    {
+      "slug": "arac-bakim-bezi",
+      "name": "Araç Bakım Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-87018fde-ff0b-4073-b792-1ba915b792fb.png",
+      "destination": "public/images/products/arac-bakim-bezi.webp"
+    },
+    {
+      "slug": "arac-ici-temizlik-bezi",
+      "name": "Araç İçi Temizlik Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-5f4eef9e-cd60-45b4-87c2-e6d5695b626c.png",
+      "destination": "public/images/products/arac-ici-temizlik-bezi.webp"
+    },
+    {
+      "slug": "mikrofiber-kurulama-bezi",
+      "name": "Mikrofiber Kurulama Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-41c38eb1-24ed-4624-a3bd-342c5bd95e90.png",
+      "destination": "public/images/products/mikrofiber-kurulama-bezi.webp"
+    },
+    {
+      "slug": "yuzey-kurulama-bezi",
+      "name": "Yüzey Kurulama Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-e00d2488-b29f-400d-a539-36fe03948095.png",
+      "destination": "public/images/products/yuzey-kurulama-bezi.webp"
+    },
+    {
+      "slug": "cok-amacli-mikrofiber-bez",
+      "name": "Çok Amaçlı Mikrofiber Bez",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-fd34e362-b2cf-4846-a5c4-9f4b79dac65a.png",
+      "destination": "public/images/products/cok-amacli-mikrofiber-bez.webp"
+    },
+    {
+      "slug": "gunluk-temizlik-bezi",
+      "name": "Günlük Temizlik Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-d49336e0-b0ad-4d87-83ee-e5e31c53dbc1.png",
+      "destination": "public/images/products/gunluk-temizlik-bezi.webp"
+    },
+    {
+      "slug": "mutfak-temizlik-bezi",
+      "name": "Mutfak Temizlik Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-f4ab0bc9-4ae9-470a-8307-f4e757f65f1d.png",
+      "destination": "public/images/products/mutfak-temizlik-bezi.webp"
+    },
+    {
+      "slug": "tezgah-temizlik-bezi",
+      "name": "Tezgâh Temizlik Bezi",
+      "source": "C:\\Users\\mert\\.codex\\generated_images\\01a0809d-ea88-70c3-833c-dbb68d7a0363\\exec-5e7ad6ce-1366-4660-9b10-9fd68cfc2682.png",
+      "destination": "public/images/products/tezgah-temizlik-bezi.webp"
+    }
+  ]
+}
