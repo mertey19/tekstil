@@ -90,3 +90,7 @@ SEO 95+ hedefi bu demo ortamında elde edilmedi: üç raporda da başarısız SE
 - Gerçek Neon üzerinde eşzamanlı iki kurulumun yalnızca birinin başarılı olması, giriş, kalıcı oturum, eski revizyonun reddi, ikili görsel verisinin kayıpsız dönmesi ve paralel istek sınırı doğrulandı. İçerik/görsel/oturum ayrı Node sürecinden tekrar okundu. Geçici doğrulama hesabı ve görseli temizlendi.
 - 5 MB üzerindeki gerçek PNG dosyası tarayıcıdan seçildi, 4 MB altına WebP olarak küçültülüp sunucuya yüklendi ve adresinden tekrar okundu.
 - SITE_URL ve ADMIN_ORIGIN canlı HTTPS adresine ayarlandı; Neon yalnızca Production ortamına bağlandı.
+
+## Canlı admin doğrulaması
+
+`https://tekstil-sigma.vercel.app` üzerinde ilk hesap kurma, giriş/çıkış, yetkisiz erişim engeli ve Secure/HttpOnly/SameSite=Strict çerez doğrulandı. Bilgisayardan gerçek WebP seçilerek yüklendi; içerik kaydı, eski revizyonun 409 ile reddi ve yeni görselin ziyaretçi ürün sayfasına yansıması kontrol edildi. 390 ve 1440 px panel görüntüleri alındı; mobil yatay taşma yok. Ana sayfa, katalog, blog, hakkında, teklif ve admin 200; bulunmayan ürün 404 döndürdü. Test hesabı ve test yüklemesi teslim öncesi temizlenir; kullanıcı hesabı için tek kullanımlık kurulum bağlantısı hazırlanır.
