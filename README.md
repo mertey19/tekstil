@@ -2,7 +2,7 @@
 
 Next.js App Router, TypeScript strict ve Tailwind CSS ile geliştirilmiş Türkçe ürün kataloğu. Ana marka **Mikrofiber Deposu**, alt satır **Siliver Silen Temizlik Bezleri Dünyası** olarak korunmuştur.
 
-**İletişim yalnızca WhatsApp üzerinden yapılır.** Kullanıcının verdiği numara: **+90 530 548 26 60**. E-posta, SMTP, e-posta sağlayıcısı, WhatsApp Business API, ödeme veya üyelik entegrasyonu yoktur. WhatsApp bağlantısı hazırlamak için ücretli servis gerekmez. Son gönderim WhatsApp içinde kullanıcı tarafından yapılır.
+**İletişim yalnızca WhatsApp üzerinden yapılır.** Kullanıcının verdiği numara: **+90 530 548 26 60**. E-posta, SMTP, e-posta sağlayıcısı, WhatsApp Business API veya ödeme entegrasyonu yoktur. Müşteri üyeliği kayıt, giriş ve profil içerir. WhatsApp bağlantısı hazırlamak için ücretli servis gerekmez. Son gönderim WhatsApp içinde kullanıcı tarafından yapılır.
 
 ## Kurulum ve çalıştırma
 
@@ -95,6 +95,18 @@ Migration mevcut içerikleri veya hesabı değiştirmez. Tablo oluşturma ziyare
 Şifreler scrypt ile özetlenir; 12 saatlik oturumlar HTTPS’te Secure/HttpOnly/SameSite=Strict çerez kullanır. Mutasyonlar oturum, Origin ve özel istek başlığıyla korunur. Kurulum, kayıt revizyonu ve deneme sınırları atomik veritabanı sorgularıyla korunur; birden fazla sunucu aynı durumu paylaşır.
 
 Yerel yedek için uygulamayı durdurup veri dizininin tamamını kopyalayın. Neon yedekleri ve veri dışa aktarımı sağlayıcının konsolundan yönetilir. Paneldeki JSON indirme metinleri, ayarları ve görsel referanslarını içerir; hesapları veya görsel baytlarını içermez. Ortam dosyaları, veritabanları ve `.vercel/` dizini Git’e ve sunucu paketlerine dahil edilmez.
+
+## Müşteri üyeliği
+
+Üst menüdeki hesap simgesi `/giris` sayfasını açar. `/uye-ol` üzerinden kullanıcı adı, ad soyad, isteğe bağlı firma ve en az 12 karakterlik şifreyle kayıt olunur. `/hesabim` profil düzenleme, şifre değiştirme, çıkış ve hesabı silme işlemlerini içerir. Müşteri giriş yaptığında ad ve firma bilgileri WhatsApp teklif formuna otomatik gelir. Teklif istemek için üyelik zorunlu değildir.
+
+E-posta adresi istenmez. Kayıtta bir defa gösterilen kurtarma kodu güvenli bir yerde saklanmalıdır. `/sifremi-unuttum` bu kodla şifreyi yeniler. Kod her kullanımda veya şifre değişiminde yenilenir; önceki kod ve tüm eski oturumlar geçersiz olur. Kod ve şifre birlikte kaybolursa otomatik kurtarma yapılamaz.
+
+Şifreler scrypt ile özetlenir; rastgele kurtarma kodları ve oturum anahtarları veritabanında yalnızca özet olarak tutulur. Müşteri oturumu yönetici oturumundan ayrıdır; HTTPS ortamında Secure, HttpOnly, SameSite=Strict çerezi en fazla 7 gün geçerlidir. Değişiklik isteklerinde kaynak denetimi ve kalıcı deneme sınırları bulunur. Hesap verileri ve bunların kullanım açıklaması `/hesabim/veriler` sayfasındadır.
+
+Yönetici panelinin **Müşteri üyelikleri** sekmesi müşterileri arama, görüntüleme, üyeliği duraklatma ve etkinleştirme sunar. Durum değişikliği açık müşteri oturumlarını kapatır. Kullanıcı hesabını kendi şifresiyle sildiğinde profil ve oturumları kaldırılır. Favori, sipariş veya ödeme bölümü yoktur.
+
+Müşteriler ve oturumlar mevcut Neon/SQLite veritabanında saklanır. Yeni uzak ortamı devreye almadan önce `npm run cms:migrate` çalıştırılmalıdır; migration mevcut içerikleri ve hesapları korur. Ek servis veya ücretli üyelik sağlayıcısı kullanılmaz.
 
 ## Blog içeriklerini güncelleme
 

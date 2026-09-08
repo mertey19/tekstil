@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSiteConfig } from "@/lib/content";
 import { isIndexable } from "@/config/site";
 import "./globals.css";
+import "./customer.css";
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const config = (await getSiteConfig());

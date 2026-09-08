@@ -14,11 +14,13 @@ export function Icon({
     | "mail"
     | "phone"
     | "pin"
-    | "grid";
+    | "grid"
+    | "user";
   size?: number;
   className?: string;
 }) {
   const paths = {
+    user: "M20 21v-2a7 7 0 0 0-14 0v2M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
     arrow: "M4 12h16m-6-6 6 6-6 6",
     search: "m21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
     menu: "M4 6h16M4 12h16M4 18h16",

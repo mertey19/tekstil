@@ -71,6 +71,12 @@ async function handle(request: Request, context: Context) {
       if (route === "session")
         return json({ configured: await isConfigured(), user: await currentAdmin() });
       await requireAdmin();
+      if (route === "customers") {
+        const query = (new URL(request.url).searchParams.get("q") || "").trim().slice(0,100).toLowerCase();
+        const pattern = `%${query}%`;
+        const customers = await database().prepare('SELECT c.id, c.username, c.name, c.company, c.active, c.created_at AS "createdAt" FROM customers c WHERE lower(c.username) LIKE ? OR lower(c.name) LIKE ? OR lower(c.company) LIKE ? ORDER BY c.created_at DESC LIMIT 200').all(pattern, pattern, pattern);
+        return json({customers});
+      }
       if (route === "content") return json(await readContent());
       if (route === "media") return json({ media: await listMedia() });
       throw new CmsError("İşlem bulunamadı.", 404);
@@ -98,6 +104,15 @@ async function handle(request: Request, context: Context) {
       return response;
     }
     await requireAdmin();
+    if (request.method === "POST" && route === "customers/status") {
+      const data = z.object({id:z.uuid(), active:z.boolean()}).strict().parse(await bodyJson(request));
+      const updated = await database().batch([
+        {sql:"UPDATE customers SET active=?, auth_version=auth_version+1 WHERE id=? RETURNING id", params:[data.active ? 1 : 0, data.id]},
+        {sql:"DELETE FROM customer_sessions WHERE customer_id=?", params:[data.id]},
+      ]);
+      if (!updated[0].rows.length) throw new CmsError("Müşteri bulunamadı.", 404);
+      return json({ok:true});
+    }
     if (request.method === "POST" && route === "logout") {
       const token = (await cookies()).get(sessionCookie)?.value;
       if (token)

@@ -1,6 +1,6 @@
 # Doğrulama raporu — 8 Eylül 2026
 
-Son kapsam: kalıcı içerik ve görsel yönetimine sahip yönetici paneli, Türkçe ürün kataloğu, üç başlangıç yazılı blog ve **yalnızca WhatsApp** iletişim/teklif akışı. Telefon/e-posta alanı veya e-posta sağlayıcısı yok. +90 530 548 26 60 kullanıcıdan alındı. Hiçbir gerçek kişiye test mesajı gönderilmedi.
+Son kapsam: kayıt, giriş ve profil içeren müşteri üyeliği; kalıcı içerik ve görsel yönetimine sahip yönetici paneli, Türkçe ürün kataloğu, üç başlangıç yazılı blog ve **yalnızca WhatsApp** iletişim/teklif akışı. Telefon/e-posta alanı veya e-posta sağlayıcısı yok. +90 530 548 26 60 kullanıcıdan alındı. Hiçbir gerçek kişiye test mesajı gönderilmedi.
 
 ## Çalıştırılan komutlar
 
@@ -8,9 +8,9 @@ Son kapsam: kalıcı içerik ve görsel yönetimine sahip yönetici paneli, Tür
 | --- | --- |
 | `npm run lint` | Başarılı, hata/uyarı yok |
 | `npm run typecheck` | Başarılı; Next route typegen ve strict TypeScript |
-| `npm test` | 16/16 birim testi başarılı |
+| `npm test` | 18/18 birim testi başarılı |
 | `npm run build` | Başarılı; dinamik katalog/blog/sayfalar, yönetici paneli, yetkili CMS API’si ve görsel sunumu |
-| `npm run test:e2e` | Tam koşu 34/34; büyük dosya testi eklendikten sonra yönetim testleri 8/8 (toplam 35 farklı senaryo) |
+| `npm run test:e2e` | Tam koşu 42/42 başarılı; 7 müşteri üyeliği senaryosu dahil |
 | `npm run test:performance` | Önceki katalog sürümünde 3 mobil Lighthouse raporu üretildi; admin sonrası tekrar ölçülmedi |
 | `npm run validate:release` | Beklenen hata kodu 1: demo/önizleme, gerçek alan adı/ürün/görsel ve hukuki onaylar eksik |
 
@@ -28,6 +28,16 @@ Kurulumda `npm install` bağımlılık denetimi 0 güvenlik açığı bildirdi. 
 - Testler her koşuda ayrı `artifacts/cms-e2e-*` veritabanı kullandı; asıl yönetici hesabı oluşturulmadı ve katalog değiştirilmedi.
 
 Şifre değiştirme ekranı ve sunucu doğrulaması uygulanmıştır; tam şifre değiştirip tüm oturumları sonlandırma akışı ayrı bir tarayıcı testine dahil edilmedi. Yük ve yedekten dönüş testi yapılmadı. Vercel’de kalıcı Neon Postgres, yerelde SQLite kullanılır.
+
+## Müşteri üyeliği doğrulamaları
+
+- Kayıt, giriş, çıkış, profil düzenleme ve yenileme sonrasında kalıcılık; üye bilgilerinin WhatsApp teklif formuna aktarılması tarayıcıda doğrulandı.
+- İki müşteri birbirinin profilini değiştiremez; müşteri oturumu yönetici API'sine erişemez. Yanlış Origin ve ek kimlik alanı reddedildi.
+- Kullanıcı adları normalize edilir ve benzersizdir. Şifre değişimi ve kurtarma tüm eski oturumları iptal eder. Aynı kurtarma kodunun iki paralel kullanımından yalnızca biri başarılı olur.
+- Admin müşteri araması, üyeliği duraklatma, tekrar etkinleştirme ve eski oturumların geri açılmaması uçtan uca geçti. Müşterinin hesabını silmesi profilini ve oturumlarını kaldırır.
+- Üyelik 390/1440 px ve profil 390 px görüntüleri incelendi. Kayıt, mobil profil ve mobil müşteri yönetiminde axe WCAG 2 A/AA ve 2.1 AA ihlali yok.
+- Gerçek Neon üzerinde kayıt, ayrı Node sürecinden profil/oturum okuma, şifre değiştirme, paralel kurtarma, duraklatma ve hesap silme doğrulandı. Yalnızca bu kontrol için açılan müşteri temizlendi; mevcut içerik ve yönetici hesabı değiştirilmedi.
+- İstek sınırları veritabanında tutulur. Yük testi ve gerçek saldırı simülasyonu yapılmadı. Kullanıcının tercihine göre favori/sipariş/ödeme özelliği eklenmedi.
 
 ## Birim testi kapsamı
 

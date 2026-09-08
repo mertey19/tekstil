@@ -1204,3 +1204,4 @@
   font-weight: 600;
   color: #35435d;
 }
+.admin-customer-search{display:flex;gap:12px;margin:22px 0}.admin-customer-search input{flex:1;min-width:0;border:1px solid #ccd5e0;border-radius:6px;padding:10px 13px}.admin-customer-list{display:grid;gap:12px}.admin-customer-list article{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e3e8ef;border-radius:8px}.admin-customer-list h3{font-size:16px}.admin-customer-list p,.admin-customer-list small{font-size:12px;overflow-wrap:anywhere}.admin-customer-list .admin-button{flex-shrink:0}@media(max-width:600px){.admin-customer-list article{align-items:flex-start;flex-direction:column}}

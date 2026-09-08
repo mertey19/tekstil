@@ -26,12 +26,14 @@ export function QuoteForm({
   invalidProduct,
   demo,
   available,
+  profile,
 }: {
   products: { id: string; name: string }[];
   initialProduct: string;
   invalidProduct: boolean;
   demo: boolean;
   available: boolean;
+  profile?: {name:string; company:string};
 }) {
   const [errors, setErrors] = useState<QuoteErrors>({});
   const [result, setResult] = useState<Result>({ status: "idle" });
@@ -171,6 +173,7 @@ export function QuoteForm({
           </label>
           <input
             {...props("name")}
+            defaultValue={profile?.name || ""}
             autoComplete="name"
             maxLength={100}
             required
@@ -183,6 +186,7 @@ export function QuoteForm({
           </label>
           <input
             {...props("company")}
+            defaultValue={profile?.company || ""}
             autoComplete="organization"
             maxLength={150}
           />

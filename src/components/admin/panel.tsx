@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Admin thumbnails display already optimized local assets. */
 import { useEffect, useMemo, useState } from "react";
+import { AdminCustomers } from "./customers";
 import {
   contentSchema,
   type CmsContent,
@@ -29,6 +30,7 @@ const tabs = [
   ["media", "Görsel kütüphanesi", "▧"],
   ["settings", "Site ayarları", "⚙"],
   ["legal", "Yasal metinler", "§"],
+  ["customers", "Müşteri üyelikleri", "♧"],
   ["account", "Hesabım", "○"],
 ] as const;
 type Tab = (typeof tabs)[number][0];
@@ -361,7 +363,7 @@ export function AdminPanel({
             >
               Siteyi görüntüle ↗
             </a>
-            {tab !== "account" && (
+            {tab !== "account" && tab !== "customers" && (
               <button
                 className="admin-button primary"
                 form="cms-editor"
@@ -404,6 +406,8 @@ export function AdminPanel({
           )}
           {tab === "account" ? (
             <AccountEditor username={username} onLogout={() => void logout()} />
+          ) : tab === "customers" ? (
+            <AdminCustomers />
           ) : (
             <form id="cms-editor" onSubmit={(e) => void save(e)} noValidate>
               <fieldset disabled={busy || uploads > 0}>

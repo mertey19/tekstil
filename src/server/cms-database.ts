@@ -26,20 +26,23 @@ const schema = (remote: boolean) => [
   "CREATE TABLE IF NOT EXISTS attempts (key TEXT PRIMARY KEY, count INTEGER NOT NULL, reset_at BIGINT NOT NULL)",
   "CREATE TABLE IF NOT EXISTS setup (id INTEGER PRIMARY KEY CHECK(id=1), token_hash TEXT NOT NULL, expires_at BIGINT NOT NULL)",
   `CREATE TABLE IF NOT EXISTS media (src TEXT PRIMARY KEY, name TEXT NOT NULL, width INTEGER NOT NULL, height INTEGER NOT NULL, size INTEGER NOT NULL, created_at TEXT NOT NULL, bytes ${remote ? "BYTEA" : "BLOB"} NOT NULL)`,
+  "CREATE TABLE IF NOT EXISTS customers (id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE, name TEXT NOT NULL, company TEXT NOT NULL, password_hash TEXT NOT NULL, recovery_hash TEXT NOT NULL, auth_version INTEGER NOT NULL DEFAULT 1, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL)",
+  "CREATE TABLE IF NOT EXISTS customer_sessions (token_hash TEXT PRIMARY KEY, customer_id TEXT NOT NULL REFERENCES customers(id) ON DELETE CASCADE, auth_version INTEGER NOT NULL, expires_at BIGINT NOT NULL)",
+  "CREATE INDEX IF NOT EXISTS customer_sessions_owner ON customer_sessions(customer_id)",
 ];
 const seed = (): Query => ({
   sql: "INSERT INTO content VALUES (1, ?, 1, ?) ON CONFLICT(id) DO NOTHING",
   params: [JSON.stringify(initialContent()), new Date().toISOString()],
 });
-const cached = globalThis as typeof globalThis & { cmsConnectionsV2?: Map<string, CmsDatabase> };
+const cached = globalThis as typeof globalThis & { cmsConnectionsV3?: Map<string, CmsDatabase> };
 
 export function database(): CmsDatabase {
   const url = process.env.CMS_DATABASE_URL || process.env.DATABASE_URL;
   if (!url && process.env.VERCEL)
     throw new Error("Vercel için CMS_DATABASE_URL veya DATABASE_URL ayarlanmalıdır.");
   const key = url || dataDirectory();
-  cached.cmsConnectionsV2 ??= new Map();
-  const existing = cached.cmsConnectionsV2.get(key);
+  cached.cmsConnectionsV3 ??= new Map();
+  const existing = cached.cmsConnectionsV3.get(key);
   if (existing) return existing;
   let execute: (query: Query) => Promise<Result>;
   let batch: CmsDatabase["batch"];
@@ -94,7 +97,7 @@ export function database(): CmsDatabase {
     }),
     batch,
   };
-  cached.cmsConnectionsV2.set(key, adapter);
+  cached.cmsConnectionsV3.set(key, adapter);
   return adapter;
 }
 

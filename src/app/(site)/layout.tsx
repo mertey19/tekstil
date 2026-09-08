@@ -4,6 +4,8 @@ import { FloatingWhatsApp } from "@/components/floating-whatsapp";
 import { isIndexable } from "@/config/site";
 import { getSiteConfig } from "@/lib/content";
 import { StructuredData } from "@/lib/seo";
+import { CustomerProvider } from "@/components/customer/session";
+import { currentCustomer } from "@/server/customer-auth";
 export const dynamic = "force-dynamic";
 export default async function SiteLayout({
   children,
@@ -11,8 +13,9 @@ export default async function SiteLayout({
   children: React.ReactNode;
 }) {
   const siteConfig = (await getSiteConfig());
+  const customer = await currentCustomer();
   return (
-    <>
+    <CustomerProvider customer={customer}>
       <a className="skip-link" href="#main">
         Ana içeriğe atla
       </a>
@@ -47,6 +50,6 @@ export default async function SiteLayout({
           }}
         />
       )}
-    </>
+    </CustomerProvider>
   );
 }

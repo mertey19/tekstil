@@ -3,6 +3,7 @@ import { getProducts } from "@/lib/content";
 import { normalizePhone } from "@/lib/contact";
 import { Breadcrumbs } from "@/components/catalog-ui";
 import { QuoteForm } from "@/components/quote-form";
+import { currentCustomer } from "@/server/customer-auth";
 import { pageMetadata } from "@/lib/seo";
 export async function generateMetadata() {
   return (await pageMetadata(
@@ -21,6 +22,7 @@ export default async function QuotePage({
   searchParams: Promise<{ urun?: string | string[] }>;
 }) {
   const fields = (await getPageContent("quote")).fields;
+  const customer = await currentCustomer();
   const params = await searchParams;
   const siteConfig = (await getSiteConfig());
   const products = (await getProducts());
@@ -53,6 +55,7 @@ export default async function QuotePage({
           </p>
         </aside>
         <QuoteForm
+          profile={customer ? {name:customer.name, company:customer.company} : undefined}
           products={products.map((p) => ({ id: p.id, name: p.name }))}
           initialProduct={product?.id || ""}
           invalidProduct={!!params.urun && !product}
