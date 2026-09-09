@@ -88,8 +88,22 @@ test("Yalnızca yapılandırılmış WhatsApp bağlantısı var; sitemap demo ü
 }) => {
   await page.goto("/iletisim");
   await expect(
-    page.locator('a[href^="tel:"], a[href^="mailto:"], iframe'),
+    page.locator('a[href^="tel:"], a[href^="mailto:"]'),
   ).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(1);
+  await expect(page.locator(".contact-map iframe")).toHaveAttribute(
+    "src",
+    "https://maps.google.com/maps?q=37.7841269,29.0876543&z=17&hl=tr&output=embed",
+  );
+  await expect(
+    page.getByRole("link", { name: "Google Haritalar’da aç" }),
+  ).toHaveAttribute(
+    "href",
+    "https://www.google.com/maps?q=37.7841269,29.0876543&z=17&hl=tr",
+  );
+  await expect(
+    page.getByText("Topraklık Mahallesi, Pamukkale / Denizli"),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "WhatsApp’tan Yazın" }),
   ).toHaveAttribute("href", /^https:\/\/wa\.me\/905305482660\?text=/);

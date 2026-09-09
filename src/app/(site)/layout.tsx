@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { FloatingWhatsApp } from "@/components/floating-whatsapp";
 import { isIndexable } from "@/config/site";
 import { getSiteConfig } from "@/lib/content";
+import { mapLocation } from "@/lib/contact";
 import { StructuredData } from "@/lib/seo";
 import { CustomerProvider } from "@/components/customer/session";
 import { currentCustomer } from "@/server/customer-auth";
@@ -15,6 +16,7 @@ export default async function SiteLayout({
 }) {
   const siteConfig = (await getSiteConfig());
   const customer = await currentCustomer();
+  const map = mapLocation(siteConfig.merchant);
   return (
     <CustomerProvider customer={customer}>
       <a className="skip-link" href="#main">
@@ -40,6 +42,16 @@ export default async function SiteLayout({
                 name: siteConfig.name,
                 legalName: siteConfig.fullName,
                 url: siteConfig.url,
+                ...(map
+                  ? {
+                      geo: {
+                        "@type": "GeoCoordinates",
+                        latitude: map.lat,
+                        longitude: map.lng,
+                      },
+                      hasMap: map.href,
+                    }
+                  : {}),
               },
               {
                 "@type": "WebSite",

@@ -8,7 +8,7 @@ import {
   visibleProducts,
 } from "../../src/lib/catalog";
 import { sitemapPaths } from "../../src/lib/sitemap";
-import { normalizePhone, whatsappLink } from "../../src/lib/contact";
+import { mapLocation, normalizePhone, whatsappLink } from "../../src/lib/contact";
 import { releaseIssues } from "../../src/lib/release";
 import { siteConfig } from "../../src/config/site";
 
@@ -110,6 +110,37 @@ test("Demo ve taslak ürünler canlı katalog ve sitemap'e sızmaz", () => {
   assert.ok(!paths.includes("/urun/cam-bezi"));
   assert.ok(!paths.includes("/teklif-al"));
   assert.ok(!paths.some((p) => p.includes("?")));
+});
+test("Harita bağlantısı yalnızca geçerli koordinatlardan üretilir", () => {
+  assert.equal(mapLocation({ mapLatitude: "", mapLongitude: "" }), null);
+  assert.equal(mapLocation({ mapLatitude: "91", mapLongitude: "29" }), null);
+  assert.equal(
+    mapLocation({ mapLatitude: "37.7841269", mapLongitude: "" }),
+    null,
+  );
+  const map = mapLocation({
+    mapLatitude: "37.7841269",
+    mapLongitude: "29.0876543",
+    mapLabel: "Topraklık Mahallesi, Pamukkale / Denizli",
+  });
+  assert.equal(
+    map?.href,
+    "https://www.google.com/maps?q=37.7841269,29.0876543&z=17&hl=tr",
+  );
+  assert.equal(
+    map?.embed,
+    "https://maps.google.com/maps?q=37.7841269,29.0876543&z=17&hl=tr&output=embed",
+  );
+  assert.equal(map?.label, "Topraklık Mahallesi, Pamukkale / Denizli");
+  assert.equal(
+    mapLocation({
+      mapLatitude: "37.7841269",
+      mapLongitude: "29.0876543",
+      mapLabel: "Etiket",
+      address: "Resmî adres",
+    })?.label,
+    "Resmî adres",
+  );
 });
 test("WhatsApp uluslararası numara ve Türkçe mesajı doğru kodlar", () => {
   // Non-routable synthetic fixture used only to inspect a URL, never contacted.

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSiteConfig } from "@/lib/content";
-import { whatsappLink } from "@/lib/contact";
+import { mapLocation, whatsappLink } from "@/lib/contact";
 import { Breadcrumbs } from "@/components/catalog-ui";
 import { Icon } from "@/components/icon";
 import { pageMetadata } from "@/lib/seo";
@@ -17,6 +17,7 @@ export default async function ContactPage() {
   const fields = (await getPageContent("contact")).fields;
   const siteConfig = (await getSiteConfig());
   const whatsapp = whatsappLink(siteConfig.whatsapp);
+  const map = mapLocation(siteConfig.merchant);
   return (
     <div className="container whatsapp-context">
       <Breadcrumbs items={[{ label: "İletişim" }]} />
@@ -30,31 +31,20 @@ export default async function ContactPage() {
           <h2>{siteConfig.name}</h2>
           <p>{siteConfig.subtitle}</p>
           {whatsapp ? (
-            <>
-              <div className="contact-item whatsapp-contact">
-                <Icon name="phone" />
-                <div>
-                  <h3>WhatsApp</h3>
-                  <a
-                    className="whatsapp-link"
-                    href={whatsapp}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    {siteConfig.whatsapp}
-                  </a>
-                </div>
+            <div className="contact-item whatsapp-contact">
+              <Icon name="phone" />
+              <div>
+                <h3>WhatsApp</h3>
+                <a
+                  className="whatsapp-link"
+                  href={whatsapp}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {siteConfig.whatsapp}
+                </a>
               </div>
-              <a
-                href={whatsapp}
-                className="button whatsapp"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                WhatsApp’tan Yazın
-                <Icon size={18} />
-              </a>
-            </>
+            </div>
           ) : (
             <div className="inline-notice">
               <strong>WhatsApp hattı hazırlanıyor.</strong>
@@ -63,6 +53,35 @@ export default async function ContactPage() {
                 paylaşılacaktır. Şu anda mesaj gönderilemez.
               </p>
             </div>
+          )}
+          {map && (
+            <div className="contact-item">
+              <Icon name="pin" />
+              <div>
+                <h3>Konum</h3>
+                {map.label ? <p>{map.label}</p> : null}
+                <a
+                  className="text-link"
+                  href={map.href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Google Haritalar’da aç
+                  <Icon size={16} />
+                </a>
+              </div>
+            </div>
+          )}
+          {whatsapp && (
+            <a
+              href={whatsapp}
+              className="button whatsapp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp’tan Yazın
+              <Icon size={18} />
+            </a>
           )}
         </section>
         <section className="contact-form-link">
@@ -79,6 +98,17 @@ export default async function ContactPage() {
           </Link>
         </section>
       </div>
+      {map && (
+        <section className="contact-map" aria-label="Harita">
+          <iframe
+            title={`${siteConfig.name} konumu`}
+            src={map.embed}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </section>
+      )}
       <CmsSections page="contact" />
     </div>
   );

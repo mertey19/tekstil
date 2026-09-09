@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { supportDefinitions, supportKeys } from "@/data/support";
 import { getSiteConfig } from "@/lib/content";
+import { mapLocation } from "@/lib/contact";
 import { CmsSections } from "./cms-sections";
 import { getPageContent, getCategories } from "@/lib/content";
 export async function Footer() {
   const siteConfig = (await getSiteConfig());
   const fields = (await getPageContent("footer")).fields;
+  const map = mapLocation(siteConfig.merchant);
   return (
     <footer className="site-footer">
       <div className="container footer-main footer-with-support">
@@ -16,6 +18,16 @@ export async function Footer() {
           </Link>
           <p>{siteConfig.subtitle}</p>
           <p className="muted preserve-lines">{fields.description}</p>
+          {map && (
+            <a
+              className="footer-map"
+              href={map.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Haritada gör
+            </a>
+          )}
         </div>
         <div>
           <h2>Ürün grupları</h2>

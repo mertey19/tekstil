@@ -186,7 +186,7 @@ export function SupportEditor({ content, change }: Props) {
       </button>
       <EditorCard
         title="Resmî satıcı bilgileri"
-        description="Yalnızca işletmenize ait doğrulanmış bilgileri girin. Doldurulan alanlar sözleşme, ön bilgilendirme ve iade sayfalarında görünür. Marka adı ile resmî unvan farklı olabilir."
+        description="Yalnızca işletmenize ait doğrulanmış bilgileri girin. Doldurulan alanlar sözleşme, ön bilgilendirme ve iade sayfalarında görünür. Harita koordinatları iletişim sayfasında gösterilir; açık adres boş bırakılabilir."
       >
         {(
           [
@@ -210,6 +210,40 @@ export function SupportEditor({ content, change }: Props) {
             }
           />
         ))}
+        <Field
+          label="Harita konumu"
+          value={content.settings.merchant.mapLabel}
+          maxLength={240}
+          hint="İletişim sayfasında görünür. Resmî açık adres doluysa o metin önceliklidir."
+          onChange={(v) =>
+            change((d) => {
+              d.settings.merchant.mapLabel = v;
+            })
+          }
+        />
+        <Field
+          label="Enlem"
+          value={content.settings.merchant.mapLatitude}
+          maxLength={24}
+          inputMode="decimal"
+          hint="Google Haritalar konumunun enlemi. İkisini de boş bırakırsanız harita gizlenir."
+          onChange={(v) =>
+            change((d) => {
+              d.settings.merchant.mapLatitude = v;
+            })
+          }
+        />
+        <Field
+          label="Boylam"
+          value={content.settings.merchant.mapLongitude}
+          maxLength={24}
+          inputMode="decimal"
+          onChange={(v) =>
+            change((d) => {
+              d.settings.merchant.mapLongitude = v;
+            })
+          }
+        />
       </EditorCard>
     </div>
   );

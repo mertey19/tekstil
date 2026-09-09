@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { settingsSchema } from "../../src/lib/cms-model";
-import { socialSchema, supportSchema } from "../../src/lib/support-model";
+import {
+  merchantSchema,
+  socialSchema,
+  supportSchema,
+} from "../../src/lib/support-model";
 import { initialContent } from "../../src/server/cms-seed";
 
 test("Eski CMS ayarları destek sayfalarıyla açılır; mevcut içerikler korunur", () => {
@@ -13,6 +17,32 @@ test("Eski CMS ayarları destek sayfalarıyla açılır; mevcut içerikler korun
   const parsed = settingsSchema.parse(old);
   assert.equal(parsed.name, old.name);
   assert.equal(parsed.social.instagram, "");
+  assert.equal(parsed.merchant.mapLatitude, "37.7841269");
+  assert.equal(parsed.merchant.mapLongitude, "29.0876543");
+  assert.equal(
+    parsed.merchant.mapLabel,
+    "Topraklık Mahallesi, Pamukkale / Denizli",
+  );
+  const migrated = settingsSchema.parse({
+    ...initialContent().settings,
+    merchant: {
+      legalName: "Eski işletme",
+      address: "",
+      taxOffice: "",
+      taxNumber: "",
+      mersisNumber: "",
+    },
+  });
+  assert.equal(migrated.merchant.legalName, "Eski işletme");
+  assert.equal(migrated.merchant.mapLatitude, "37.7841269");
+  assert.equal(
+    merchantSchema.safeParse({
+      ...migrated.merchant,
+      mapLatitude: "37.7841269",
+      mapLongitude: "",
+    }).success,
+    false,
+  );
   assert.equal(Object.keys(parsed.support).length, 5);
   parsed.support.faq.sections[0].title = "Özel soru";
   assert.notEqual(
