@@ -20,7 +20,7 @@ export const siteConfig = {
   visuals: {
     hero: {
       src: "/images/hero.webp",
-      alt: "Denizli Silen Mikrofiber Deposu tanıtım afişi: renkli mikrofiber temizlik bezleri, toptan ve perakende, yakında burada açılıyor",
+      alt: "Siliver Silen Denizli Mikrofiber Deposu tanıtım afişi: renkli mikrofiber temizlik bezleri, toptan ve perakende",
       isDemo: false,
     },
   },

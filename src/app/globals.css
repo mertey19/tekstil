@@ -1724,13 +1724,13 @@ main:focus {
 }
 .about-image {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 5 / 4;
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
 }
 .about-image .product-image {
-  object-fit: cover;
+  object-fit: contain;
 }
 .contact-layout {
   display: grid;
@@ -2065,7 +2065,7 @@ main:focus {
     font-size: 15px;
   }
   .about-image {
-    aspect-ratio: 1.2;
+    aspect-ratio: 5 / 4;
   }
   .contact-layout {
     grid-template-columns: 1fr;

@@ -5,14 +5,16 @@ import { readContent } from "@/server/cms-store";
 import type { PageKey } from "@/lib/cms-model";
 import type { SupportKey } from "@/data/support";
 const read = cache(async () => (await readContent()).content);
-const previousDemoHeroAlt =
-  "Mavi, açık yeşil ve beyaz katlanmış mikrofiber bezlerden oluşan ürün kompozisyonu";
+const previousHeroAlts = [
+  "Mavi, açık yeşil ve beyaz katlanmış mikrofiber bezlerden oluşan ürün kompozisyonu",
+  "Denizli Silen Mikrofiber Deposu tanıtım afişi: renkli mikrofiber temizlik bezleri, toptan ve perakende, yakında burada açılıyor",
+];
 export async function getSiteConfig() {
   const settings = (await read()).settings;
   const hero = { ...settings.hero };
   if (hero.src === siteConfig.visuals.hero.src) {
     hero.isDemo = siteConfig.visuals.hero.isDemo;
-    if (hero.alt === previousDemoHeroAlt) hero.alt = siteConfig.visuals.hero.alt;
+    if (previousHeroAlts.includes(hero.alt)) hero.alt = siteConfig.visuals.hero.alt;
   }
   return {
     ...siteConfig,
