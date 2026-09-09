@@ -20,3 +20,9 @@ export function sitemapPaths(
     ...live.map((p) => `/urun/${p.slug}`),
   ];
 }
+
+export function sitemapEntries(origin: string | null, paths: string[]) {
+  if (!origin) return [];
+  const base = origin.endsWith("/") ? origin : `${origin}/`;
+  return paths.map((path) => ({ url: new URL(path, base).toString() }));
+}

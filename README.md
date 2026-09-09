@@ -126,13 +126,13 @@ Firma, WhatsApp, tanıtım görseli ve yasal metinler panelden yönetilir. `src/
 
 | Değişken | Açıklama |
 | --- | --- |
-| `SITE_MODE` | Varsayılan demo; `live` yalnızca gerçek içerik hazırken |
-| `SITE_PREVIEW` | Varsayılan true; canlı indeksleme için false |
+| `SITE_MODE` | Varsayılan demo; Google indeksleme için Production’da `live` |
+| `SITE_PREVIEW` | Varsayılan true; Google indeksleme için Production’da `false` |
 | `SITE_WHATSAPP` | İlk kurulumda kaydedilecek numara; sonrasında paneldeki numara kullanılır |
 | `DATABASE_URL` / `CMS_DATABASE_URL` | Neon Postgres bağlantısı; yalnızca sunucuda tutulur |
 | `CMS_DATA_DIR` | Yerel SQLite dizini; boşsa `./data` |
 | `ADMIN_ORIGIN` | Yönetici panelinin HTTPS kaynağı; boşsa `SITE_URL` |
-| `SITE_URL` | Doğrulanmış HTTPS kök alan adı; bilinmiyorsa boş |
+| `SITE_URL` | Doğrulanmış HTTPS kök alan adı (Search Console ile aynı, örn. `https://www.siliversilen.com`). `*.vercel.app` yazmayın; bilinmiyorsa boş |
 | `SITE_DOMAIN_VERIFIED` | Alan adı gerçekten doğrulandıktan sonra true |
 | `CONTENT_APPROVED` | İşletme ve ürün içeriği onaylandıktan sonra true |
 | `TRUSTED_CLIENT_IP_HEADER` | İsteğe bağlı; yalnızca bu başlığı üzerine yazan güvenilir proxy varsa |
@@ -157,7 +157,7 @@ Numara yoksa/yanlışsa sahte bağlantı veya hazır mesaj sonucu verilmez. Yük
 
 ## SEO ve yayın kontrolü
 
-Demo/önizleme `noindex, follow` kullanır; robots sayfaları taramaya kapatmaz, böylece noindex okunabilir. Demo sitemap boştur. Filtreli aramalar noindex ve temel sayfaya canonical taşır. Gerçek indekslenebilir içerikte Organization, WebSite, BreadcrumbList ve doğrulanmış Product alanları üretilir. Fiyat, stok, yıldız veya yorum uydurulmaz. Gerçek ürün fotoğrafı sosyal paylaşım meta verisine bağlanır; alan adı yokken yerel/örnek URL metadata'ya yazılmaz.
+Demo/önizleme `noindex, follow` kullanır; robots sayfaları taramaya kapatmaz, böylece noindex okunabilir. Yerel demo, `localhost` ve `*.vercel.app` sitemap’i boş bırakır. Özel alan adında (`www.siliversilen.com`) `/sitemap.xml` yayımlanmış gerçek (demo olmayan) sayfa adreslerini listeler ve `robots.txt` `Sitemap:` satırını ekler. Google’ın sayfaları dizine eklemesi için Vercel **Production** ortamında şunlar gerekir: `SITE_MODE=live`, `SITE_PREVIEW=false`, `SITE_URL=https://www.siliversilen.com`. Filtreli aramalar noindex ve temel sayfaya canonical taşır. Gerçek indekslenebilir içerikte Organization, WebSite, BreadcrumbList ve doğrulanmış Product alanları üretilir. Fiyat, stok, yıldız veya yorum uydurulmaz. Gerçek ürün fotoğrafı sosyal paylaşım meta verisine bağlanır; alan adı yokken yerel/örnek URL metadata'ya yazılmaz.
 
 ```powershell
 npm run validate:release

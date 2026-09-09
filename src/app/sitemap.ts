@@ -1,27 +1,35 @@
 import type { MetadataRoute } from "next";
-import { isIndexable } from "@/config/site";
+import { headers } from "next/headers";
+import { siteConfig } from "@/config/site";
 import {
   getSiteConfig,
   getProducts,
   getAllCategories,
   getBlogPosts,
 } from "@/lib/content";
-
-import { sitemapPaths } from "@/lib/sitemap";
+import { sitemapEntries, sitemapPaths } from "@/lib/sitemap";
+import { originFromRequestHeaders } from "@/lib/site-origin";
 import { supportDefinitions, supportKeys } from "@/data/support";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteConfig = (await getSiteConfig());
-  const products = (await getProducts()),
-    categories = (await getAllCategories()),
-    blogPosts = (await getBlogPosts());
-  const paths = sitemapPaths(products, categories, isIndexable, {
-    privacy: siteConfig.legal.privacy.approved,
-    disclosure: siteConfig.legal.disclosure.approved,
+  const origin = originFromRequestHeaders(
+    await headers(),
+    siteConfig.url,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  );
+  if (!origin) return [];
+  const site = await getSiteConfig();
+  const products = await getProducts();
+  const categories = await getAllCategories();
+  const blogPosts = await getBlogPosts();
+  const paths = sitemapPaths(products, categories, true, {
+    privacy: site.legal.privacy.approved,
+    disclosure: site.legal.disclosure.approved,
   });
-  if (isIndexable)
-    paths.push("/blog", ...blogPosts.map((post) => `/blog/${post.slug}`), ...supportKeys.map((key) => supportDefinitions[key].path));
-  return paths.map((path) => ({
-    url: new URL(path, siteConfig.url!).toString(),
-  }));
+  paths.push(
+    "/blog",
+    ...blogPosts.map((post) => `/blog/${post.slug}`),
+    ...supportKeys.map((key) => supportDefinitions[key].path),
+  );
+  return sitemapEntries(origin, paths);
 }

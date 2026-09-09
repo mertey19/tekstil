@@ -178,6 +178,7 @@ test("Eksik canlı ayarlar ve yanlış alan adları yayını engeller", () => {
     "https://www.kukuroglu.com.tr",
     "https://fixture.test",
     "https://127.0.0.1",
+    "https://tekstil-sigma.vercel.app",
   ])
     assert.ok(
       releaseIssues({ ...siteConfig, url }, products, categories, {}).some(
