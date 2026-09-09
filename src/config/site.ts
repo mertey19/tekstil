@@ -17,7 +17,13 @@ export const siteConfig = {
       ? "+905305482660"
       : optional(process.env.SITE_WHATSAPP),
   url: optional(process.env.SITE_URL),
-  visuals: { hero: { src: "/images/hero.webp", isDemo: true } },
+  visuals: {
+    hero: {
+      src: "/images/hero.webp",
+      alt: "Denizli Silen Mikrofiber Deposu tanıtım afişi: renkli mikrofiber temizlik bezleri, toptan ve perakende, yakında burada açılıyor",
+      isDemo: false,
+    },
+  },
   demo: process.env.SITE_MODE !== "live",
   preview: process.env.SITE_PREVIEW !== "false",
   features: {

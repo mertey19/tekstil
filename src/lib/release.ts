@@ -47,7 +47,6 @@ export function releaseIssues(
   if (products.some((p) => p.isDemo && p.isPublished))
     issues.push("Demo ürün yayımlanmış olarak işaretlenmiş.");
   const demoImages = [
-    "/images/hero.webp",
     "/images/glass.webp",
     "/images/auto.webp",
     ...Object.values(productImages).map((image) => image.src),

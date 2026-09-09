@@ -5,8 +5,15 @@ import { readContent } from "@/server/cms-store";
 import type { PageKey } from "@/lib/cms-model";
 import type { SupportKey } from "@/data/support";
 const read = cache(async () => (await readContent()).content);
+const previousDemoHeroAlt =
+  "Mavi, açık yeşil ve beyaz katlanmış mikrofiber bezlerden oluşan ürün kompozisyonu";
 export async function getSiteConfig() {
   const settings = (await read()).settings;
+  const hero = { ...settings.hero };
+  if (hero.src === siteConfig.visuals.hero.src) {
+    hero.isDemo = siteConfig.visuals.hero.isDemo;
+    if (hero.alt === previousDemoHeroAlt) hero.alt = siteConfig.visuals.hero.alt;
+  }
   return {
     ...siteConfig,
     name: settings.name,
@@ -14,7 +21,7 @@ export async function getSiteConfig() {
     subtitle: settings.subtitle,
     whatsapp: settings.whatsapp,
     about: settings.about,
-    visuals: { hero: settings.hero },
+    visuals: { hero },
     legal: settings.legal,
     social: settings.social,
     merchant: settings.merchant,
