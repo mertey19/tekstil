@@ -15,7 +15,18 @@ export async function generateMetadata(): Promise<Metadata> {
       "Mikrofiber bez ve tekstil ürünleri. Ürün bilgisi ve teklif için iletişime geçin.",
     robots: { index: isIndexable, follow: true },
     ...(config.url ? { metadataBase: new URL(config.url) } : {}),
-    icons: { icon: "/icon.svg" },
+    icons: {
+      icon: [
+        { url: "/icon.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+        { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      ],
+      apple: {
+        url: "/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    },
   };
 }
 export default function RootLayout({
