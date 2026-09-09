@@ -1,5 +1,6 @@
 import { type Category, type Product, validateCatalog } from "@/lib/catalog";
 import { productImages } from "./product-images";
+import { productCopy } from "./product-copy";
 export const categories: Category[] = [
   {
     id: "cam",
@@ -125,8 +126,8 @@ export const products: Product[] = demos.map(
     slug,
     name,
     categoryId,
-    summary,
-    description: summary,
+    summary: productCopy[slug].summary || summary,
+    description: productCopy[slug].description,
     images: [productImages[slug]],
     useCases: [...useCases],
     featured: [0, 2, 4, 6].includes(index),

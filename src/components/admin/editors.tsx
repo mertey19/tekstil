@@ -185,6 +185,7 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           value={product.description}
           onChange={(v) => update("description", v)}
           multiline
+          hint="Ürün görselinin yanında görünür. Paragraflar arasında boş satır bırakın."
           required
         />
         <Field

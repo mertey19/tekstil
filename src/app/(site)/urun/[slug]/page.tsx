@@ -11,8 +11,8 @@ import { whatsappLink } from "@/lib/contact";
 import { BreadcrumbData, pageMetadata, StructuredData } from "@/lib/seo";
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
-  const siteConfig = (await getSiteConfig());
-  const product = (await getProduct((await params).slug));
+  const siteConfig = await getSiteConfig();
+  const product = await getProduct((await params).slug);
   if (!product) notFound();
   return {
     ...(await pageMetadata(
@@ -37,10 +37,12 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 export default async function ProductPage({ params }: Props) {
-  const siteConfig = (await getSiteConfig());
-  const product = (await getProduct((await params).slug));
+  const siteConfig = await getSiteConfig();
+  const product = await getProduct((await params).slug);
   if (!product) notFound();
-  const category = (await getAllCategories()).find((c) => c.id === product.categoryId)!;
+  const category = (await getAllCategories()).find(
+    (c) => c.id === product.categoryId,
+  )!;
   const url = siteConfig.url
     ? new URL(`/urun/${product.slug}`, siteConfig.url).toString()
     : null;
@@ -73,7 +75,11 @@ export default async function ProductPage({ params }: Props) {
             {category.name}
           </Link>
           <h1>{product.name}</h1>
-          <p className="detail-summary">{product.summary}</p>
+          <div className="detail-description" aria-label="Ürün açıklaması">
+            {product.description.split(/\n\s*\n/).map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
           <div className="detail-use-cases">
             <h2>Kullanım alanları</h2>
             <div className="tags">
@@ -112,26 +118,19 @@ export default async function ProductPage({ params }: Props) {
           </p>
         </div>
       </div>
-      <div className="product-description">
-        <div>
-          <span className="eyebrow">ÜRÜNÜ YAKINDAN TANIYIN</span>
-          <h2>Ürün hakkında</h2>
-          <p>{product.description}</p>
-        </div>
-        {specs.length > 0 && (
-          <div>
-            <h2>Teknik bilgiler</h2>
-            <dl className="spec-list">
-              {specs.map(([name, value]) => (
-                <div key={name}>
-                  <dt>{name}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
-      </div>
+      {specs.length > 0 && (
+        <section className="product-description product-technical">
+          <h2>Teknik bilgiler</h2>
+          <dl className="spec-list">
+            {specs.map(([name, value]) => (
+              <div key={name}>
+                <dt>{name}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
       {similar.length > 0 && (
         <section className="section related-products">
           <div className="section-heading">
