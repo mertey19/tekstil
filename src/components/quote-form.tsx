@@ -144,6 +144,11 @@ export function QuoteForm({
       <p className="form-intro">
         Talebinizi hazırlayın, WhatsApp’ta gözden geçirip gönderin.
       </p>
+      <div className="quote-support-links" aria-label="Sipariş bilgileri">
+        <Link href="/siparis-ve-teslimat">Sipariş ve teslimat</Link>
+        <Link href="/iptal-ve-iade">İptal ve iade</Link>
+        <Link href="/on-bilgilendirme">Ön bilgilendirme</Link>
+      </div>
       {!available && (
         <div className="inline-notice">
           <strong>WhatsApp hattı hazırlanıyor.</strong>

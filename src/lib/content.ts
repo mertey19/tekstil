@@ -3,6 +3,7 @@ import { visibleProducts } from "@/lib/catalog";
 import { cache } from "react";
 import { readContent } from "@/server/cms-store";
 import type { PageKey } from "@/lib/cms-model";
+import type { SupportKey } from "@/data/support";
 const read = cache(async () => (await readContent()).content);
 export async function getSiteConfig() {
   const settings = (await read()).settings;
@@ -15,9 +16,12 @@ export async function getSiteConfig() {
     about: settings.about,
     visuals: { hero: settings.hero },
     legal: settings.legal,
+    social: settings.social,
+    merchant: settings.merchant,
   };
 }
 export const getPageContent = async (key: PageKey) => (await read()).pages[key];
+export const getSupportPage = async (key: SupportKey) => (await read()).settings.support[key];
 export const getAllCategories = async () =>
   (await read()).categories.filter((c) => c.status === "published");
 export const getProducts = async () => {

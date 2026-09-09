@@ -2,6 +2,7 @@
 
 import {
   contentSchema,
+  settingsSchema,
   type CmsSnapshot,
   type CmsContent,
   type MediaItem,
@@ -15,8 +16,11 @@ export async function readContent(): Promise<CmsSnapshot> {
   const row = (await database()
     .prepare("SELECT body, revision, updated_at FROM content WHERE id=1")
     .get())!;
+  const content = JSON.parse(String(row.body)) as CmsContent;
+  // Defaults keep existing installations compatible without rewriting saved content.
+  content.settings = settingsSchema.parse(content.settings);
   return {
-    content: JSON.parse(String(row.body)) as CmsContent,
+    content,
     revision: Number(row.revision),
     updatedAt: String(row.updated_at),
   };

@@ -15,11 +15,15 @@ export function Icon({
     | "phone"
     | "pin"
     | "grid"
+    | "document"
+    | "help"
     | "user";
   size?: number;
   className?: string;
 }) {
   const paths = {
+    document: "M5 3h14v18H5zM8 7h8M8 11h8M8 15h5",
+    help: "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M9.1 9a3 3 0 1 1 5.8 1c-.6 1-2.9 1.5-2.9 3M12 17h.01",
     user: "M20 21v-2a7 7 0 0 0-14 0v2M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
     arrow: "M4 12h16m-6-6 6 6-6 6",
     search: "m21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",

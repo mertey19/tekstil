@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+import { UtilityBar } from "@/components/utility-bar";
 import { Footer } from "@/components/footer";
 import { FloatingWhatsApp } from "@/components/floating-whatsapp";
 import { isIndexable } from "@/config/site";
@@ -19,6 +20,7 @@ export default async function SiteLayout({
       <a className="skip-link" href="#main">
         Ana içeriğe atla
       </a>
+      <UtilityBar whatsapp={siteConfig.whatsapp} social={siteConfig.social} />
       <Header
         name={siteConfig.name}
         subtitle={siteConfig.subtitle}

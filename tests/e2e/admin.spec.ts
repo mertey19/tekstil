@@ -464,6 +464,33 @@ test("Kategori, blog ve ek sayfa bölümü panel formlarından oluşturulur", as
   ).toBeVisible();
 });
 
+test("Bilgilendirme ve sosyal hesaplar panelden kaydedilir ve kalıcı görünür", async ({ page }) => {
+  await login(page);
+  const menu = page.getByRole("navigation", { name: "Yönetim menüsü" });
+  await menu.getByRole("button", { name: "Bilgilendirme", exact: true }).click();
+  await page.getByRole("button", { name: "+ Soru ekle", exact: true }).click();
+  await page.getByLabel("Soru", { exact: true }).last().fill("Panelden eklenen soru?");
+  await page.getByLabel("Yanıt", { exact: true }).last().fill("Bu yanıt yönetim panelinden eklendi.");
+  await page.getByLabel("Resmî unvan", { exact: true }).fill("Yalnızca test işletmesi");
+  await page.getByRole("button", { name: "9. bölümü yukarı taşı" }).click();
+  await page.getByLabel("Düzenlenecek bilgilendirme sayfası").selectOption("order");
+  await page.getByLabel("Sayfa başlığı", { exact: true }).fill("Sipariş rehberi güncellendi");
+  await menu.getByRole("button", { name: "Site ayarları", exact: true }).click();
+  await page.getByLabel("Instagram bağlantısı").fill("https://www.instagram.com/test-account/");
+  await page.getByRole("button", { name: "Değişiklikleri kaydet" }).click();
+  await expect(page.getByRole("status")).toContainText("Değişiklikler kaydedildi. Yayındaki içerikler sitede güncellendi.");
+  await page.reload();
+  await menu.getByRole("button", { name: "Bilgilendirme", exact: true }).click();
+  await expect(page.getByLabel("Soru", { exact: true }).nth(7)).toHaveValue("Panelden eklenen soru?");
+  await page.goto("/sss");
+  await expect(page.locator(".faq-item").nth(7)).toContainText("Panelden eklenen soru?");
+  await expect(page.locator(".utility-social").getByRole("link", { name: "Instagram (yeni sekmede)" })).toHaveAttribute("href", "https://www.instagram.com/test-account/");
+  await page.goto("/siparis-ve-teslimat");
+  await expect(page.locator("h1")).toHaveText("Sipariş rehberi güncellendi");
+  await page.goto("/mesafeli-satis-sozlesmesi");
+  await expect(page.locator(".merchant-information")).toContainText("Yalnızca test işletmesi");
+});
+
 test("Panel masaüstü ve mobilde taşmaz; temel ekranlar erişilebilir", async ({
   page,
 }) => {
@@ -477,6 +504,7 @@ test("Panel masaüstü ve mobilde taşmaz; temel ekranlar erişilebilir", async 
       "Sayfa içerikleri",
       "Görsel kütüphanesi",
       "Site ayarları",
+      "Bilgilendirme",
       "Hesabım",
     ]) {
       await page
@@ -496,7 +524,7 @@ test("Panel masaüstü ve mobilde taşmaz; temel ekranlar erişilebilir", async 
     }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  for (const name of ["Genel bakış", "Site ayarları", "Sayfa içerikleri"]) {
+  for (const name of ["Genel bakış", "Site ayarları", "Sayfa içerikleri", "Bilgilendirme"]) {
     await page
       .getByRole("navigation", { name: "Yönetim menüsü" })
       .getByRole("button", { name })

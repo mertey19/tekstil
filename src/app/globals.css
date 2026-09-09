@@ -2617,3 +2617,418 @@ body:has(.floating-whatsapp) .site-footer {
     padding: 32px 0;
   }
 }
+
+/* Utility navigation and customer information pages. */
+@media (max-width: 360px) {
+  .header-inner {
+    gap: 8px;
+  }
+  .brand {
+    flex-shrink: 1;
+    gap: 6px;
+  }
+  .brand > span:last-child {
+    min-width: 0;
+  }
+  .brand strong {
+    font-size: 16px;
+  }
+  .brand small {
+    font-size: 9px;
+  }
+  .header-actions {
+    flex-shrink: 0;
+    gap: 4px;
+  }
+  .search-shortcut {
+    width: 26px;
+  }
+}
+.utility-bar {
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  font-size: 12px;
+}
+.utility-inner,
+.utility-social,
+.utility-links {
+  display: flex;
+  align-items: center;
+}
+.utility-inner {
+  min-height: 51px;
+  justify-content: space-between;
+  gap: 16px;
+}
+.utility-social {
+  gap: 9px;
+}
+.utility-social a {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c6cfdd;
+  border-radius: 50%;
+}
+.utility-social a:hover {
+  background: var(--soft-blue);
+  border-color: var(--accent);
+}
+.utility-social .utility-whatsapp {
+  color: var(--whatsapp-ink);
+  background: var(--whatsapp);
+  border-color: var(--whatsapp);
+}
+.utility-social .utility-whatsapp:hover {
+  background: var(--whatsapp-hover);
+  border-color: var(--whatsapp-hover);
+}
+.utility-links {
+  gap: 27px;
+}
+.utility-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+}
+.utility-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.utility-links .utility-phone {
+  color: var(--whatsapp-text);
+  font-variant-numeric: tabular-nums;
+}
+.footer-main.footer-with-support {
+  grid-template-columns: 1.6fr 1fr 0.8fr 1.2fr;
+  gap: 35px;
+}
+.support-page {
+  padding-bottom: 84px;
+}
+.support-heading {
+  max-width: 770px;
+  padding: 32px 0 42px;
+}
+.support-heading h1 {
+  font-size: clamp(32px, 3.6vw, 49px);
+  line-height: 1.15;
+  letter-spacing: -1.6px;
+  margin: 15px 0 20px;
+  font-weight: 500;
+}
+.support-heading > p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.85;
+  max-width: 680px;
+}
+.support-layout {
+  display: grid;
+  grid-template-columns: 275px minmax(0, 1fr);
+  align-items: start;
+  gap: 48px;
+}
+.support-sidebar {
+  display: grid;
+  gap: 23px;
+}
+.support-sidebar nav {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 12px 12px;
+}
+.support-nav-label {
+  display: block;
+  padding: 0 12px 13px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1.4px;
+}
+.support-sidebar nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.support-sidebar nav a svg {
+  flex-shrink: 0;
+}
+.support-sidebar nav a:hover {
+  background: var(--surface);
+}
+.support-sidebar nav a[aria-current="page"] {
+  background: var(--soft-blue);
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+.support-contact {
+  padding: 24px;
+  background: var(--whatsapp-surface);
+  border: 1px solid var(--whatsapp-border);
+  border-radius: 12px;
+}
+.support-contact > svg {
+  color: var(--whatsapp-text);
+}
+.support-contact h2 {
+  margin: 14px 0 8px;
+  font-size: 20px;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+}
+.support-contact p {
+  color: var(--whatsapp-ink);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+.support-contact .button {
+  width: 100%;
+  font-size: 12px;
+  padding-inline: 12px;
+  min-height: 44px;
+}
+.support-body {
+  min-width: 0;
+}
+.support-document {
+  padding: 32px 36px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.support-section + .support-section {
+  border-top: 1px solid var(--border);
+  padding-top: 27px;
+  margin-top: 27px;
+}
+.support-section h2 {
+  font-size: 20px;
+  line-height: 1.45;
+  margin-bottom: 14px;
+  letter-spacing: -0.35px;
+}
+.support-prose {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.support-prose p {
+  white-space: pre-line;
+}
+.support-prose p + p {
+  margin-top: 14px;
+}
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 13px;
+}
+.faq-item summary {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary svg {
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.faq-item[open] {
+  border-color: #cbd9ed;
+}
+.faq-item[open] summary {
+  color: var(--accent-dark);
+}
+.faq-item[open] summary svg {
+  transform: rotate(90deg);
+}
+.faq-item .support-prose {
+  padding: 0 24px 24px;
+  font-size: 14px;
+}
+.support-source {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.support-source a {
+  color: var(--accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.support-related {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.support-related > span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.7px;
+  margin-bottom: 12px;
+}
+.support-related > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.support-related a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--accent-dark);
+}
+.support-related a:hover {
+  background: var(--soft-blue);
+}
+.merchant-information dl > div {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 14px;
+  font-size: 14px;
+  padding-block: 8px;
+  overflow-wrap: anywhere;
+}
+.merchant-information dt {
+  color: var(--muted);
+}
+.merchant-information dd {
+  margin: 0;
+  white-space: pre-line;
+}
+.quote-support-links {
+  display: flex;
+  gap: 6px 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--accent-dark);
+  margin: -8px 0 24px;
+}
+.quote-support-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.admin-support-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+@media (max-width: 1000px) {
+  .support-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .support-document {
+    padding: 26px;
+  }
+  .footer-main.footer-with-support {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .utility-inner {
+    min-height: 45px;
+    gap: 12px;
+  }
+  .utility-links {
+    gap: 18px;
+  }
+  .utility-links .utility-phone {
+    display: none;
+  }
+  .support-heading {
+    padding: 18px 0 30px;
+  }
+  .support-heading h1 {
+    letter-spacing: -1px;
+  }
+  .support-heading > p {
+    font-size: 14px;
+  }
+  .support-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  .support-sidebar {
+    display: contents;
+  }
+  .support-sidebar nav {
+    width: 100%;
+    padding: 15px 8px 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .support-nav-label {
+    grid-column: 1 / -1;
+  }
+  .support-sidebar nav a {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  .support-contact {
+    order: 3;
+    width: 100%;
+  }
+  .support-contact .button {
+    width: auto;
+    padding-inline: 22px;
+  }
+  .support-body {
+    width: 100%;
+  }
+  .support-document {
+    padding: 22px 20px;
+  }
+  .support-section h2 {
+    font-size: 18px;
+  }
+  .support-prose {
+    font-size: 14px;
+  }
+  .faq-item summary {
+    padding: 18px;
+    font-size: 14px;
+    gap: 12px;
+  }
+  .faq-item .support-prose {
+    padding: 0 18px 20px;
+  }
+  .footer-main.footer-with-support {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 20px;
+  }
+  .footer-with-support > div:last-child {
+    grid-column: 1 / -1;
+  }
+  .merchant-information dl > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

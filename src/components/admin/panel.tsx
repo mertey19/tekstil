@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Admin thumbnails display already optimized local assets. */
 import { useEffect, useMemo, useState } from "react";
 import { AdminCustomers } from "./customers";
+import { SocialEditor, SupportEditor } from "./support-editor";
 import {
   contentSchema,
   type CmsContent,
@@ -30,6 +31,7 @@ const tabs = [
   ["media", "Görsel kütüphanesi", "▧"],
   ["settings", "Site ayarları", "⚙"],
   ["legal", "Yasal metinler", "§"],
+  ["support", "Bilgilendirme", "?"],
   ["customers", "Müşteri üyelikleri", "♧"],
   ["account", "Hesabım", "○"],
 ] as const;
@@ -139,9 +141,11 @@ export function AdminPanel({
         setTab(
           issue.path[1] === "legal"
             ? "legal"
-            : issue.path[1] === "hero" || issue.path[1] === "about"
-              ? "pages"
-              : "settings",
+            : issue.path[1] === "support" || issue.path[1] === "merchant"
+              ? "support"
+              : issue.path[1] === "hero" || issue.path[1] === "about"
+                ? "pages"
+                : "settings",
         );
         if (issue.path[1] === "hero") setPage("home");
         if (issue.path[1] === "about") setPage("about");
@@ -719,53 +723,59 @@ export function AdminPanel({
                   </>
                 )}
                 {tab === "settings" && (
-                  <EditorCard
-                    title="Firma ve iletişim bilgileri"
-                    description="Bu bilgiler üst menü, alt bilgi ve WhatsApp bağlantılarında kullanılır."
-                  >
-                    <Field
-                      label="Firma kısa adı"
-                      value={content.settings.name}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.settings.name = v;
-                        })
-                      }
-                      required
-                    />
-                    <Field
-                      label="Firma tam adı"
-                      value={content.settings.fullName}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.settings.fullName = v;
-                        })
-                      }
-                      required
-                    />
-                    <Field
-                      label="Alt başlık"
-                      value={content.settings.subtitle}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.settings.subtitle = v;
-                        })
-                      }
-                      required
-                    />
-                    <Field
-                      label="WhatsApp numarası"
-                      value={content.settings.whatsapp}
-                      onChange={(v) =>
-                        change((d) => {
-                          d.settings.whatsapp = v.replace(/[\s()-]/g, "");
-                        })
-                      }
-                      hint="Ülke koduyla yazın. Örnek: +905305482660. Tüm WhatsApp butonları bu numaraya bağlanır."
-                      type="tel"
-                      required
-                    />
-                  </EditorCard>
+                  <div className="admin-editor-stack">
+                    <EditorCard
+                      title="Firma ve iletişim bilgileri"
+                      description="Bu bilgiler üst menü, alt bilgi ve WhatsApp bağlantılarında kullanılır."
+                    >
+                      <Field
+                        label="Firma kısa adı"
+                        value={content.settings.name}
+                        onChange={(v) =>
+                          change((d) => {
+                            d.settings.name = v;
+                          })
+                        }
+                        required
+                      />
+                      <Field
+                        label="Firma tam adı"
+                        value={content.settings.fullName}
+                        onChange={(v) =>
+                          change((d) => {
+                            d.settings.fullName = v;
+                          })
+                        }
+                        required
+                      />
+                      <Field
+                        label="Alt başlık"
+                        value={content.settings.subtitle}
+                        onChange={(v) =>
+                          change((d) => {
+                            d.settings.subtitle = v;
+                          })
+                        }
+                        required
+                      />
+                      <Field
+                        label="WhatsApp numarası"
+                        value={content.settings.whatsapp}
+                        onChange={(v) =>
+                          change((d) => {
+                            d.settings.whatsapp = v.replace(/[\s()-]/g, "");
+                          })
+                        }
+                        hint="Ülke koduyla yazın. Örnek: +905305482660. Tüm WhatsApp butonları bu numaraya bağlanır."
+                        type="tel"
+                        required
+                      />
+                    </EditorCard>
+                    <SocialEditor content={content} change={change} />
+                  </div>
+                )}
+                {tab === "support" && (
+                  <SupportEditor content={content} change={change} />
                 )}
                 {tab === "legal" && (
                   <div className="admin-editor-stack">

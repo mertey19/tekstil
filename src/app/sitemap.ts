@@ -8,6 +8,7 @@ import {
 } from "@/lib/content";
 
 import { sitemapPaths } from "@/lib/sitemap";
+import { supportDefinitions, supportKeys } from "@/data/support";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteConfig = (await getSiteConfig());
@@ -19,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     disclosure: siteConfig.legal.disclosure.approved,
   });
   if (isIndexable)
-    paths.push("/blog", ...blogPosts.map((post) => `/blog/${post.slug}`));
+    paths.push("/blog", ...blogPosts.map((post) => `/blog/${post.slug}`), ...supportKeys.map((key) => supportDefinitions[key].path));
   return paths.map((path) => ({
     url: new URL(path, siteConfig.url!).toString(),
   }));

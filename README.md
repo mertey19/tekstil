@@ -139,6 +139,12 @@ Firma, WhatsApp, tanıtım görseli ve yasal metinler panelden yönetilir. `src/
 
 SITE_URL boşken canonical veya ürün mesajına uydurma alan adı yazılmaz. Gerçek URL eklendiğinde WhatsApp mesajı ürün bağlantısını da içerir. Sosyal hesap, adres, harita ve başka iletişim kanalı üretilmez.
 
+## Bilgilendirme ve üst şerit
+
+`/sss`, `/siparis-ve-teslimat`, `/iptal-ve-iade`, `/on-bilgilendirme` ve `/mesafeli-satis-sozlesmesi` sayfaları panelin **Bilgilendirme** sekmesinden düzenlenir. Soru/bölüm ekleme, sıralama, kaldırma ve resmî satıcı bilgileri desteklenir. **Site ayarları** içindeki Facebook, Instagram ve LinkedIn alanlarına geçerli HTTPS hesap bağlantıları girildiğinde üst şeritte görünürler. WhatsApp ve numara bağlantısı mevcut WhatsApp hattını kullanır.
+
+Yeni ayarlar eski CMS kayıtları okunurken varsayılanlarla tamamlanır; mevcut içerik veya hesaplar yeniden oluşturulmaz. İlk panel kaydında ayarlar mevcut içerikle birlikte kalıcı kaydedilir. Başlangıç metinleri `src/data/support.ts` içindedir. Bireysel tüketici ve ticari alım ayrımı açıklanır; sözleşme ve ön bilgilendirme sayfaları genel rehberdir, siparişe özel doldurulmuş belge veya kabul akışı değildir. Resmî unvan, adres ve vergi bilgileri doğrulanıp panelden girilmelidir. Tüketici bilgileri 9 Eylül 2026 tarihinde Ticaret Bakanlığının bağlantı verilen güncel rehberleriyle kontrol edildi.
+
 ## WhatsApp akışı ve veri işleme
 
 Form ad soyad, isteğe bağlı firma/ürün/adet ve mesaj alır. İstemci ve sunucuda aynı Zod şeması kullanılır. Ürün kimliği sunucuda görünür katalogla tekrar doğrulanır. POST isteği yalnızca geçerli `wa.me` bağlantısı ve önizleme metni döndürür. Kullanıcı **WhatsApp’ta Aç** bağlantısıyla kendi WhatsApp uygulamasında gönderimi tamamlar. Site “mesaj gönderildi/okundu” iddiasında bulunmaz.

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { merchantSchema, socialSchema, supportSchema } from "./support-model";
 z.config(z.locales.tr());
 
 export const pageDefinitions = {
@@ -271,6 +272,9 @@ export const settingsSchema = z.object({
   }),
   hero: z.object({ src: imagePath, alt: short, isDemo: z.boolean() }),
   legal: z.object({ privacy: legal, disclosure: legal }),
+  social: socialSchema,
+  merchant: merchantSchema,
+  support: supportSchema,
 });
 const pageSchema = z.object({
   fields: z.record(z.string().max(80), z.string().max(4000)),

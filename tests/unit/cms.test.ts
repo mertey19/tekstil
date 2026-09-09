@@ -19,6 +19,7 @@ test("CMS kayıtları ve görseller yeni Node sürecinde kalıcıdır; eski revi
   try {
     const first = await readContent();
     first.content.settings.name = "Kalıcı içerik testi";
+    first.content.settings.support.order.title = "Kalıcı sipariş bilgisi";
     const saved = await saveContent(first.content, first.revision);
     await database()
       .prepare("INSERT INTO media VALUES (?, ?, 1, 1, 3, ?, ?)")
@@ -34,12 +35,13 @@ test("CMS kayıtları ve görseller yeni Node sürecinde kalıcıdır; eski revi
         "--import",
         "tsx",
         "-e",
-        "const {readContent,database}=require('./src/server/cms-store.ts'); (async()=>{const c=await readContent(); console.log(JSON.stringify({name:c.content.settings.name,revision:c.revision,media:Number((await database().prepare('SELECT count(*) AS n FROM media').get()).n)}));})();",
+        "const {readContent,database}=require('./src/server/cms-store.ts'); (async()=>{const c=await readContent(); console.log(JSON.stringify({name:c.content.settings.name,support:c.content.settings.support.order.title,revision:c.revision,media:Number((await database().prepare('SELECT count(*) AS n FROM media').get()).n)}));})();",
       ],
       { cwd: process.cwd(), env: process.env, encoding: "utf8" },
     );
     assert.deepEqual(JSON.parse(result), {
       name: "Kalıcı içerik testi",
+      support: "Kalıcı sipariş bilgisi",
       revision: saved.revision,
       media: 1,
     });
