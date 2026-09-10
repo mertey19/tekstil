@@ -17,14 +17,28 @@ Müşteri fotoğraf sağlamadı. Referans firmanın hiçbir görseli, logosu vey
 | public/images/products/gunluk-temizlik-bezi.webp | Sarı, yelpaze katlama | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
 | public/images/products/mutfak-temizlik-bezi.webp | Kiremit, çizgili doku, uzun katlama | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
 | public/images/products/tezgah-temizlik-bezi.webp | Adaçayı yeşili, petek doku, rulo | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
-| public/icon.svg | Siliver Silen tam logo: altın girdap + S işareti, altında "Siliver Silen" sözcük imi, nane yeşili zemin | Vektör 512 × 512 (SVG 1.1, yazılar yola çevrildi; CorelDRAW açar) | `scripts/generate-logo.py`, müşteri logosu ekran görüntüsünden vektör yaklaşımı |
-| public/icon-mark.svg | Yalnız amblem (girdap + S); 16-48 piksel ikonların kaynağı | Vektör 512 × 512 (SVG 1.1) | `scripts/generate-logo.py` |
-| public/icon.png | Tam logo, PWA/arama ikonu | 192 × 192 | `scripts/generate-icons.mjs` (sharp) |
-| public/apple-touch-icon.png | Tam logo, iOS ana ekran | 180 × 180 | `scripts/generate-icons.mjs` (sharp) |
-| public/icon-48.png | Amblem, küçük boyda okunaklı | 48 × 48 | `scripts/generate-icons.mjs` (sharp) |
-| public/favicon.ico | Amblem, üç boy | 16 / 32 / 48 | `scripts/generate-icons.mjs` (sharp) |
+| assets/brand/icon-source.jpg | Marka ikonunun tek kaynağı: nane yeşili yuvarlatılmış kare üzerinde parlak altın girdap + S amblemi ve dört köşeli ışıltı | 1024 × 1024 | Imagegen, 10 Eylül 2026 (müşteri onaylı render) |
+| public/icon.svg | Aynı render'ın ölçeklenebilir sarmalayıcısı: JPEG gömülü, %20 yuvarlatılmış kareye kırpılmış | SVG 1024 × 1024 | `scripts/generate-icons.mjs` |
+| public/icon.png | Tam amblem, PWA/arama ikonu, köşeler saydam | 192 × 192 | `scripts/generate-icons.mjs` (sharp) |
+| public/apple-touch-icon.png | Tam amblem, iOS ana ekran; saydamlık yok, köşeler nane yeşiliyle dolu | 180 × 180 | `scripts/generate-icons.mjs` (sharp) |
+| public/icon-48.png | Tam amblem, küçük boyda okunaklı | 48 × 48 | `scripts/generate-icons.mjs` (sharp) |
+| public/favicon.ico | Üç boy; 48 ve 32 tam amblem, 16 ise S'nin okunması için yakınlaştırılmış kırpım | 16 / 32 / 48 | `scripts/generate-icons.mjs` (sharp) |
 
 Imagegen PNG çıktıları sharp ile yeniden boyutlandırılıp WebP'ye dönüştürüldü. Görseller ayrıca Next Image üzerinden uygun boyutta AVIF/WebP olarak sunulur. Dış hotlink yok. Arayüz ikonları basit geometrik SVG çizgileridir. Sistem fontları Türkçe karakterleri destekler; haricî font isteği yok.
+
+## Marka ikonu üretimi
+
+Tek kaynak `assets/brand/icon-source.jpg` dosyasıdır; tüm ikonlar `node scripts/generate-icons.mjs` ile ondan türetilir. Elle çizilmiş vektör lockup (eski `public/icon-mark.svg` ve `scripts/generate-logo.py`) bu render ile uyuşmadığı için kaldırıldı; git geçmişinde 47ce72a işlemesinde durmaktadır.
+
+Boru hattı:
+
+1. Nane yeşili yuvarlatılmış kare zaten 1024 × 1024 tuvalin dört kenarına değiyor; beyaz yalnızca yuvarlatma yarıçapının dışındaki dört köşede kalıyor. Kenarlardaki beyaz karışım için 3 piksel içeri kırpılır.
+2. Ölçülen köşe yarıçapı kenarın ~%19,5'i; maskeleme %20 yapılır, böylece beyaz köşelerden iz kalmaz.
+3. `icon.png`, `icon-48.png` ve `favicon.ico` köşeleri saydam bırakır. iOS saydamlığı siyaha düzleştirdiği için `apple-touch-icon.png` köşeleri, düz bir renk yerine aynı karenin biraz yakınlaştırılmış kopyasından alınan nane yeşiliyle doldurulur; böylece zemin gradyanıyla dikiş izi oluşmaz.
+4. Küçültme lanczos3 ile yapılır ve 48 piksel ve altında hafif unsharp uygulanır. 16 pikselde lanczos3'ün halkalanması altın gradyanı benekliyor; bu tek boy mitchell çekirdeğiyle küçültülür.
+5. Tam kare 16 pikselde okunmuyor. Bu yüzden `favicon.ico` içindeki 16 piksellik giriş, amblemin ağırlık merkezine göre 820 × 820 kırpımdan üretilir; S okunur kalır ve yuvarlatılmış kare silueti korunur. 32 piksel ve üzeri tam kareyi kullanır.
+
+`public/icon.svg` metadata'da bilinçli olarak yer almaz: tarayıcılar SVG'yi tercih eder ve 16 piksel için özel olarak hazırlanan kırpım devre dışı kalırdı. Dosya, daha önce yayımlanmış URL'in 404 vermemesi ve müşteriye ölçeklenebilir bir marka dosyası bırakmak için korunur.
 
 ## Üretim istemleri (birebir)
 
