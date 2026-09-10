@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
-import { siteConfig } from "@/config/site";
+import { siteConfig, isIndexable } from "@/config/site";
 import {
   getSiteConfig,
   getProducts,
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     siteConfig.url,
     process.env.VERCEL_PROJECT_PRODUCTION_URL,
   );
-  if (!origin) return [];
+  if (!origin || !isIndexable) return [];
   const site = await getSiteConfig();
   const products = await getProducts();
   const categories = await getAllCategories();

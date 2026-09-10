@@ -47,8 +47,8 @@ export function resolveSitemapOrigin(input: {
   productionUrl?: string | null;
 }): string | null {
   return (
-    publicHttpsOrigin(input.host) ||
     publicHttpsOrigin(input.siteUrl) ||
+    publicHttpsOrigin(input.host) ||
     publicHttpsOrigin(input.productionUrl)
   );
 }

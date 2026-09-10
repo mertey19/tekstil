@@ -8,6 +8,7 @@ import {
   resolveSitemapOrigin,
 } from "../../src/lib/site-origin";
 import { categories, products } from "../../src/data/catalog";
+import { canonicalRedirects } from "../../src/lib/canonical-redirects";
 
 test("Yalnızca gerçek HTTPS kök alan adı sitemap origin olur", () => {
   assert.equal(isPublicSiteUrl("https://www.siliversilen.com/"), true);
@@ -28,6 +29,7 @@ test("Yalnızca gerçek HTTPS kök alan adı sitemap origin olur", () => {
 });
 
 test("Özel alan adı isteği Vercel SITE_URL olsa da sitemap origin üretir", () => {
+  assert.equal(resolveSitemapOrigin({ host: "www.silversilen.com.tr", siteUrl: "https://www.siliversilen.com" }), "https://www.siliversilen.com");
   assert.equal(
     resolveSitemapOrigin({
       host: "www.siliversilen.com",
@@ -59,6 +61,19 @@ test("Özel alan adı isteği Vercel SITE_URL olsa da sitemap origin üretir", (
     ),
     "https://www.siliversilen.com",
   );
+});
+
+test("Alan adı yönlendirmeleri yalnızca üretimde tanımlı diğer hostlara uygulanır", () => {
+  const primary = "https://www.siliversilen.com";
+  const hosts = "tekstil-sigma.vercel.app,www.siliversilen.com,www.silversilen.com.tr,https://bad.test,foo@evil.test";
+  assert.deepEqual(canonicalRedirects(primary, hosts, "preview"), []);
+  assert.deepEqual(canonicalRedirects("https://localhost", hosts, "production"), []);
+  const redirects = canonicalRedirects(primary, hosts, "production");
+  assert.equal(redirects.length, 2);
+  assert.equal(redirects[0].destination, `${primary}/:path`);
+  assert.equal(redirects[0].has[0].value, "tekstil-sigma\\.vercel\\.app");
+  assert.equal(redirects[0].permanent, true);
+  assert.ok(redirects[0].source.includes("google"));
 });
 
 test("Sitemap loc adresleri origin yokken üretilmez; demo ürün sızmaz", () => {

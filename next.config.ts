@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { canonicalRedirects } from "./src/lib/canonical-redirects";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -19,6 +20,12 @@ const nextConfig: NextConfig = {
   images: { formats: ["image/avif", "image/webp"] },
   // Wait for metadata before flushing so unknown dynamic routes retain an HTTP 404.
   htmlLimitedBots: /.*/,
+  redirects: () =>
+    canonicalRedirects(
+      process.env.SITE_URL,
+      process.env.SITE_REDIRECT_HOSTS,
+      process.env.VERCEL_ENV,
+    ),
   async headers() {
     return [
       {

@@ -25,7 +25,7 @@ export const siteConfig = {
     },
   },
   demo: process.env.SITE_MODE !== "live",
-  preview: process.env.SITE_PREVIEW !== "false",
+  preview: process.env.VERCEL_ENV === "preview" || process.env.SITE_PREVIEW !== "false",
   features: {
     wholesale: false,
     manufacturing: false,
