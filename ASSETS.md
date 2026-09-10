@@ -17,7 +17,12 @@ Müşteri fotoğraf sağlamadı. Referans firmanın hiçbir görseli, logosu vey
 | public/images/products/gunluk-temizlik-bezi.webp | Sarı, yelpaze katlama | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
 | public/images/products/mutfak-temizlik-bezi.webp | Kiremit, çizgili doku, uzun katlama | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
 | public/images/products/tezgah-temizlik-bezi.webp | Adaçayı yeşili, petek doku, rulo | 1200 × 1200 | Imagegen, 8 Eylül 2026 |
-| public/icon.svg | Geçici özgün geometrik monogram | Vektör | Proje içerisinde kodla oluşturuldu |
+| public/icon.svg | Siliver Silen tam logo: altın girdap + S işareti, altında "Siliver Silen" sözcük imi, nane yeşili zemin | Vektör 512 × 512 (SVG 1.1, yazılar yola çevrildi; CorelDRAW açar) | `scripts/generate-logo.py`, müşteri logosu ekran görüntüsünden vektör yaklaşımı |
+| public/icon-mark.svg | Yalnız amblem (girdap + S); 16-48 piksel ikonların kaynağı | Vektör 512 × 512 (SVG 1.1) | `scripts/generate-logo.py` |
+| public/icon.png | Tam logo, PWA/arama ikonu | 192 × 192 | `scripts/generate-icons.mjs` (sharp) |
+| public/apple-touch-icon.png | Tam logo, iOS ana ekran | 180 × 180 | `scripts/generate-icons.mjs` (sharp) |
+| public/icon-48.png | Amblem, küçük boyda okunaklı | 48 × 48 | `scripts/generate-icons.mjs` (sharp) |
+| public/favicon.ico | Amblem, üç boy | 16 / 32 / 48 | `scripts/generate-icons.mjs` (sharp) |
 
 Imagegen PNG çıktıları sharp ile yeniden boyutlandırılıp WebP'ye dönüştürüldü. Görseller ayrıca Next Image üzerinden uygun boyutta AVIF/WebP olarak sunulur. Dış hotlink yok. Arayüz ikonları basit geometrik SVG çizgileridir. Sistem fontları Türkçe karakterleri destekler; haricî font isteği yok.
 
