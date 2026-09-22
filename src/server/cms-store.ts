@@ -1,5 +1,3 @@
-
-
 import {
   contentSchema,
   settingsSchema,
@@ -8,6 +6,7 @@ import {
   type MediaItem,
 } from "@/lib/cms-model";
 import { initialContent } from "./cms-seed";
+import { districtBlogPosts } from "@/data/district-blog";
 
 import { database } from "./cms-database";
 export { database, dataDirectory } from "./cms-database";
@@ -17,6 +16,19 @@ export async function readContent(): Promise<CmsSnapshot> {
     .prepare("SELECT body, revision, updated_at FROM content WHERE id=1")
     .get())!;
   const content = JSON.parse(String(row.body)) as CmsContent;
+  if ((content.version as number) === 1) {
+    const savedSlugs = new Set(content.posts.map((post) => post.slug));
+    content.posts.unshift(
+      ...districtBlogPosts
+        .filter((post) => !savedSlugs.has(post.slug))
+        .map((post) => ({
+          ...structuredClone(post),
+          id: post.slug,
+          status: "published" as const,
+        })),
+    );
+    content.version = 2;
+  }
   // Defaults keep existing installations compatible without rewriting saved content.
   content.settings = settingsSchema.parse(content.settings);
   return {
@@ -33,7 +45,10 @@ export class CmsError extends Error {
     super(message);
   }
 }
-export async function saveContent(input: unknown, revision: number): Promise<CmsSnapshot> {
+export async function saveContent(
+  input: unknown,
+  revision: number,
+): Promise<CmsSnapshot> {
   const result = contentSchema.safeParse(input);
   if (!result.success)
     throw new CmsError(
@@ -62,7 +77,9 @@ export async function saveContent(input: unknown, revision: number): Promise<Cms
   walk(content);
   const uploaded = new Set((await listMedia()).map((item) => item.src));
   for (const src of paths) {
-    const found = src.startsWith("/images/uploads/") ? uploaded.has(src) : bundled.has(src);
+    const found = src.startsWith("/images/uploads/")
+      ? uploaded.has(src)
+      : bundled.has(src);
     if (!found)
       throw new CmsError(
         "Seçilen görsel bulunamadı. Görseli yeniden yükleyin veya kütüphaneden seçin.",
@@ -82,17 +99,18 @@ export async function saveContent(input: unknown, revision: number): Promise<Cms
   return { content, revision: revision + 1, updatedAt };
 }
 export async function listMedia(): Promise<MediaItem[]> {
-  return (await database()
-    .prepare(
-      "SELECT src, name, width, height, size, created_at AS \"createdAt\" FROM media ORDER BY created_at DESC",
-    )
-    .all())
-    .map((row) => ({
-      src: String(row.src),
-      name: String(row.name),
-      width: Number(row.width),
-      height: Number(row.height),
-      size: Number(row.size),
-      createdAt: String(row.createdAt),
-    }));
+  return (
+    await database()
+      .prepare(
+        'SELECT src, name, width, height, size, created_at AS "createdAt" FROM media ORDER BY created_at DESC',
+      )
+      .all()
+  ).map((row) => ({
+    src: String(row.src),
+    name: String(row.name),
+    width: Number(row.width),
+    height: Number(row.height),
+    size: Number(row.size),
+    createdAt: String(row.createdAt),
+  }));
 }

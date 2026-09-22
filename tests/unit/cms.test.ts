@@ -6,15 +6,21 @@ import path from "node:path";
 import { initialContent } from "../../src/server/cms-seed";
 import { contentSchema } from "../../src/lib/cms-model";
 import { database, readContent, saveContent } from "../../src/server/cms-store";
-import { setupAdmin, tokenHash, limitAttempt } from "../../src/server/admin-auth";
+import {
+  setupAdmin,
+  tokenHash,
+  limitAttempt,
+} from "../../src/server/admin-auth";
 import { randomBytes } from "node:crypto";
 
 test("CMS kayıtları ve görseller yeni Node sürecinde kalıcıdır; eski revizyon kaydı ezemez", async () => {
   const base = path.join(process.cwd(), "artifacts", "unit-cms");
   mkdirSync(base, { recursive: true });
   const previous = process.env.CMS_DATA_DIR;
-  const remote = process.env.CMS_DATABASE_URL, remoteDefault = process.env.DATABASE_URL;
-  delete process.env.CMS_DATABASE_URL; delete process.env.DATABASE_URL;
+  const remote = process.env.CMS_DATABASE_URL,
+    remoteDefault = process.env.DATABASE_URL;
+  delete process.env.CMS_DATABASE_URL;
+  delete process.env.DATABASE_URL;
   process.env.CMS_DATA_DIR = mkdtempSync(path.join(base, "run-"));
   try {
     const first = await readContent();
@@ -50,15 +56,27 @@ test("CMS kayıtları ve görseller yeni Node sürecinde kalıcıdır; eski revi
       /başka bir sekmede/,
     );
     const token = randomBytes(32).toString("hex");
-    await database().prepare("INSERT INTO setup VALUES (1, ?, ?)").run(tokenHash(token), Date.now() + 60_000);
+    await database()
+      .prepare("INSERT INTO setup VALUES (1, ?, ?)")
+      .run(tokenHash(token), Date.now() + 60_000);
     const setup = await Promise.allSettled([
       setupAdmin("first", "Test-password-only-123!", token),
       setupAdmin("second", "Test-password-only-123!", token),
     ]);
     assert.equal(setup.filter((item) => item.status === "fulfilled").length, 1);
-    assert.equal(Number((await database().prepare("SELECT count(*) AS n FROM admin").get())!.n), 1);
-    const attempts = await Promise.allSettled(Array.from({ length: 12 }, () => limitAttempt("parallel-test", 5)));
-    assert.equal(attempts.filter((item) => item.status === "fulfilled").length, 5);
+    assert.equal(
+      Number(
+        (await database().prepare("SELECT count(*) AS n FROM admin").get())!.n,
+      ),
+      1,
+    );
+    const attempts = await Promise.allSettled(
+      Array.from({ length: 12 }, () => limitAttempt("parallel-test", 5)),
+    );
+    assert.equal(
+      attempts.filter((item) => item.status === "fulfilled").length,
+      5,
+    );
   } finally {
     if (remote !== undefined) process.env.CMS_DATABASE_URL = remote;
     if (remoteDefault !== undefined) process.env.DATABASE_URL = remoteDefault;
@@ -87,4 +105,50 @@ test("CMS şeması yinelenen adresleri, kopuk ilişkileri ve güvensiz bağlant�
   const relation = initialContent();
   relation.categories = [];
   assert.equal(contentSchema.safeParse(relation).success, false);
+});
+
+test("Eski içerik sürümü Denizli ilçe yazılarını bir kez ekleyerek yükseltilir", async () => {
+  const base = path.join(process.cwd(), "artifacts", "unit-cms-migration");
+  mkdirSync(base, { recursive: true });
+  const previous = process.env.CMS_DATA_DIR;
+  const remote = process.env.CMS_DATABASE_URL;
+  const remoteDefault = process.env.DATABASE_URL;
+  delete process.env.CMS_DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  process.env.CMS_DATA_DIR = mkdtempSync(path.join(base, "run-"));
+  try {
+    const db = database();
+    const row = await db.prepare("SELECT body FROM content WHERE id=1").get();
+    const legacy = JSON.parse(String(row!.body));
+    legacy.version = 1;
+    legacy.posts = legacy.posts.filter(
+      (post: { category: string }) =>
+        post.category !== "Denizli ilçe rehberleri",
+    );
+    await db
+      .prepare("UPDATE content SET body=? WHERE id=1")
+      .run(JSON.stringify(legacy));
+    const migrated = await readContent();
+    assert.equal(migrated.content.version, 2);
+    assert.equal(
+      migrated.content.posts.filter(
+        (post) => post.category === "Denizli ilçe rehberleri",
+      ).length,
+      19,
+    );
+    assert.equal(
+      new Set(migrated.content.posts.map((post) => post.slug)).size,
+      migrated.content.posts.length,
+    );
+    await saveContent(migrated.content, migrated.revision);
+    assert.equal(
+      (await readContent()).content.posts.length,
+      migrated.content.posts.length,
+    );
+  } finally {
+    if (remote !== undefined) process.env.CMS_DATABASE_URL = remote;
+    if (remoteDefault !== undefined) process.env.DATABASE_URL = remoteDefault;
+    if (previous === undefined) delete process.env.CMS_DATA_DIR;
+    else process.env.CMS_DATA_DIR = previous;
+  }
 });

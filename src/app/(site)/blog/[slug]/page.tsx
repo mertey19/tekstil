@@ -14,10 +14,14 @@ import { BreadcrumbData, StructuredData, pageMetadata } from "@/lib/seo";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const siteConfig = (await getSiteConfig());
-  const post = (await getBlogPost((await params).slug));
+  const siteConfig = await getSiteConfig();
+  const post = await getBlogPost((await params).slug);
   if (!post) notFound();
-  const metadata = (await pageMetadata(post.title, post.excerpt, `/blog/${post.slug}`));
+  const metadata = await pageMetadata(
+    post.title,
+    post.excerpt,
+    `/blog/${post.slug}`,
+  );
   return {
     ...metadata,
     openGraph: {
@@ -40,10 +44,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const siteConfig = (await getSiteConfig());
-  const post = (await getBlogPost((await params).slug));
+  const siteConfig = await getSiteConfig();
+  const post = await getBlogPost((await params).slug);
   if (!post) notFound();
-  const related = (await getBlogPosts()).filter((item) => item.slug !== post.slug);
+  const allPosts = await getBlogPosts();
+  const related = [
+    ...allPosts.filter(
+      (item) => item.slug !== post.slug && item.category === post.category,
+    ),
+    ...allPosts.filter(
+      (item) => item.slug !== post.slug && item.category !== post.category,
+    ),
+  ].slice(0, 3);
 
   return (
     <div className="container">

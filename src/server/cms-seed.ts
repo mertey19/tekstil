@@ -5,7 +5,7 @@ import { contentSchema, pageDefinitions, pageKeys } from "@/lib/cms-model";
 
 export function initialContent() {
   return contentSchema.parse({
-    version: 1,
+    version: 2,
     categories: categories.map((c) => ({ ...c, status: "published" })),
     products: products.map((p) => ({ ...p, status: "published" })),
     posts: blogPosts.map((p) => ({ ...p, id: p.slug, status: "published" })),

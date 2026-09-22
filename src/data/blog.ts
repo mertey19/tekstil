@@ -15,7 +15,10 @@ export type BlogPost = {
   }[];
 };
 
+import { districtBlogPosts } from "./district-blog";
+
 export const blogPosts: BlogPost[] = [
+  ...districtBlogPosts,
   {
     slug: "mikrofiber-bez-nasil-yikanir",
     title: "Mikrofiber bez nasıl yıkanır?",
