@@ -1,5 +1,5 @@
 "use client";
-import { useId, type InputHTMLAttributes } from "react";
+import { useId, useState, type InputHTMLAttributes } from "react";
 import {
   pageDefinitions,
   pageKeys,
@@ -131,9 +131,47 @@ const lines = (v: string) =>
 const moneyInput = (cents: number | null) =>
   cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
 const moneyCents = (value: string) => {
-  const number = Number(value.replace(",", "."));
+  const number = Number(value.trim().replace(",", "."));
   return Number.isFinite(number) && number >= 0 ? Math.round(number * 100) : 0;
 };
+function MoneyField({
+  label,
+  value,
+  onChange,
+  optional = false,
+}: {
+  label: string;
+  value: number | null;
+  onChange: (value: number | null) => void;
+  optional?: boolean;
+}) {
+  const [draft, setDraft] = useState(moneyInput(value));
+  const commit = () => {
+    const empty = !draft.trim();
+    const cents = empty && optional ? null : moneyCents(draft);
+    setDraft(moneyInput(cents));
+    onChange(cents);
+  };
+  return (
+    <Field
+      label={label}
+      value={draft}
+      onChange={(next) => {
+        if (/^\d*(?:[.,]\d{0,2})?$/.test(next)) setDraft(next);
+      }}
+      onBlur={commit}
+      onFocus={(event) => event.currentTarget.select()}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") event.currentTarget.blur();
+      }}
+      type="text"
+      inputMode="decimal"
+      enterKeyHint="done"
+      placeholder="Örn. 80,00"
+      hint="Fiyatı TL olarak doğrudan yazın. Örnek: 80 veya 80,50"
+    />
+  );
+}
 export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
   const { content, change } = props;
   const index = content.products.findIndex((p) => p.id === id),
@@ -217,21 +255,18 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
         description="Satışa açmadan önce fiyatı ve stok durumunu kontrol edin. Tutarları KDV dahil girin."
       >
         <div className="admin-form-grid">
-          <Field
+          <MoneyField
+            key={`${product.id}-price-${product.priceCents}`}
             label="Satış fiyatı (₺)"
-            value={moneyInput(product.priceCents)}
-            onChange={(v) => update("priceCents", moneyCents(v))}
-            inputMode="decimal"
-            placeholder="0,00"
+            value={product.priceCents}
+            onChange={(value) => update("priceCents", value ?? 0)}
           />
-          <Field
+          <MoneyField
+            key={`${product.id}-compare-price-${product.compareAtCents}`}
             label="Eski fiyat (₺, isteğe bağlı)"
-            value={moneyInput(product.compareAtCents)}
-            onChange={(v) =>
-              update("compareAtCents", v.trim() ? moneyCents(v) : null)
-            }
-            inputMode="decimal"
-            placeholder="0,00"
+            value={product.compareAtCents}
+            onChange={(value) => update("compareAtCents", value)}
+            optional
           />
           <Field
             label="Stok adedi"

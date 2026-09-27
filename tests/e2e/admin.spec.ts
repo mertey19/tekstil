@@ -235,6 +235,8 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await page
     .getByLabel("Kullanım alanları", { exact: true })
     .fill("Günlük temizlik\nCamlar");
+  await page.getByLabel("Satış fiyatı (₺)", { exact: true }).fill("80,50");
+  await page.getByLabel("Stok adedi", { exact: true }).click();
   await page
     .getByLabel("Ürün görseli 1 yükle", { exact: true })
     .setInputFiles("public/images/products/cam-bezi.webp");
@@ -260,6 +262,7 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     (p) => p.slug === "yonetim-test-bezi",
   )!;
   expect(product.images[0].src).toMatch(/^\/images\/uploads\/.*\.webp$/);
+  expect(product.priceCents).toBe(8050);
   expect(
     (await page.request.get(product.images[0].src)).headers()["content-type"],
   ).toBe("image/webp");
