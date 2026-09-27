@@ -6,6 +6,7 @@ import { AdminUsers } from "./users";
 import { SocialEditor, SupportEditor } from "./support-editor";
 import {
   contentSchema,
+  productSchema,
   type CmsContent,
   type CmsSnapshot,
   type MediaItem,
@@ -226,23 +227,41 @@ export function AdminPanel({
     }
   }
   async function saveProduct(id: string) {
-    const next = structuredClone(content);
-    const product = next.products.find((item) => item.id === id);
+    const normalized = normalizeContent(content);
+    const product = normalized.products.find((item) => item.id === id);
     if (!product) return;
     if (product.status === "published") product.isDemo = false;
-    const success = await persistProduct(
-      next,
-      product.status === "published"
-        ? `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`
-        : `“${product.name}” taslak olarak kaydedildi.`,
-    );
-    if (!success) return;
-    setSelected((current) => ({ ...current, products: "" }));
-    requestAnimationFrame(() =>
-      document
-        .querySelector(".admin-records")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-    );
+    const parsed = productSchema.safeParse(product);
+    if (!parsed.success) {
+      setError(`Ürün kaydedilemedi: ${parsed.error.issues[0].message}`);
+      return;
+    }
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const next = await adminRequest<CmsSnapshot>("content/product", {
+        method: "PUT",
+        body: JSON.stringify({ product: parsed.data }),
+      });
+      setSaved(next);
+      setContent(next.content);
+      setMessage(
+        product.status === "published"
+          ? `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`
+          : `“${product.name}” taslak olarak kaydedildi.`,
+      );
+      setSelected((current) => ({ ...current, products: "" }));
+      requestAnimationFrame(() =>
+        document
+          .querySelector(".admin-records")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      );
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Ürün kaydedilemedi.");
+    } finally {
+      setBusy(false);
+    }
   }
   async function deleteProduct(id: string) {
     const product = content.products.find((item) => item.id === id);

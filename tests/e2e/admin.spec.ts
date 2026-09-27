@@ -305,6 +305,41 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await publicPage.close();
 });
 
+test("Art arda eklenen ürünler birbirinin üzerine yazılmaz", async ({ page }) => {
+  test.setTimeout(60_000);
+  await login(page);
+  await page
+    .getByRole("navigation", { name: "Yönetim menüsü" })
+    .getByRole("button", { name: "Ürünler" })
+    .click();
+
+  for (const name of ["Ardışık Birinci Bez", "Ardışık İkinci Bez"]) {
+    await page.getByRole("button", { name: "+ Ürün ekle", exact: true }).click();
+    await page.getByLabel("Ürün adı", { exact: true }).fill(name);
+    await page
+      .getByLabel("Ürün açıklaması", { exact: true })
+      .fill(`${name} için ürün açıklaması.`);
+    await page
+      .getByLabel("Kullanım alanları", { exact: true })
+      .fill("Günlük temizlik");
+    await page
+      .getByLabel("Ürün görseli 1 yükle", { exact: true })
+      .setInputFiles("public/images/products/cam-bezi.webp");
+    await page
+      .getByLabel("Görsel 1 açıklaması", { exact: true })
+      .fill(`${name} görseli`);
+    await page.getByRole("button", { name: "Ürünü kaydet", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Ürün kaydedildi." })).toBeVisible();
+  }
+
+  const state = await snapshot(page);
+  expect(
+    state.content.products.filter((product) =>
+      product.name.startsWith("Ardışık "),
+    ).map((product) => product.name),
+  ).toEqual(expect.arrayContaining(["Ardışık Birinci Bez", "Ardışık İkinci Bez"]));
+});
+
 test("Blog, kategori, sayfa bölümü ve WhatsApp ayarı sitede güncellenir", async ({
   page,
 }) => {

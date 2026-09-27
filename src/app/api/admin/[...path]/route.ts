@@ -31,6 +31,7 @@ import {
 } from "@/server/admin-auth";
 import { listOrders, updateOrderStatus } from "@/server/order-store";
 import { orderStatusSchema } from "@/lib/order-model";
+import { productSchema } from "@/lib/cms-model";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -214,6 +215,20 @@ async function handle(request: Request, context: Context) {
         .object({ content: z.unknown(), revision: z.number().int().positive() })
         .parse(await bodyJson(request, 4 * 1024 * 1024));
       return json(await saveContent(body.content, body.revision));
+    }
+    if (request.method === "PUT" && route === "content/product") {
+      const body = z
+        .object({ product: productSchema })
+        .strict()
+        .parse(await bodyJson(request, 1024 * 1024));
+      const snapshot = await readContent();
+      const next = structuredClone(snapshot.content);
+      const index = next.products.findIndex(
+        (product) => product.id === body.product.id,
+      );
+      if (index === -1) next.products.unshift(body.product);
+      else next.products[index] = body.product;
+      return json(await saveContent(next, snapshot.revision));
     }
     if (request.method === "POST" && route === "media") {
       limitAttempt("upload", 120, 60);
