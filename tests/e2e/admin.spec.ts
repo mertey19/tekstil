@@ -224,9 +224,6 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     .click();
   await page.getByLabel("Ürün adı", { exact: true }).fill("Yönetim Test Bezi");
   await page
-    .getByLabel("Ürün adresi", { exact: true })
-    .fill("yonetim-test-bezi");
-  await page
     .getByLabel("Kısa açıklama", { exact: true })
     .fill("Bilgisayardan görsel eklenen test ürünü.");
   await page
@@ -568,6 +565,19 @@ test("Panel masaüstü ve mobilde taşmaz; temel ekranlar erişilebilir", async 
         });
     }
   }
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page
+    .getByRole("navigation", { name: "Yönetim menüsü" })
+    .getByRole("button", { name: "Ürünler" })
+    .click();
+  await page.getByRole("button", { name: "+ Ürün ekle", exact: true }).click();
+  await expect(page.getByLabel("Ürün adı", { exact: true })).toBeFocused();
+  await expect(page.getByLabel("Ürün adı", { exact: true })).toBeInViewport();
+  await page.getByLabel("Ürün adı", { exact: true }).fill("Mobil Yeni Bez");
+  await page.getByLabel("Ürün adresi", { exact: true }).click();
+  await expect(page.getByLabel("Ürün adresi", { exact: true })).toHaveValue(
+    "mobil-yeni-bez",
+  );
   await page.setViewportSize({ width: 1440, height: 1000 });
   for (const name of ["Genel bakış", "Site ayarları", "Sayfa içerikleri", "Bilgilendirme"]) {
     await page

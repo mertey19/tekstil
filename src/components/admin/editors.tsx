@@ -182,12 +182,12 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
       Object.assign(d.products[index], { [key]: value });
     });
   return (
-    <div className="admin-editor-stack">
+    <div className="admin-editor-stack" id="admin-products-editor">
       <EditorCard title="Ürün bilgileri">
         <p className={`admin-publish-note ${product.status === "published" && !product.isDemo ? "live" : ""}`}>
           {product.status === "published" && !product.isDemo
             ? "Bu ürün yayında. Kaydettiğiniz değişiklikler doğrudan canlı siteye yansır."
-            : "Bu ürün taslakta. Gerçek fotoğrafı ve bilgileri tamamladıktan sonra Demo ürün işaretini kaldırıp yayın durumunu Yayında seçin."}
+            : "Bu ürün taslakta. Gerçek fotoğrafı ve bilgileri tamamlayın, ardından Kaydet ve canlıya al düğmesine basın."}
         </p>
         <Field
           label="Ürün adı"
@@ -195,6 +195,12 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           required
           maxLength={240}
           onChange={(v) => update("name", v)}
+          onBlur={() =>
+            change((d) => {
+              const current = d.products[index];
+              if (!current.slug) current.slug = slugify(current.name);
+            })
+          }
         />
         <div className="admin-form-grid">
           <Field

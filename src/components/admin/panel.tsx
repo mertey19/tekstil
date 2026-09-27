@@ -327,6 +327,14 @@ export function AdminPanel({
     setTab(collection);
     setSearch("");
     setMessage("");
+    setError("");
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const editor = document.getElementById(`admin-${collection}-editor`);
+        editor?.scrollIntoView({ behavior: "smooth", block: "start" });
+        editor?.querySelector<HTMLInputElement>("input")?.focus();
+      }),
+    );
   }
   function remove(collection: Collection, id: string) {
     if (
@@ -501,8 +509,19 @@ export function AdminPanel({
             </div>
           )}
           {error && (
-            <div className="admin-error" role="alert">
-              {error}
+            <div className="admin-error admin-error-toast" role="alert">
+              <span className="admin-error-toast-icon" aria-hidden="true">!</span>
+              <div>
+                <strong>İşlem tamamlanamadı</strong>
+                <p>{error}</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Hata bildirimini kapat"
+                onClick={() => setError("")}
+              >
+                ×
+              </button>
             </div>
           )}
           {tab === "account" ? (
