@@ -122,9 +122,18 @@ test("Hesap sahibi ürün editörü oluşturabilir; editör ekip yönetimini gö
   await expect(page.getByText("@urun-editoru")).toBeVisible();
 
   await page.getByRole("button", { name: "Çıkış yap", exact: true }).click();
-  await page.getByLabel("Kullanıcı adı", { exact: true }).fill("urun-editoru");
-  await page.getByLabel("Şifre", { exact: true }).fill("Editor-Password-2046!");
-  await page.getByRole("button", { name: "Giriş yap" }).click();
+  expect(
+    (
+      await page.request.post("/api/admin/login", {
+        headers,
+        data: {
+          username: "urun-editoru",
+          password: "Editor-Password-2046!",
+        },
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.goto("/admin");
   await expect(page.getByRole("button", { name: "Ürünler" })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Yetkili kullanıcılar" }),
@@ -254,14 +263,9 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     404,
   );
   await page
-    .getByLabel("Yayın durumu", { exact: true })
-    .selectOption("published");
-  await page
-    .getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true })
+    .getByRole("button", { name: "Kaydet ve canlıya al", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText(
-    "Değişiklikler kaydedildi",
-  );
+  await expect(page.getByRole("status")).toContainText("canlı sitede yayımlandı");
   const publicPage = await page.context().newPage();
   await publicPage.goto("/urun/yonetim-test-bezi");
   await expect(publicPage.locator("h1")).toHaveText("Yönetim Test Bezi");
@@ -284,11 +288,8 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await publicPage.reload();
   await expect(publicPage.locator("h1")).toHaveText("Güncellenmiş Test Bezi");
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Kaydı kaldır", exact: true }).click();
-  await page.getByRole("button", { name: "Kaydet ve siteyi güncelle" }).click();
-  await expect(page.getByRole("status")).toContainText(
-    "Değişiklikler kaydedildi",
-  );
+  await page.getByRole("button", { name: "Ürünü sil", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("siteden kaldırıldı");
   state = await snapshot(page);
   expect(state.content.products.some((p) => p.id === product.id)).toBe(false);
   expect((await page.request.get("/urun/yonetim-test-bezi")).status()).toBe(

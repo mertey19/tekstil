@@ -19,7 +19,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
     <main className="admin-login" id="main">
       <div className="admin-login-story">
         <Link href="/" className="admin-brand">
-          MD<span>İÇERİK YÖNETİMİ</span>
+          MD<span>MAĞAZA YÖNETİMİ</span>
         </Link>
         <div>
           <span className="admin-kicker">MİKROFİBER DEPOSU</span>
@@ -29,8 +29,8 @@ export function AdminLogin({ configured }: { configured: boolean }) {
             <em>sizin elinizde.</em>
           </h1>
           <p>
-            Ürünlerinizi güncelleyin, yeni yazılar paylaşın ve sitenize kendi
-            görsellerinizle hayat verin.
+          Ürün ekleyin, fiyat ve stokları değiştirin, bilgisayarınızdan gerçek
+          görseller yükleyip doğrudan canlıya alın.
           </p>
         </div>
         <span className="admin-login-note">

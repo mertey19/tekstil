@@ -198,6 +198,76 @@ export function AdminPanel({
       setBusy(false);
     }
   }
+  async function persistProduct(nextContent: CmsContent, success: string) {
+    setError("");
+    setMessage("");
+    const parsed = contentSchema.safeParse(normalizeContent(nextContent));
+    if (!parsed.success) {
+      setError(`Ürün kaydedilemedi: ${parsed.error.issues[0].message}`);
+      return false;
+    }
+    setBusy(true);
+    try {
+      const next = await adminRequest<CmsSnapshot>("content", {
+        method: "PUT",
+        body: JSON.stringify({ content: parsed.data, revision: saved.revision }),
+      });
+      setSaved(next);
+      setContent(next.content);
+      setMessage(success);
+      return true;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Ürün kaydedilemedi.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function publishProduct(id: string) {
+    const current = content.products.find((product) => product.id === id);
+    if (!current) return;
+    if (
+      current.isDemo &&
+      !current.images.some((image) => image.src.startsWith("/images/uploads/"))
+    ) {
+      setError(
+        "Canlıya almadan önce bilgisayarınızdan gerçek ürün fotoğrafını yükleyin.",
+      );
+      return;
+    }
+    const next = structuredClone(content);
+    const product = next.products.find((item) => item.id === id)!;
+    product.status = "published";
+    product.isDemo = false;
+    await persistProduct(
+      next,
+      `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`,
+    );
+  }
+  async function deleteProduct(id: string) {
+    const product = content.products.find((item) => item.id === id);
+    if (!product || !confirm(`“${product.name}” kalıcı olarak silinsin mi?`))
+      return;
+    const next = structuredClone(content);
+    next.products = next.products.filter((item) => item.id !== id);
+    if (
+      await persistProduct(
+        next,
+        `“${product.name}” silindi ve siteden kaldırıldı.`,
+      )
+    )
+      setSelected((current) => ({ ...current, products: "" }));
+  }
+  async function unpublishProduct(id: string) {
+    const next = structuredClone(content);
+    const product = next.products.find((item) => item.id === id);
+    if (!product) return;
+    product.status = "draft";
+    await persistProduct(
+      next,
+      `“${product.name}” yayından kaldırıldı ve taslaklara taşındı.`,
+    );
+  }
   function add(collection: Collection) {
     const id = `yeni-${crypto.randomUUID()}`;
     change((d) => {
@@ -577,6 +647,14 @@ export function AdminPanel({
                   <div
                     className={`admin-collection ${selectedItem ? "has-selection" : ""}`}
                   >
+                    {tab === "products" && (
+                      <section className="admin-product-guide" aria-label="Ürün yönetimi adımları">
+                        <strong>Ürün yönetimi</strong>
+                        <span>1. Ürünü seçin veya yeni ürün ekleyin</span>
+                        <span>2. Bilgileri ve gerçek fotoğrafları girin</span>
+                        <span>3. Kaydet veya doğrudan canlıya alın</span>
+                      </section>
+                    )}
                     <section className="admin-card admin-records">
                       <div className="admin-list-title">
                         <h2>{labels[tab]} listesi</h2>
@@ -648,7 +726,8 @@ export function AdminPanel({
                           <div className="admin-selected-heading">
                             <span>{labels[tab]} düzenleniyor</span>
                             <div>
-                              {selectedItem.status === "published" && (
+                              {selectedItem.status === "published" &&
+                                !("isDemo" in selectedItem && selectedItem.isDemo) && (
                                 <a
                                   className="admin-text-button"
                                   target="_blank"
@@ -658,13 +737,56 @@ export function AdminPanel({
                                   Sitede aç ↗
                                 </a>
                               )}
-                              <button
-                                className="admin-text-button danger"
-                                type="button"
-                                onClick={() => remove(tab, selectedItem.id)}
-                              >
-                                Kaydı kaldır
-                              </button>
+                              {tab === "products" ? (
+                                <>
+                                  <button
+                                    className="admin-button subtle"
+                                    form="cms-editor"
+                                    type="submit"
+                                    disabled={!dirty || busy || uploads > 0}
+                                  >
+                                    Değişiklikleri kaydet
+                                  </button>
+                                  <button
+                                    className="admin-button primary"
+                                    type="button"
+                                    disabled={busy || uploads > 0}
+                                    onClick={() => void publishProduct(selectedItem.id)}
+                                  >
+                                    Kaydet ve canlıya al
+                                  </button>
+                                  {"isDemo" in selectedItem &&
+                                    selectedItem.status === "published" &&
+                                    !selectedItem.isDemo && (
+                                      <button
+                                        className="admin-button subtle"
+                                        type="button"
+                                        disabled={busy || uploads > 0}
+                                        onClick={() =>
+                                          void unpublishProduct(selectedItem.id)
+                                        }
+                                      >
+                                        Yayından kaldır
+                                      </button>
+                                    )}
+                                  <button
+                                    className="admin-button danger"
+                                    type="button"
+                                    disabled={busy || uploads > 0}
+                                    onClick={() => void deleteProduct(selectedItem.id)}
+                                  >
+                                    Ürünü sil
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  className="admin-text-button danger"
+                                  type="button"
+                                  onClick={() => remove(tab, selectedItem.id)}
+                                >
+                                  Kaydı kaldır
+                                </button>
+                              )}
                             </div>
                           </div>
                           {tab === "products" && (

@@ -206,16 +206,10 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           multiline
           hint="Her satıra bir kullanım alanı yazın."
         />
-        <Status value={product.status} onChange={(v) => update("status", v)} />
         <Check
           label="Ana sayfada öne çıkar"
           value={product.featured}
           onChange={(v) => update("featured", v)}
-        />
-        <Check
-          label="Demo katalog ürünü"
-          value={product.isDemo}
-          onChange={(v) => update("isDemo", v)}
         />
       </EditorCard>
       <EditorCard

@@ -422,6 +422,30 @@
   font-size: 10px;
   font-weight: 400;
 }
+.admin-product-guide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border: 1px solid #cbd8f5;
+  border-radius: 8px;
+  background: #edf3ff;
+  color: #34496f;
+  font-size: 11px;
+}
+.admin-product-guide strong {
+  color: var(--admin-blue);
+  font-size: 12px;
+}
+.admin-selected-heading > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .admin-check {
   display: flex;
   align-items: center;
