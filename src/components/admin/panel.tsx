@@ -230,11 +230,18 @@ export function AdminPanel({
     const product = next.products.find((item) => item.id === id);
     if (!product) return;
     if (product.status === "published") product.isDemo = false;
-    await persistProduct(
+    const success = await persistProduct(
       next,
       product.status === "published"
         ? `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`
         : `“${product.name}” taslak olarak kaydedildi.`,
+    );
+    if (!success) return;
+    setSelected((current) => ({ ...current, products: "" }));
+    requestAnimationFrame(() =>
+      document
+        .querySelector(".admin-records")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
     );
   }
   async function deleteProduct(id: string) {
@@ -810,10 +817,15 @@ export function AdminPanel({
                       ) : (
                         <div className="admin-selection-empty">
                           <span aria-hidden="true">↖</span>
-                          <h2>Düzenlemek için bir kayıt seçin.</h2>
+                          <h2>
+                            {tab === "products" && message
+                              ? "Ürün kaydedildi."
+                              : "Düzenlemek için bir kayıt seçin."}
+                          </h2>
                           <p>
-                            Mevcut içeriklerden başlayabilir veya yeni bir kayıt
-                            ekleyebilirsiniz.
+                            {tab === "products" && message
+                              ? "Başka bir ürün girmek için yukarıdaki “+ Ürün ekle” düğmesine basın. Kayıtlı ürünü değiştirmek için listeden ürünü seçin."
+                              : "Mevcut içeriklerden başlayabilir veya yeni bir kayıt ekleyebilirsiniz."}
                           </p>
                         </div>
                       )}

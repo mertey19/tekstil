@@ -248,9 +248,8 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     "taslak olarak kaydedildi",
   );
   await expect(page.locator(".admin-save-toast")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Kaydedildi ✓", exact: true }).first(),
-  ).toBeDisabled();
+  await expect(page.getByRole("heading", { name: "Ürün kaydedildi." })).toBeVisible();
+  await expect(page.getByLabel("Ürün adı", { exact: true })).toHaveCount(0);
   let state = await snapshot(page);
   const product = state.content.products.find(
     (p) => p.slug === "yonetim-test-bezi",
@@ -263,6 +262,9 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   expect((await page.request.get("/urun/yonetim-test-bezi")).status()).toBe(
     404,
   );
+  await page
+    .getByRole("button", { name: "Yönetim Test Bezi Taslak" })
+    .click();
   await page
     .getByLabel("Kaydedince ürünü canlı sitede yayınla", { exact: true })
     .check();
@@ -289,6 +291,9 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   );
   await publicPage.reload();
   await expect(publicPage.locator("h1")).toHaveText("Güncellenmiş Test Bezi");
+  await page
+    .getByRole("button", { name: "Güncellenmiş Test Bezi Yayında" })
+    .click();
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Ürünü sil", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("siteden kaldırıldı");
