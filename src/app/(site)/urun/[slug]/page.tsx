@@ -9,6 +9,8 @@ import { ProductGallery } from "@/components/product-gallery";
 import { Icon } from "@/components/icon";
 import { whatsappLink } from "@/lib/contact";
 import { BreadcrumbData, pageMetadata, StructuredData } from "@/lib/seo";
+import { formatPrice, isPurchasable } from "@/lib/catalog";
+import { AddToCart } from "@/components/shop/cart-provider";
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
   const siteConfig = await getSiteConfig();
@@ -75,6 +77,21 @@ export default async function ProductPage({ params }: Props) {
             {category.name}
           </Link>
           <h1>{product.name}</h1>
+          {product.salesEnabled && product.priceCents > 0 && (
+            <div className="detail-price" aria-label="Ürün fiyatı">
+              <strong>{formatPrice(product.priceCents)}</strong>
+              {product.compareAtCents && (
+                <del>{formatPrice(product.compareAtCents)}</del>
+              )}
+              <span>
+                {product.trackStock
+                  ? product.stock > 0
+                    ? `Stokta ${product.stock} adet`
+                    : "Stokta yok"
+                  : "Stokta"}
+              </span>
+            </div>
+          )}
           <div className="detail-description" aria-label="Ürün açıklaması">
             {product.description.split(/\n\s*\n/).map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
@@ -94,6 +111,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </div>
           <div className="detail-actions">
+            {isPurchasable(product) && <AddToCart productId={product.id} />}
             <Link
               href={`/teklif-al?urun=${encodeURIComponent(product.id)}`}
               className="button primary"
@@ -165,6 +183,21 @@ export default async function ProductPage({ params }: Props) {
               new URL(i.src, siteConfig.url!).toString(),
             ),
             url,
+            ...(product.salesEnabled && product.priceCents > 0
+              ? {
+                  sku: product.sku || product.id,
+                  offers: {
+                    "@type": "Offer",
+                    priceCurrency: "TRY",
+                    price: (product.priceCents / 100).toFixed(2),
+                    availability:
+                      !product.trackStock || product.stock > 0
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                    url,
+                  },
+                }
+              : {}),
           }}
         />
       )}

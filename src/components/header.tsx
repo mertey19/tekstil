@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { Icon } from "./icon";
-import { useCustomer } from "./customer/session";
+import { CartShortcut } from "./shop/cart-provider";
 export function Header({
   name,
   subtitle,
@@ -14,7 +14,6 @@ export function Header({
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const {customer} = useCustomer();
   const links = [
     ["/", "Ana Sayfa"],
     ["/urunler", "Ürünler"],
@@ -63,7 +62,7 @@ export function Header({
             ))}
           </nav>
           <div className="header-actions">
-            <Link className="account-shortcut" href={customer ? "/hesabim" : "/giris"} aria-label={customer ? "Müşteri hesabım" : "Müşteri girişi"} title={customer ? "Hesabım" : "Giriş / Üye ol"}><Icon name="user"/></Link>
+            <CartShortcut />
             <Link
               className="search-shortcut"
               href="/urunler#arama"
@@ -92,7 +91,7 @@ export function Header({
           aria-label="Mobil menü"
           hidden={!open}
         >
-          {links.concat([[customer ? "/hesabim" : "/giris", customer ? "Hesabım" : "Giriş / Üye ol"], ["/teklif-al", "Teklif Al"]]).map(([href, label]) => (
+          {links.concat([["/sepet", "Sepet"], ["/teklif-al", "Teklif Al"]]).map(([href, label]) => (
             <Link
               key={href}
               href={href}

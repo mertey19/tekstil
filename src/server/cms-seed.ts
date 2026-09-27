@@ -5,7 +5,7 @@ import { contentSchema, pageDefinitions, pageKeys } from "@/lib/cms-model";
 
 export function initialContent() {
   return contentSchema.parse({
-    version: 2,
+    version: 3,
     categories: categories.map((c) => ({ ...c, status: "published" })),
     products: products.map((p) => ({ ...p, status: "published" })),
     posts: blogPosts.map((p) => ({ ...p, id: p.slug, status: "published" })),
@@ -21,6 +21,12 @@ export function initialContent() {
       legal: {
         privacy: { approved: false, text: "" },
         disclosure: { approved: false, text: "" },
+      },
+      shop: {
+        enabled: false,
+        shippingFeeCents: 0,
+        freeShippingThresholdCents: 0,
+        minimumOrderCents: 0,
       },
     },
     pages: Object.fromEntries(

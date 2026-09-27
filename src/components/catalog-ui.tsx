@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { type Product } from "@/lib/catalog";
+import { formatPrice, isPurchasable, type Product } from "@/lib/catalog";
 import { getAllCategories, getSiteConfig, getPageContent } from "@/lib/content";
 import { CmsSections } from "./cms-sections";
 import { Icon } from "./icon";
 import { ProductImage } from "./product-image";
 
 import { whatsappLink } from "@/lib/contact";
+import { AddToCart } from "./shop/cart-provider";
 export async function ProductCard({
   product,
   eager = false,
@@ -30,14 +31,25 @@ export async function ProductCard({
           <Link href={`/urun/${product.slug}`}>{product.name}</Link>
         </h3>
         <p>{product.summary}</p>
-        <Link
-          className="text-link product-link"
-          href={`/urun/${product.slug}`}
-          aria-label={`${product.name} — Ürünü İncele`}
-        >
-          Ürünü İncele
-          <Icon size={17} />
-        </Link>
+        {product.salesEnabled && product.priceCents > 0 && (
+          <div className="product-price">
+            <strong>{formatPrice(product.priceCents)}</strong>
+            {product.compareAtCents && (
+              <del>{formatPrice(product.compareAtCents)}</del>
+            )}
+          </div>
+        )}
+        <div className="product-card-actions">
+          <Link
+            className="text-link product-link"
+            href={`/urun/${product.slug}`}
+            aria-label={`${product.name} — Ürünü İncele`}
+          >
+            Ürünü İncele
+            <Icon size={17} />
+          </Link>
+          {isPurchasable(product) && <AddToCart productId={product.id} compact />}
+        </div>
       </div>
     </article>
   );

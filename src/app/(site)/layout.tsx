@@ -6,8 +6,9 @@ import { isIndexable } from "@/config/site";
 import { getSiteConfig } from "@/lib/content";
 import { mapLocation } from "@/lib/contact";
 import { StructuredData } from "@/lib/seo";
-import { CustomerProvider } from "@/components/customer/session";
-import { currentCustomer } from "@/server/customer-auth";
+import { getProducts } from "@/lib/content";
+import { productForCart } from "@/lib/cart";
+import { CartProvider } from "@/components/shop/cart-provider";
 export const dynamic = "force-dynamic";
 export default async function SiteLayout({
   children,
@@ -15,10 +16,10 @@ export default async function SiteLayout({
   children: React.ReactNode;
 }) {
   const siteConfig = (await getSiteConfig());
-  const customer = await currentCustomer();
+  const cartProducts = (await getProducts()).map(productForCart);
   const map = mapLocation(siteConfig.merchant);
   return (
-    <CustomerProvider customer={customer}>
+    <CartProvider products={cartProducts} shop={siteConfig.shop}>
       <a className="skip-link" href="#main">
         Ana içeriğe atla
       </a>
@@ -63,6 +64,6 @@ export default async function SiteLayout({
           }}
         />
       )}
-    </CustomerProvider>
+    </CartProvider>
   );
 }

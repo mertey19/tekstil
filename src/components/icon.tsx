@@ -17,11 +17,17 @@ export function Icon({
     | "grid"
     | "document"
     | "help"
-    | "user";
+    | "user"
+    | "cart"
+    | "minus"
+    | "plus";
   size?: number;
   className?: string;
 }) {
   const paths = {
+    cart: "M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 8H6M10 21h.01M18 21h.01",
+    minus: "M5 12h14",
+    plus: "M12 5v14M5 12h14",
     document: "M5 3h14v18H5zM8 7h8M8 11h8M8 15h5",
     help: "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0M9.1 9a3 3 0 1 1 5.8 1c-.6 1-2.9 1.5-2.9 3M12 17h.01",
     user: "M20 21v-2a7 7 0 0 0-14 0v2M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",

@@ -107,7 +107,7 @@ test("CMS şeması yinelenen adresleri, kopuk ilişkileri ve güvensiz bağlant�
   assert.equal(contentSchema.safeParse(relation).success, false);
 });
 
-test("Eski içerik sürümü Denizli ilçe yazılarını bir kez ekleyerek yükseltilir", async () => {
+test("Eski içerik sürümü ilçe yazıları ve e-ticaret alanlarıyla bir kez yükseltilir", async () => {
   const base = path.join(process.cwd(), "artifacts", "unit-cms-migration");
   mkdirSync(base, { recursive: true });
   const previous = process.env.CMS_DATA_DIR;
@@ -129,7 +129,16 @@ test("Eski içerik sürümü Denizli ilçe yazılarını bir kez ekleyerek yüks
       .prepare("UPDATE content SET body=? WHERE id=1")
       .run(JSON.stringify(legacy));
     const migrated = await readContent();
-    assert.equal(migrated.content.version, 2);
+    assert.equal(migrated.content.version, 3);
+    assert.equal(migrated.content.settings.shop.enabled, false);
+    assert.ok(
+      migrated.content.products.every(
+        (product) =>
+          product.priceCents === 0 &&
+          product.stock === 0 &&
+          product.salesEnabled === false,
+      ),
+    );
     assert.equal(
       migrated.content.posts.filter(
         (post) => post.category === "Denizli ilçe rehberleri",

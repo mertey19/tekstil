@@ -26,6 +26,8 @@ import {
   tokenHash,
   verifyPassword,
 } from "@/server/admin-auth";
+import { listOrders, updateOrderStatus } from "@/server/order-store";
+import { orderStatusSchema } from "@/lib/order-model";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,6 +79,10 @@ async function handle(request: Request, context: Context) {
         const customers = await database().prepare('SELECT c.id, c.username, c.name, c.company, c.active, c.created_at AS "createdAt" FROM customers c WHERE lower(c.username) LIKE ? OR lower(c.name) LIKE ? OR lower(c.company) LIKE ? ORDER BY c.created_at DESC LIMIT 200').all(pattern, pattern, pattern);
         return json({customers});
       }
+      if (route === "orders") {
+        const query = new URL(request.url).searchParams.get("q") || "";
+        return json({ orders: await listOrders(query) });
+      }
       if (route === "content") return json(await readContent());
       if (route === "media") return json({ media: await listMedia() });
       throw new CmsError("İşlem bulunamadı.", 404);
@@ -112,6 +118,11 @@ async function handle(request: Request, context: Context) {
       ]);
       if (!updated[0].rows.length) throw new CmsError("Müşteri bulunamadı.", 404);
       return json({ok:true});
+    }
+    if (request.method === "POST" && route === "orders/status") {
+      const data = z.object({ id: z.uuid(), status: orderStatusSchema }).strict().parse(await bodyJson(request));
+      await updateOrderStatus(data.id, data.status);
+      return json({ ok: true });
     }
     if (request.method === "POST" && route === "logout") {
       const token = (await cookies()).get(sessionCookie)?.value;

@@ -2,7 +2,7 @@
 
 Next.js App Router, TypeScript strict ve Tailwind CSS ile geliştirilmiş Türkçe ürün kataloğu. Ana marka **Mikrofiber Deposu**, alt satır **Siliver Silen Temizlik Bezleri Dünyası** olarak korunmuştur.
 
-**İletişim yalnızca WhatsApp üzerinden yapılır.** Kullanıcının verdiği numara: **+90 530 548 26 60**. E-posta, SMTP, e-posta sağlayıcısı, WhatsApp Business API veya ödeme entegrasyonu yoktur. Müşteri üyeliği kayıt, giriş ve profil içerir. WhatsApp bağlantısı hazırlamak için ücretli servis gerekmez. Son gönderim WhatsApp içinde kullanıcı tarafından yapılır.
+İletişim WhatsApp üzerinden yapılır; kullanıcıdan e-posta istenmez. Kullanıcının verdiği numara: **+90 530 548 26 60**. E-ticaret altyapısı misafir alışverişi olarak çalışır: üyelik gerekmeden ürün sepete eklenir, teslimat ve fatura bilgileri alınır, sipariş kaydedilir ve kart ödemesi yapılandırılmış sanal POS sağlayıcısının güvenli sayfasında tamamlanır. Kart numarası uygulamanın sunucusuna veya veritabanına girmez.
 
 ## Kurulum ve çalıştırma
 
@@ -24,7 +24,7 @@ npm run build
 npm run start -- --hostname 127.0.0.1
 ```
 
-Tarayıcı testleri üretim build'ini kullanır ve 3001 portunda geçici sunucu açıp kapatır:
+Tarayıcı testleri üretim build'ini kullanır ve 3101 portunda geçici sunucu açıp kapatır:
 
 ```powershell
 npx playwright install chromium
@@ -58,6 +58,9 @@ npm run test:performance
 | `/admin` | Giriş, içerik yönetimi, görsel yükleme ve site ayarları |
 | `/iletisim` | WhatsApp numarası ve doğrudan sohbet bağlantısı |
 | `/teklif-al?urun=...` | Ürün seçili WhatsApp mesajı hazırlama |
+| `/sepet` | Kalıcı tarayıcı sepeti, adet/stok ve kargo toplamı |
+| `/odeme` | Üyeliksiz teslimat, fatura, sözleşme onayı ve sanal POS başlangıcı |
+| `/siparis/[token]` | Tahmin edilemez bağlantıyla sipariş ve teslimat durumu |
 | `/gizlilik`, `/aydinlatma` | Onaylı içerik için altyapı; mevcut durumda eksik metin bildirimi |
 | `/api/teklif` | POST: doğrulama ve WhatsApp bağlantısı hazırlama; mesaj göndermez |
 | `/sitemap.xml`, `/robots.txt` | Ortama ve yayımlanmış gerçek içeriğe göre SEO |
@@ -68,12 +71,13 @@ npm run test:performance
 
 Panel `/admin` adresindedir. İlk hesabı oluşturmak için sunucuda `npm run admin:setup` çalıştırın. Komut, 24 saat geçerli ve tek kullanımlık bir kurulum bağlantısı üretir. Bağlantıyı açıp kullanıcı adınızı ve en az 12 karakterli şifrenizi belirleyin. Önceden tanımlanmış şifre veya herkese açık hesap açma yolu yoktur. İlk hesabın kurulmasından sonra normal giriş ekranı görünür.
 
-- **Ürünler:** Ekleme, düzenleme, kaldırma, kategori, teknik bilgiler, kullanım alanları, öne çıkarma, taslak/yayın ve 8 fotoğrafa kadar galeri.
+- **Ürünler:** Ekleme, düzenleme, kaldırma, kategori, teknik bilgiler, fiyat/eski fiyat, SKU, KDV, ağırlık, stok takibi, satış durumu, öne çıkarma, taslak/yayın ve 8 fotoğrafa kadar galeri.
 - **Kategoriler:** Ad, kısa ad, açıklama, kullanım alanı, görsel ve yayın durumu. Ürünü olan kategori doğrudan silinemez.
 - **Blog:** Başlık, özet, tarih, kapak, giriş metni; sıralanabilir yazı bölümleri, maddeler ve kaynaklar.
 - **Sayfalar:** Ana sayfa, hakkımızda, ürün listesi, blog, iletişim, teklif, alt bilgi ve iletişim bandındaki metinler. Her alana görsel ve sıralanabilir metin/görsel/buton bölümleri eklenebilir.
 - **Görseller:** Bilgisayardan JPG, PNG veya WebP yükleme, önizleme ve ortak kütüphaneden tekrar kullanma. En fazla 8 MB/25 megapiksel dosya seçilebilir. 4 MB üzerindeki dosyalar tarayıcıda küçültülür; sunucu en fazla 4 MB kabul eder, gerçek dosya türünü kontrol edip metadata bilgisini kaldırarak en fazla 2400 px WebP üretir. SVG kabul edilmez; görseller tek kare olarak saklanır.
 - **Ayarlar:** Firma adı, alt başlık, tüm butonlarda kullanılan WhatsApp numarası, yasal metinler ve şifre değiştirme.
+- **Siparişler:** Sipariş numarası, müşteri/telefon, tutar, ödeme durumu ve hazırlama–kargo–teslimat durumu. Ödeme sonucu panelden elle başarılıya çevrilemez.
 
 İçerik değişiklikleri üstteki **Değişiklikleri kaydet** düğmesiyle kaydedilir. Taslak kayıtlar doğrudan adresleriyle de ziyaretçilere görünmez. Taslak kategorinin ürünleri gizlenir. Görsel yükleme dosyayı kütüphaneye hemen kaydeder; siteye eklemek için bir içerikte seçip içeriği de kaydedin. Başka sekmede daha yeni bir kayıt varsa panel eski verinin üzerine yazmaz; çalışmanızı kopyalayıp **Güncel içeriği yükle** ile tekrar düzenleyin.
 
@@ -96,9 +100,15 @@ Migration mevcut içerikleri veya hesabı değiştirmez. Tablo oluşturma ziyare
 
 Yerel yedek için uygulamayı durdurup veri dizininin tamamını kopyalayın. Neon yedekleri ve veri dışa aktarımı sağlayıcının konsolundan yönetilir. Paneldeki JSON indirme metinleri, ayarları ve görsel referanslarını içerir; hesapları veya görsel baytlarını içermez. Ortam dosyaları, veritabanları ve `.vercel/` dizini Git’e ve sunucu paketlerine dahil edilmez.
 
-## Müşteri üyeliği
+## Misafir alışverişi
 
-Üst menüdeki hesap simgesi `/giris` sayfasını açar. `/uye-ol` üzerinden kullanıcı adı, ad soyad, isteğe bağlı firma ve en az 12 karakterlik şifreyle kayıt olunur. `/hesabim` profil düzenleme, şifre değiştirme, çıkış ve hesabı silme işlemlerini içerir. Müşteri giriş yaptığında ad ve firma bilgileri WhatsApp teklif formuna otomatik gelir. Teklif istemek için üyelik zorunlu değildir.
+Satın alma için hesap açma veya giriş zorunluluğu yoktur. Sepet yalnızca ürün kimliği ve adediyle tarayıcının `localStorage` alanında tutulur; fiyat, stok, kargo ve toplam ödeme başlamadan önce sunucuda güncel CMS verisiyle yeniden hesaplanır. Teslimat/fatura bilgileri sipariş kaydına yazılır. E-posta alanı ve e-posta gönderimi yoktur.
+
+Mağaza panelde **Site ayarları → E-ticaret ayarları** bölümünden açılır. Ürün ayrıca geçerli bir fiyatla “internetten satışa açık” olmalıdır. Sanal POS hesabı sunucu ortamında yapılandırılmadan `/api/siparis` tahsilat başlatmaz ve sepeti silmez. `mock` ödeme yalnızca `PAYMENT_TEST_MODE=true` olan yerel otomatik testlerde kullanılabilir.
+
+## Eski müşteri üyeliği altyapısı
+
+Önceki sürümün kayıtları korunur ancak üyelik bağlantıları ana menüden çıkarılmıştır ve e-ticaret akışı üyelik kullanmaz. Eski `/giris`, `/uye-ol` ve `/hesabim` sayfaları veri kaybını önlemek için şimdilik erişilebilir kalır.
 
 E-posta adresi istenmez. Kayıtta bir defa gösterilen kurtarma kodu güvenli bir yerde saklanmalıdır. `/sifremi-unuttum` bu kodla şifreyi yeniler. Kod her kullanımda veya şifre değişiminde yenilenir; önceki kod ve tüm eski oturumlar geçersiz olur. Kod ve şifre birlikte kaybolursa otomatik kurtarma yapılamaz.
 
@@ -136,6 +146,8 @@ Firma, WhatsApp, tanıtım görseli ve yasal metinler panelden yönetilir. `src/
 | `SITE_DOMAIN_VERIFIED` | Alan adı gerçekten doğrulandıktan sonra true |
 | `CONTENT_APPROVED` | İşletme ve ürün içeriği onaylandıktan sonra true |
 | `TRUSTED_CLIENT_IP_HEADER` | İsteğe bağlı; yalnızca bu başlığı üzerine yazan güvenilir proxy varsa |
+| `PAYMENT_PROVIDER` | Canlı sanal POS sağlayıcısı; sağlayıcı entegrasyonu tamamlanmadan boş bırakılır |
+| `PAYMENT_TEST_MODE` | Yalnızca yerel otomatik testlerde `true`; Production’da her zaman `false` |
 
 SITE_URL boşken canonical veya ürün mesajına uydurma alan adı yazılmaz. Gerçek URL eklendiğinde WhatsApp mesajı ürün bağlantısını da içerir. Sosyal hesap, adres, harita ve başka iletişim kanalı üretilmez.
 

@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { DatabaseSync } from "node:sqlite";
 import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
-const headers = { origin: "http://127.0.0.1:3001", "x-customer-request": "1" };
+const headers = { origin: "http://127.0.0.1:3101", "x-customer-request": "1" };
 const account = {
   username: "browser-customer",
   password: "Customer-password-123!",
@@ -225,7 +225,7 @@ test("Yönetici üyeleri görür ve duraklatma tüm müşteri oturumlarını kap
       {
         name: "tekstil_admin",
         value: token,
-        url: "http://127.0.0.1:3001",
+        url: "http://127.0.0.1:3101",
         httpOnly: true,
         sameSite: "Strict",
       },

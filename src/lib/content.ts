@@ -27,6 +27,7 @@ export async function getSiteConfig() {
     legal: settings.legal,
     social: settings.social,
     merchant: settings.merchant,
+    shop: settings.shop,
   };
 }
 export const getPageContent = async (key: PageKey) => (await read()).pages[key];

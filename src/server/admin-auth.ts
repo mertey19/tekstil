@@ -76,7 +76,10 @@ export async function limitAttempt(key: string, maximum: number, minutes = 15) {
       429,
     );
 }
-export function assertSameOrigin(request: Request) {
+export function assertSameOrigin(
+  request: Request,
+  requestHeader = "x-cms-request",
+) {
   let origin: URL;
   try {
     origin = new URL(request.headers.get("origin") || "");
@@ -94,7 +97,7 @@ export function assertSameOrigin(request: Request) {
   if (
     !trusted ||
     (!local && origin.protocol !== "https:") ||
-    request.headers.get("x-cms-request") !== "1" ||
+    request.headers.get(requestHeader) !== "1" ||
     request.headers.get("sec-fetch-site") === "cross-site"
   )
     throw new CmsError(

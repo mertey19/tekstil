@@ -128,6 +128,12 @@ const lines = (v: string) =>
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
+const moneyInput = (cents: number | null) =>
+  cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
+const moneyCents = (value: string) => {
+  const number = Number(value.replace(",", "."));
+  return Number.isFinite(number) && number >= 0 ? Math.round(number * 100) : 0;
+};
 export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
   const { content, change } = props;
   const index = content.products.findIndex((p) => p.id === id),
@@ -205,6 +211,72 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           label="Demo katalog ürünü"
           value={product.isDemo}
           onChange={(v) => update("isDemo", v)}
+        />
+      </EditorCard>
+      <EditorCard
+        title="Fiyat ve stok"
+        description="Satışa açmadan önce fiyatı ve stok durumunu kontrol edin. Tutarları KDV dahil girin."
+      >
+        <div className="admin-form-grid">
+          <Field
+            label="Satış fiyatı (₺)"
+            value={moneyInput(product.priceCents)}
+            onChange={(v) => update("priceCents", moneyCents(v))}
+            inputMode="decimal"
+            placeholder="0,00"
+          />
+          <Field
+            label="Eski fiyat (₺, isteğe bağlı)"
+            value={moneyInput(product.compareAtCents)}
+            onChange={(v) =>
+              update("compareAtCents", v.trim() ? moneyCents(v) : null)
+            }
+            inputMode="decimal"
+            placeholder="0,00"
+          />
+          <Field
+            label="Stok adedi"
+            value={String(product.stock)}
+            onChange={(v) => update("stock", Math.max(0, Number(v) || 0))}
+            type="number"
+            min={0}
+            step={1}
+          />
+          <Field
+            label="Stok kodu / SKU"
+            value={product.sku}
+            onChange={(v) => update("sku", v)}
+            maxLength={60}
+          />
+          <Field
+            label="KDV oranı (%)"
+            value={String(product.vatRate)}
+            onChange={(v) => update("vatRate", Math.max(0, Number(v) || 0))}
+            type="number"
+            min={0}
+            max={100}
+            step={1}
+          />
+          <Field
+            label="Ağırlık (gram)"
+            value={String(product.weightGrams)}
+            onChange={(v) =>
+              update("weightGrams", Math.max(0, Number(v) || 0))
+            }
+            type="number"
+            min={0}
+            step={1}
+          />
+        </div>
+        <Check
+          label="Stok takibi yap"
+          value={product.trackStock}
+          onChange={(v) => update("trackStock", v)}
+        />
+        <Check
+          label="Ürünü internetten satışa aç"
+          value={product.salesEnabled}
+          onChange={(v) => update("salesEnabled", v)}
         />
       </EditorCard>
       <EditorCard

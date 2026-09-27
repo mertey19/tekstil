@@ -28,6 +28,14 @@ export type Product = {
       string
     >
   >;
+  sku: string;
+  priceCents: number;
+  compareAtCents: number | null;
+  stock: number;
+  trackStock: boolean;
+  salesEnabled: boolean;
+  vatRate: number;
+  weightGrams: number;
   featured: boolean;
   isDemo: boolean;
   isPublished: boolean;
@@ -81,6 +89,15 @@ export function validateCatalog(categories: Category[], products: Product[]) {
       [p.isDemo, p.isPublished, p.featured].some((v) => typeof v !== "boolean")
     )
       throw new Error(`Geçersiz ürün durumu: ${p.id}`);
+    if (
+      !Number.isInteger(p.priceCents) ||
+      p.priceCents < 0 ||
+      !Number.isInteger(p.stock) ||
+      p.stock < 0 ||
+      !Number.isInteger(p.weightGrams) ||
+      p.weightGrams < 0
+    )
+      throw new Error(`Geçersiz satış bilgisi: ${p.id}`);
     if (p.images.some((i) => !i.src.startsWith("/images/") || !i.alt.trim()))
       throw new Error(`Geçersiz görsel: ${p.id}`);
     if (
@@ -91,6 +108,17 @@ export function validateCatalog(categories: Category[], products: Product[]) {
       throw new Error(`Geçersiz teknik bilgi: ${p.id}`);
   }
 }
+export const isPurchasable = (product: Product) =>
+  product.salesEnabled &&
+  product.priceCents > 0 &&
+  (!product.trackStock || product.stock > 0);
+
+export const formatPrice = (cents: number) =>
+  new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY",
+    minimumFractionDigits: 2,
+  }).format(cents / 100);
 export const visibleProducts = (products: Product[], demo: boolean) =>
   products.filter((p) =>
     demo ? p.isDemo || p.isPublished : p.isPublished && !p.isDemo,

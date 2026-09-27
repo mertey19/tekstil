@@ -9,7 +9,7 @@ import type { CmsContent, CmsSnapshot } from "../../src/lib/cms-model";
 
 test.describe.configure({ mode: "serial" });
 test.use({ actionTimeout: 10_000 });
-const headers = { origin: "http://127.0.0.1:3001", "x-cms-request": "1" };
+const headers = { origin: "http://127.0.0.1:3101", "x-cms-request": "1" };
 const account = {
   username: "test-admin",
   password: "Test-Only-Password-2046!",

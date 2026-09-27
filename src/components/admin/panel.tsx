@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Admin thumbnails display already optimized local assets. */
 import { useEffect, useMemo, useState } from "react";
 import { AdminCustomers } from "./customers";
+import { AdminOrders } from "./orders";
 import { SocialEditor, SupportEditor } from "./support-editor";
 import {
   contentSchema,
@@ -33,6 +34,7 @@ const tabs = [
   ["legal", "Yasal metinler", "§"],
   ["support", "Bilgilendirme", "?"],
   ["customers", "Müşteri üyelikleri", "♧"],
+  ["orders", "Siparişler", "▣"],
   ["account", "Hesabım", "○"],
 ] as const;
 type Tab = (typeof tabs)[number][0];
@@ -207,6 +209,14 @@ export function AdminPanel({
           description: "",
           images: [{ src: "", alt: "" }],
           useCases: [""],
+          sku: "",
+          priceCents: 0,
+          compareAtCents: null,
+          stock: 0,
+          trackStock: true,
+          salesEnabled: false,
+          vatRate: 20,
+          weightGrams: 0,
           isDemo: false,
           isPublished: false,
           featured: false,
@@ -367,7 +377,7 @@ export function AdminPanel({
             >
               Siteyi görüntüle ↗
             </a>
-            {tab !== "account" && tab !== "customers" && (
+            {tab !== "account" && tab !== "customers" && tab !== "orders" && (
               <button
                 className="admin-button primary"
                 form="cms-editor"
@@ -412,6 +422,8 @@ export function AdminPanel({
             <AccountEditor username={username} onLogout={() => void logout()} />
           ) : tab === "customers" ? (
             <AdminCustomers />
+          ) : tab === "orders" ? (
+            <AdminOrders />
           ) : (
             <form id="cms-editor" onSubmit={(e) => void save(e)} noValidate>
               <fieldset disabled={busy || uploads > 0}>
@@ -770,6 +782,71 @@ export function AdminPanel({
                         type="tel"
                         required
                       />
+                    </EditorCard>
+                    <EditorCard
+                      title="E-ticaret ayarları"
+                      description="Mağazayı açmadan önce ürün fiyatlarını, stokları ve ödeme sağlayıcısı anahtarlarını tamamlayın."
+                    >
+                      <Check
+                        label="Sepet ve ödeme akışını ziyaretçilere aç"
+                        value={content.settings.shop.enabled}
+                        onChange={(v) =>
+                          change((d) => {
+                            d.settings.shop.enabled = v;
+                          })
+                        }
+                      />
+                      <div className="admin-form-grid">
+                        <Field
+                          label="Kargo ücreti (kuruş)"
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={String(content.settings.shop.shippingFeeCents)}
+                          onChange={(v) =>
+                            change((d) => {
+                              d.settings.shop.shippingFeeCents = Math.max(
+                                0,
+                                Number(v) || 0,
+                              );
+                            })
+                          }
+                          hint="Örnek: 89,90 ₺ için 8990 yazın."
+                        />
+                        <Field
+                          label="Ücretsiz kargo sınırı (kuruş)"
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={String(
+                            content.settings.shop.freeShippingThresholdCents,
+                          )}
+                          onChange={(v) =>
+                            change((d) => {
+                              d.settings.shop.freeShippingThresholdCents =
+                                Math.max(0, Number(v) || 0);
+                            })
+                          }
+                          hint="0 yazılırsa ücretsiz kargo sınırı uygulanmaz."
+                        />
+                        <Field
+                          label="Minimum sipariş tutarı (kuruş)"
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={String(
+                            content.settings.shop.minimumOrderCents,
+                          )}
+                          onChange={(v) =>
+                            change((d) => {
+                              d.settings.shop.minimumOrderCents = Math.max(
+                                0,
+                                Number(v) || 0,
+                              );
+                            })
+                          }
+                        />
+                      </div>
                     </EditorCard>
                     <SocialEditor content={content} change={change} />
                   </div>

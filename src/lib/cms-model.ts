@@ -218,6 +218,14 @@ export const productSchema = z.object({
   images: z.array(image).min(1, "En az bir ürün görseli ekleyin.").max(8),
   useCases: z.array(short).min(1, "En az bir kullanım alanı girin.").max(30),
   specifications: z.partialRecord(z.enum(specNames), short).optional(),
+  sku: z.string().trim().max(60),
+  priceCents: z.number().int().min(0).max(1_000_000_000),
+  compareAtCents: z.number().int().positive().max(1_000_000_000).nullable(),
+  stock: z.number().int().min(0).max(1_000_000),
+  trackStock: z.boolean(),
+  salesEnabled: z.boolean(),
+  vatRate: z.number().int().min(0).max(100),
+  weightGrams: z.number().int().min(0).max(1_000_000),
   featured: z.boolean(),
   isDemo: z.boolean(),
   isPublished: z.boolean(),
@@ -275,6 +283,12 @@ export const settingsSchema = z.object({
   social: socialSchema,
   merchant: merchantSchema,
   support: supportSchema,
+  shop: z.object({
+    enabled: z.boolean(),
+    shippingFeeCents: z.number().int().min(0).max(100_000_000),
+    freeShippingThresholdCents: z.number().int().min(0).max(1_000_000_000),
+    minimumOrderCents: z.number().int().min(0).max(1_000_000_000),
+  }),
 });
 const pageSchema = z.object({
   fields: z.record(z.string().max(80), z.string().max(4000)),
@@ -284,7 +298,7 @@ const pageSchema = z.object({
 });
 export const contentSchema = z
   .object({
-    version: z.literal(2),
+    version: z.literal(3),
     categories: z.array(categorySchema).max(200),
     products: z.array(productSchema).max(2000),
     posts: z.array(postSchema).max(1000),
@@ -314,6 +328,23 @@ export const contentSchema = z
           message:
             "Bu kategoride ürünler var. Önce ürünleri başka kategoriye taşıyın veya kaldırın.",
         });
+    for (const [index, product] of v.products.entries()) {
+      if (
+        product.compareAtCents !== null &&
+        product.compareAtCents <= product.priceCents
+      )
+        ctx.addIssue({
+          code: "custom",
+          path: ["products", index, "compareAtCents"],
+          message: "Eski fiyat satış fiyatından yüksek olmalıdır.",
+        });
+      if (product.salesEnabled && product.priceCents < 1)
+        ctx.addIssue({
+          code: "custom",
+          path: ["products", index, "priceCents"],
+          message: "Satışa açık ürünün fiyatı sıfır olamaz.",
+        });
+    }
     for (const key of pageKeys) {
       for (const field of Object.keys(pageDefinitions[key].fields))
         if (!v.pages[key].fields[field]?.trim())

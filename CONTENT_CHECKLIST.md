@@ -1,6 +1,6 @@
 # Canlı yayın öncesi içerik kontrolü
 
-Bu proje çalışan bir önizleme kataloğudur. Yerel build sonucu, yayına içerik onayı anlamına gelmez. İletişim yalnızca WhatsApp üzerinden yapılır; sunucu mesaj göndermez, doğrulanmış bir WhatsApp bağlantısı hazırlar.
+Bu proje katalog ve kapalı e-ticaret altyapısı içerir. Yerel build sonucu, satışa veya yayına içerik onayı anlamına gelmez. İletişim WhatsApp üzerinden yapılır; sunucu mesaj göndermez, doğrulanmış bir WhatsApp bağlantısı hazırlar.
 
 - [ ] Kesin marka yazımını onaylat: “Mikrofiber deposu siliver silen temizlik bezleri dünyası”. “Siliver Silen” korunmuştur.
 - [ ] Resmî logo ve kullanım izni. Geçici tipografik marka gösterimi/favikon onaylanmış logo değildir.
@@ -11,6 +11,11 @@ Bu proje çalışan bir önizleme kataloğudur. Yerel build sonucu, yayına içe
 - [ ] Gerçek ürün ve kategori listesi; 10 kayıt şu anda `isDemo: true`, `isPublished: false`.
 - [ ] İzinli gerçek ürün fotoğrafları, kategori ve tanıtım görselleri; kaynaklarını ASSETS.md'ye işle.
 - [ ] Ürün kodu, ölçüler, gramaj, bileşim, renkler, paket ve bakım bilgileri. Bilinmeyen alanları boş bırak.
+- [ ] Her satış ürünü için doğrulanmış KDV dahil fiyat, SKU, stok, KDV oranı ve ağırlık.
+- [ ] Sanal POS sağlayıcısı ve ticari hesap onayı; API anahtarları yalnızca Vercel Production ortamında.
+- [ ] Sanal POS başarılı/başarısız callback, tutar ve sipariş kimliği doğrulaması gerçek sağlayıcının test ortamında tamamlandı.
+- [ ] Kargo ücreti, ücretsiz kargo sınırı, minimum sipariş ve teslimat kapsamı işletme tarafından onaylandı.
+- [ ] Mesafeli satış, ön bilgilendirme, iptal/iade, gizlilik ve KVKK metinleri gerçek satıcı bilgileriyle hukuk/işletme yetkilisi tarafından onaylandı.
 - [ ] Doğrulanmış ticari faaliyetler. Toptan satış, üretim, bayilik, ihracat, teslimat iddiaları şu anda kapalı.
 - [ ] Gizlilik ve aydınlatma metinlerini yetkili kişi onaylasın; `src/config/site.ts` içindeki içerik ve `approved` alanları güncellensin.
 - [ ] Yayın ortamında WhatsApp bağlantısını cihazda açarak kontrol edin; son gönderim kullanıcıdadır.

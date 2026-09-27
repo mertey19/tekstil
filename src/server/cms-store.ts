@@ -16,7 +16,8 @@ export async function readContent(): Promise<CmsSnapshot> {
     .prepare("SELECT body, revision, updated_at FROM content WHERE id=1")
     .get())!;
   const content = JSON.parse(String(row.body)) as CmsContent;
-  if ((content.version as number) === 1) {
+  const versioned = content as unknown as { version: number };
+  if (versioned.version === 1) {
     const savedSlugs = new Set(content.posts.map((post) => post.slug));
     content.posts.unshift(
       ...districtBlogPosts
@@ -27,7 +28,30 @@ export async function readContent(): Promise<CmsSnapshot> {
           status: "published" as const,
         })),
     );
-    content.version = 2;
+    versioned.version = 2;
+  }
+  if (versioned.version === 2) {
+    for (const product of content.products) {
+      Object.assign(product, {
+        sku: "",
+        priceCents: 0,
+        compareAtCents: null,
+        stock: 0,
+        trackStock: true,
+        salesEnabled: false,
+        vatRate: 20,
+        weightGrams: 0,
+      });
+    }
+    Object.assign(content.settings, {
+      shop: {
+        enabled: false,
+        shippingFeeCents: 0,
+        freeShippingThresholdCents: 0,
+        minimumOrderCents: 0,
+      },
+    });
+    versioned.version = 3;
   }
   // Defaults keep existing installations compatible without rewriting saved content.
   content.settings = settingsSchema.parse(content.settings);
