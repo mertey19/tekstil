@@ -670,7 +670,7 @@ export function AdminPanel({
                         <strong>Ürün yönetimi</strong>
                         <span>1. Ürünü seçin veya yeni ürün ekleyin</span>
                         <span>2. Bilgileri ve gerçek fotoğrafları girin</span>
-                        <span>3. Kaydet veya doğrudan canlıya alın</span>
+                        <span>3. Yayın seçeneğini belirleyip ürünü kaydedin</span>
                       </section>
                     )}
                     <section className="admin-card admin-records">

@@ -128,6 +128,8 @@ const lines = (v: string) =>
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
+const productSummary = (description: string) =>
+  description.replace(/\s+/g, " ").trim().slice(0, 600);
 const moneyInput = (cents: number | null) =>
   cents === null ? "" : (cents / 100).toFixed(2).replace(".", ",");
 const moneyCents = (value: string) => {
@@ -187,7 +189,7 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
         <p className={`admin-publish-note ${product.status === "published" && !product.isDemo ? "live" : ""}`}>
           {product.status === "published" && !product.isDemo
             ? "Bu ürün yayında. Kaydettiğiniz değişiklikler doğrudan canlı siteye yansır."
-            : "Bu ürün taslakta. Gerçek fotoğrafı ve bilgileri tamamlayın, ardından Kaydet ve canlıya al düğmesine basın."}
+            : "Bu ürün taslakta. Bilgileri tamamlayın, yayın seçeneğini işaretleyin ve ürünü kaydedin."}
         </p>
         <Field
           label="Ürün adı"
@@ -202,45 +204,34 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
             })
           }
         />
-        <div className="admin-form-grid">
-          <Field
-            label="Ürün adresi"
-            value={product.slug}
-            onChange={(v) => update("slug", v)}
-            hint={`/urun/${product.slug}`}
-          />
-          <label className="admin-field">
-            <span>Kategori</span>
-            <select
-              aria-label="Kategori"
-              required
-              value={product.categoryId}
-              onChange={(e) => update("categoryId", e.target.value)}
-            >
-              <option value="">Kategori seçin</option>
-              {content.categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                  {c.status === "draft" ? " (taslak)" : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <Field
-          label="Kısa açıklama"
-          value={product.summary}
-          onChange={(v) => update("summary", v)}
-          multiline
-          maxLength={600}
-          required
-        />
+        <label className="admin-field">
+          <span>Kategori</span>
+          <select
+            aria-label="Kategori"
+            required
+            value={product.categoryId}
+            onChange={(e) => update("categoryId", e.target.value)}
+          >
+            <option value="">Kategori seçin</option>
+            {content.categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+                {c.status === "draft" ? " (taslak)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
         <Field
           label="Ürün açıklaması"
           value={product.description}
-          onChange={(v) => update("description", v)}
+          onChange={(v) =>
+            change((d) => {
+              d.products[index].description = v;
+              d.products[index].summary = productSummary(v);
+            })
+          }
           multiline
-          hint="Ürün görselinin yanında görünür. Paragraflar arasında boş satır bırakın."
+          hint="Bu açıklama ürün kartında ve ürün sayfasında kullanılır. Paragraflar arasında boş satır bırakabilirsiniz."
           required
         />
         <Field
@@ -968,6 +959,7 @@ export function normalizeContent(input: CmsContent) {
     p.useCases = lines(p.useCases.join("\n"));
     p.isPublished = p.status === "published" && !p.isDemo;
     if (!p.slug) p.slug = slugify(p.name);
+    if (!p.summary.trim()) p.summary = productSummary(p.description);
   });
   content.categories.forEach((c) => {
     if (!c.slug) c.slug = slugify(c.name);

@@ -224,11 +224,8 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     .click();
   await page.getByLabel("Ürün adı", { exact: true }).fill("Yönetim Test Bezi");
   await page
-    .getByLabel("Kısa açıklama", { exact: true })
-    .fill("Bilgisayardan görsel eklenen test ürünü.");
-  await page
     .getByLabel("Ürün açıklaması", { exact: true })
-    .fill("Yönetim panelinden eklenen ürünün açıklaması.");
+    .fill("Bilgisayardan görsel eklenen test ürününün açıklaması.");
   await page
     .getByLabel("Kullanım alanları", { exact: true })
     .fill("Günlük temizlik\nCamlar");
@@ -575,10 +572,9 @@ test("Panel masaüstü ve mobilde taşmaz; temel ekranlar erişilebilir", async 
   await expect(page.getByLabel("Ürün adı", { exact: true })).toBeFocused();
   await expect(page.getByLabel("Ürün adı", { exact: true })).toBeInViewport();
   await page.getByLabel("Ürün adı", { exact: true }).fill("Mobil Yeni Bez");
-  await page.getByLabel("Ürün adresi", { exact: true }).click();
-  await expect(page.getByLabel("Ürün adresi", { exact: true })).toHaveValue(
-    "mobil-yeni-bez",
-  );
+  await page.getByLabel("Ürün açıklaması", { exact: true }).click();
+  await expect(page.getByLabel("Kısa açıklama", { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel("Ürün adresi", { exact: true })).toHaveCount(0);
   await page.setViewportSize({ width: 1440, height: 1000 });
   for (const name of ["Genel bakış", "Site ayarları", "Sayfa içerikleri", "Bilgilendirme"]) {
     await page
