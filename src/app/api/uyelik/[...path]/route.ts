@@ -31,13 +31,15 @@ function sameOrigin(request: Request) {
   } catch {
     throw new CmsError("İstek kaynağı doğrulanamadı.", 403);
   }
-  const configured = process.env.SITE_URL || process.env.ADMIN_ORIGIN;
+  const configured = [process.env.SITE_URL, process.env.ADMIN_ORIGIN]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => new URL(value).origin);
   const local =
     origin.protocol === "http:" &&
     ["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname) &&
     origin.host === request.headers.get("host");
   if (
-    !(configured ? origin.origin === new URL(configured).origin : local) ||
+    !(configured.length ? configured.includes(origin.origin) : local) ||
     (!local && origin.protocol !== "https:") ||
     request.headers.get("x-customer-request") !== "1" ||
     request.headers.get("sec-fetch-site") === "cross-site"

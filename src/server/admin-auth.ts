@@ -86,14 +86,14 @@ export function assertSameOrigin(
   } catch {
     throw new CmsError("İstek kaynağı doğrulanamadı.", 403);
   }
-  const configured = process.env.ADMIN_ORIGIN || process.env.SITE_URL;
+  const configured = [process.env.ADMIN_ORIGIN, process.env.SITE_URL]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => new URL(value).origin);
   const local =
     ["127.0.0.1", "localhost", "[::1]"].includes(origin.hostname) &&
     origin.protocol === "http:" &&
     origin.host === request.headers.get("host");
-  const trusted = configured
-    ? origin.origin === new URL(configured).origin
-    : local;
+  const trusted = configured.length ? configured.includes(origin.origin) : local;
   if (
     !trusted ||
     (!local && origin.protocol !== "https:") ||
