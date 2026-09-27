@@ -172,6 +172,14 @@ test("Eksik canlı ayarlar ve yanlış alan adları yayını engeller", () => {
   assert.ok(issues.some((i) => i.includes("WhatsApp")));
   assert.ok(issues.some((i) => i.includes("gerçek ürün")));
   assert.ok(issues.some((i) => i.includes("hukuki")));
+  const shopIssues = releaseIssues(
+    { ...siteConfig, shop: { enabled: true } },
+    products,
+    categories,
+    { VERCEL_ENV: "production", PAYMENT_PROVIDER: "mock", PAYMENT_TEST_MODE: "true" },
+  );
+  assert.ok(shopIssues.some((i) => i.includes("PAYMENT_TEST_MODE")));
+  assert.ok(shopIssues.some((i) => i.includes("Mock ödeme")));
   for (const url of [
     "http://localhost:3000",
     "https://example.com",

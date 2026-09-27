@@ -4,7 +4,7 @@ import { normalizePhone } from "./contact";
 import { isPublicSiteUrl } from "./site-origin";
 import { productImages } from "../data/product-images";
 export function releaseIssues(
-  config: typeof siteConfig,
+  config: typeof siteConfig & { shop?: { enabled: boolean } },
   products: Product[],
   categories: Category[],
   env: Record<string, string | undefined>,
@@ -25,6 +25,14 @@ export function releaseIssues(
     );
   if (!normalizePhone(config.whatsapp))
     issues.push("WhatsApp iletişim numarası eksik veya geçersiz.");
+  if (env.VERCEL_ENV === "production" && env.PAYMENT_TEST_MODE === "true")
+    issues.push("Production ortamında PAYMENT_TEST_MODE kapatılmalıdır.");
+  if (config.shop?.enabled) {
+    if (!env.PAYMENT_PROVIDER)
+      issues.push("Mağaza açık ancak sanal POS sağlayıcısı yapılandırılmamış.");
+    if (env.PAYMENT_PROVIDER === "mock")
+      issues.push("Mock ödeme sağlayıcısı canlı mağazada kullanılamaz.");
+  }
   const live = products.filter((p) => p.isPublished && !p.isDemo);
   if (!live.length) issues.push("Yayımlanmış gerçek ürün bulunmuyor.");
   if (products.some((p) => p.isDemo && p.isPublished))
