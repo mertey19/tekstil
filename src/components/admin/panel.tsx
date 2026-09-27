@@ -225,25 +225,16 @@ export function AdminPanel({
       setBusy(false);
     }
   }
-  async function publishProduct(id: string) {
-    const current = content.products.find((product) => product.id === id);
-    if (!current) return;
-    if (
-      current.isDemo &&
-      !current.images.some((image) => image.src.startsWith("/images/uploads/"))
-    ) {
-      setError(
-        "Canlıya almadan önce bilgisayarınızdan gerçek ürün fotoğrafını yükleyin.",
-      );
-      return;
-    }
+  async function saveProduct(id: string) {
     const next = structuredClone(content);
-    const product = next.products.find((item) => item.id === id)!;
-    product.status = "published";
-    product.isDemo = false;
+    const product = next.products.find((item) => item.id === id);
+    if (!product) return;
+    if (product.status === "published") product.isDemo = false;
     await persistProduct(
       next,
-      `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`,
+      product.status === "published"
+        ? `“${product.name}” kaydedildi ve canlı sitede yayımlandı.`
+        : `“${product.name}” taslak olarak kaydedildi.`,
     );
   }
   async function deleteProduct(id: string) {
@@ -259,16 +250,6 @@ export function AdminPanel({
       )
     )
       setSelected((current) => ({ ...current, products: "" }));
-  }
-  async function unpublishProduct(id: string) {
-    const next = structuredClone(content);
-    const product = next.products.find((item) => item.id === id);
-    if (!product) return;
-    product.status = "draft";
-    await persistProduct(
-      next,
-      `“${product.name}” yayından kaldırıldı ve taslaklara taşındı.`,
-    );
   }
   function add(collection: Collection) {
     const id = `yeni-${crypto.randomUUID()}`;
@@ -459,7 +440,10 @@ export function AdminPanel({
             >
               Siteyi görüntüle ↗
             </a>
-            {tab !== "account" && tab !== "users" && tab !== "orders" && (
+            {tab !== "account" &&
+              tab !== "users" &&
+              tab !== "orders" &&
+              tab !== "products" && (
               <button
                 className="admin-button primary"
                 form="cms-editor"
@@ -761,50 +745,32 @@ export function AdminPanel({
                             <span>{labels[tab]} düzenleniyor</span>
                             <div>
                               {selectedItem.status === "published" &&
-                                !("isDemo" in selectedItem && selectedItem.isDemo) && (
-                                <a
-                                  className="admin-text-button"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  href={`/${tab === "products" ? "urun" : tab === "categories" ? "kategori" : "blog"}/${selectedItem.slug}`}
-                                >
-                                  Sitede aç ↗
-                                </a>
-                              )}
+                                !("isDemo" in selectedItem &&
+                                  selectedItem.isDemo) &&
+                                (!("isDemo" in selectedItem) || !dirty) && (
+                                  <a
+                                    className="admin-text-button"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    href={`/${tab === "products" ? "urun" : tab === "categories" ? "kategori" : "blog"}/${selectedItem.slug}`}
+                                  >
+                                    Sitede aç ↗
+                                  </a>
+                                )}
                               {tab === "products" ? (
                                 <>
                                   <button
-                                    className="admin-button subtle"
-                                    form="cms-editor"
-                                    type="submit"
-                                    disabled={!dirty || busy || uploads > 0}
+                                    className="admin-button primary"
+                                    type="button"
+                                    disabled={busy || uploads > 0 || !dirty}
+                                    onClick={() =>
+                                      void saveProduct(selectedItem.id)
+                                    }
                                   >
                                     {message && !dirty
                                       ? "Kaydedildi ✓"
-                                      : "Değişiklikleri kaydet"}
+                                      : "Ürünü kaydet"}
                                   </button>
-                                  <button
-                                    className="admin-button primary"
-                                    type="button"
-                                    disabled={busy || uploads > 0}
-                                    onClick={() => void publishProduct(selectedItem.id)}
-                                  >
-                                    Kaydet ve canlıya al
-                                  </button>
-                                  {"isDemo" in selectedItem &&
-                                    selectedItem.status === "published" &&
-                                    !selectedItem.isDemo && (
-                                      <button
-                                        className="admin-button subtle"
-                                        type="button"
-                                        disabled={busy || uploads > 0}
-                                        onClick={() =>
-                                          void unpublishProduct(selectedItem.id)
-                                        }
-                                      >
-                                        Yayından kaldır
-                                      </button>
-                                    )}
                                   <button
                                     className="admin-button danger"
                                     type="button"

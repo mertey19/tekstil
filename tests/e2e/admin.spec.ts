@@ -238,17 +238,17 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     .getByLabel("Ürün görseli 1 yükle", { exact: true })
     .setInputFiles("public/images/products/cam-bezi.webp");
   await expect(
-    page.getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true }),
+    page.getByRole("button", { name: "Ürünü kaydet", exact: true }),
   ).toBeEnabled();
   await page
     .getByLabel("Görsel 1 açıklaması", { exact: true })
     .fill("Mavi mikrofiber test bezi");
   await page.getByLabel("Ölçüler", { exact: true }).fill("40 × 40 cm");
   await page
-    .getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true })
+    .getByRole("button", { name: "Ürünü kaydet", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
-    "Değişiklikler kaydedildi",
+    "taslak olarak kaydedildi",
   );
   await expect(page.locator(".admin-save-toast")).toBeVisible();
   await expect(
@@ -267,8 +267,9 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     404,
   );
   await page
-    .getByRole("button", { name: "Kaydet ve canlıya al", exact: true })
-    .click();
+    .getByLabel("Kaydedince ürünü canlı sitede yayınla", { exact: true })
+    .check();
+  await page.getByRole("button", { name: "Ürünü kaydet", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("canlı sitede yayımlandı");
   const publicPage = await page.context().newPage();
   await publicPage.goto("/urun/yonetim-test-bezi");
@@ -285,9 +286,9 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await page
     .getByLabel("Ürün adı", { exact: true })
     .fill("Güncellenmiş Test Bezi");
-  await page.getByRole("button", { name: "Kaydet ve siteyi güncelle" }).click();
+  await page.getByRole("button", { name: "Ürünü kaydet" }).click();
   await expect(page.getByRole("status")).toContainText(
-    "Değişiklikler kaydedildi",
+    "canlı sitede yayımlandı",
   );
   await publicPage.reload();
   await expect(publicPage.locator("h1")).toHaveText("Güncellenmiş Test Bezi");

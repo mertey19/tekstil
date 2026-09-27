@@ -255,6 +255,16 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
           value={product.featured}
           onChange={(v) => update("featured", v)}
         />
+        <Check
+          label="Kaydedince ürünü canlı sitede yayınla"
+          value={product.status === "published" && !product.isDemo}
+          onChange={(value) =>
+            change((d) => {
+              d.products[index].status = value ? "published" : "draft";
+              if (value) d.products[index].isDemo = false;
+            })
+          }
+        />
       </EditorCard>
       <EditorCard
         title="Fiyat ve stok"
