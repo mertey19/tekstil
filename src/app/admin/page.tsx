@@ -8,6 +8,7 @@ export default async function AdminPage() {
   return (
     <AdminPanel
       username={user.username}
+      role={user.role}
       initial={await readContent()}
       uploadedMedia={await listMedia()}
     />

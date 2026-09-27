@@ -246,6 +246,10 @@
 .admin-button.primary:hover {
   background: #193c91;
 }
+.admin-button.danger {
+  border-color: #e7c5c9;
+  color: #a12936 !important;
+}
 .admin-button.white {
   background: #fff;
   color: var(--admin-blue) !important;
@@ -396,6 +400,27 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 20px;
+}
+.admin-publish-note {
+  margin: 0 0 20px !important;
+  padding: 12px 14px;
+  border: 1px solid #eadbb8;
+  border-radius: 6px;
+  background: #fff9e9;
+  color: #71571c;
+  font-size: 12px;
+}
+.admin-publish-note.live {
+  border-color: #bfe1d1;
+  background: #ecf8f1;
+  color: #205c43;
+}
+.admin-product-meta {
+  display: block;
+  margin-top: 5px;
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 400;
 }
 .admin-check {
   display: flex;
@@ -1206,3 +1231,4 @@
 }
 .admin-customer-search{display:flex;gap:12px;margin:22px 0}.admin-customer-search input{flex:1;min-width:0;border:1px solid #ccd5e0;border-radius:6px;padding:10px 13px}.admin-customer-list{display:grid;gap:12px}.admin-customer-list article{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e3e8ef;border-radius:8px}.admin-customer-list h3{font-size:16px}.admin-customer-list p,.admin-customer-list small{font-size:12px;overflow-wrap:anywhere}.admin-customer-list .admin-button{flex-shrink:0}@media(max-width:600px){.admin-customer-list article{align-items:flex-start;flex-direction:column}}
 .admin-order-list{display:grid;gap:12px}.admin-order-list article{display:grid;grid-template-columns:1fr minmax(210px,280px);gap:22px;align-items:center;padding:20px;border:1px solid #e3e8ef;border-radius:8px}.admin-order-main>strong{font-size:12px;color:#2858b8}.admin-order-main h3{font-size:17px;margin:5px 0}.admin-order-main p,.admin-order-main small{font-size:12px;overflow-wrap:anywhere}.admin-order-list .admin-field{margin:0}@media(max-width:650px){.admin-order-list article{grid-template-columns:1fr}}
+.admin-user-list{display:grid;gap:12px}.admin-user-list article{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px;border:1px solid #e3e8ef;border-radius:8px}.admin-user-list h3{font-size:15px}.admin-user-list p,.admin-user-list small{color:var(--admin-muted);font-size:11px}.admin-user-actions{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:600px){.admin-user-list article{align-items:flex-start;flex-direction:column}}

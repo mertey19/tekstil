@@ -2,12 +2,16 @@ import { categories, products } from "@/data/catalog";
 import { blogPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
 import { contentSchema, pageDefinitions, pageKeys } from "@/lib/cms-model";
+import { commerceProductDrafts } from "@/data/commerce-products";
 
 export function initialContent() {
   return contentSchema.parse({
-    version: 3,
+    version: 4,
     categories: categories.map((c) => ({ ...c, status: "published" })),
-    products: products.map((p) => ({ ...p, status: "published" })),
+    products: [
+      ...products.map((p) => ({ ...p, status: "published" as const })),
+      ...structuredClone(commerceProductDrafts),
+    ],
     posts: blogPosts.map((p) => ({ ...p, id: p.slug, status: "published" })),
     settings: {
       name: siteConfig.name,

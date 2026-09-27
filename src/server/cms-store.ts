@@ -7,6 +7,7 @@ import {
 } from "@/lib/cms-model";
 import { initialContent } from "./cms-seed";
 import { districtBlogPosts } from "@/data/district-blog";
+import { commerceProductDrafts } from "@/data/commerce-products";
 
 import { database } from "./cms-database";
 export { database, dataDirectory } from "./cms-database";
@@ -52,6 +53,15 @@ export async function readContent(): Promise<CmsSnapshot> {
       },
     });
     versioned.version = 3;
+  }
+  if (versioned.version === 3) {
+    const ids = new Set(content.products.map((product) => product.id));
+    content.products.push(
+      ...structuredClone(commerceProductDrafts).filter(
+        (product) => !ids.has(product.id),
+      ),
+    );
+    versioned.version = 4;
   }
   // Defaults keep existing installations compatible without rewriting saved content.
   content.settings = settingsSchema.parse(content.settings);

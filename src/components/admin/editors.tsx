@@ -146,6 +146,11 @@ export function ProductEditor({ id, ...props }: EditorProps & { id: string }) {
   return (
     <div className="admin-editor-stack">
       <EditorCard title="Ürün bilgileri">
+        <p className={`admin-publish-note ${product.status === "published" && !product.isDemo ? "live" : ""}`}>
+          {product.status === "published" && !product.isDemo
+            ? "Bu ürün yayında. Kaydettiğiniz değişiklikler doğrudan canlı siteye yansır."
+            : "Bu ürün taslakta. Gerçek fotoğrafı ve bilgileri tamamladıktan sonra Demo ürün işaretini kaldırıp yayın durumunu Yayında seçin."}
+        </p>
         <Field
           label="Ürün adı"
           value={product.name}

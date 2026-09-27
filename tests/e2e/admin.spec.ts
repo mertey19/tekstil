@@ -108,6 +108,43 @@ test("İlk kurulum anahtarla korunur; hesap ve oturum oluşturulur", async ({
   ).toHaveCount(0);
 });
 
+test("Hesap sahibi ürün editörü oluşturabilir; editör ekip yönetimini göremez", async ({
+  page,
+}) => {
+  await login(page);
+  await page.getByRole("button", { name: "Yetkili kullanıcılar" }).click();
+  await page.getByLabel("Kullanıcı adı", { exact: true }).fill("urun-editoru");
+  await page
+    .getByLabel("Geçici şifre", { exact: true })
+    .fill("Editor-Password-2046!");
+  await page.getByRole("button", { name: "Yetkili hesabı oluştur" }).click();
+  await expect(page.getByRole("status")).toContainText("oluşturuldu");
+  await expect(page.getByText("@urun-editoru")).toBeVisible();
+
+  await page.getByRole("button", { name: "Çıkış yap", exact: true }).click();
+  await page.getByLabel("Kullanıcı adı", { exact: true }).fill("urun-editoru");
+  await page.getByLabel("Şifre", { exact: true }).fill("Editor-Password-2046!");
+  await page.getByRole("button", { name: "Giriş yap" }).click();
+  await expect(page.getByRole("button", { name: "Ürünler" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Yetkili kullanıcılar" }),
+  ).toHaveCount(0);
+
+  await page.request.post("/api/admin/login", { headers, data: account });
+  const body = (await (
+    await page.request.get("/api/admin/users")
+  ).json()) as { users: Array<{ id: string; username: string }> };
+  const editor = body.users.find((user) => user.username === "urun-editoru")!;
+  expect(
+    (
+      await page.request.post("/api/admin/users/delete", {
+        headers,
+        data: { id: editor.id },
+      })
+    ).ok(),
+  ).toBe(true);
+});
+
 test("Giriş, yetki, kaynak kontrolü, doğrulama ve eşzamanlı kayıt koruması", async ({
   page,
   request,
@@ -193,14 +230,14 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     .getByLabel("Ürün görseli 1 yükle", { exact: true })
     .setInputFiles("public/images/products/cam-bezi.webp");
   await expect(
-    page.getByRole("button", { name: "Değişiklikleri kaydet", exact: true }),
+    page.getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true }),
   ).toBeEnabled();
   await page
     .getByLabel("Görsel 1 açıklaması", { exact: true })
     .fill("Mavi mikrofiber test bezi");
   await page.getByLabel("Ölçüler", { exact: true }).fill("40 × 40 cm");
   await page
-    .getByRole("button", { name: "Değişiklikleri kaydet", exact: true })
+    .getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
     "Değişiklikler kaydedildi",
@@ -220,7 +257,7 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
     .getByLabel("Yayın durumu", { exact: true })
     .selectOption("published");
   await page
-    .getByRole("button", { name: "Değişiklikleri kaydet", exact: true })
+    .getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
     "Değişiklikler kaydedildi",
@@ -240,7 +277,7 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await page
     .getByLabel("Ürün adı", { exact: true })
     .fill("Güncellenmiş Test Bezi");
-  await page.getByRole("button", { name: "Değişiklikleri kaydet" }).click();
+  await page.getByRole("button", { name: "Kaydet ve siteyi güncelle" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Değişiklikler kaydedildi",
   );
@@ -248,7 +285,7 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await expect(publicPage.locator("h1")).toHaveText("Güncellenmiş Test Bezi");
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Kaydı kaldır", exact: true }).click();
-  await page.getByRole("button", { name: "Değişiklikleri kaydet" }).click();
+  await page.getByRole("button", { name: "Kaydet ve siteyi güncelle" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Değişiklikler kaydedildi",
   );
@@ -378,7 +415,7 @@ test("Kategori, blog ve ek sayfa bölümü panel formlarından oluşturulur", as
   const menu = page.getByRole("navigation", { name: "Yönetim menüsü" });
   const save = async () => {
     await page
-      .getByRole("button", { name: "Değişiklikleri kaydet", exact: true })
+      .getByRole("button", { name: "Kaydet ve siteyi güncelle", exact: true })
       .click();
     await expect(page.getByRole("status")).toContainText(
       "Değişiklikler kaydedildi",
@@ -477,7 +514,7 @@ test("Bilgilendirme ve sosyal hesaplar panelden kaydedilir ve kalıcı görünü
   await page.getByLabel("Sayfa başlığı", { exact: true }).fill("Sipariş rehberi güncellendi");
   await menu.getByRole("button", { name: "Site ayarları", exact: true }).click();
   await page.getByLabel("Instagram bağlantısı").fill("https://www.instagram.com/test-account/");
-  await page.getByRole("button", { name: "Değişiklikleri kaydet" }).click();
+  await page.getByRole("button", { name: "Kaydet ve siteyi güncelle" }).click();
   await expect(page.getByRole("status")).toContainText("Değişiklikler kaydedildi. Yayındaki içerikler sitede güncellendi.");
   await page.reload();
   await menu.getByRole("button", { name: "Bilgilendirme", exact: true }).click();

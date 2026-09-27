@@ -298,7 +298,7 @@ const pageSchema = z.object({
 });
 export const contentSchema = z
   .object({
-    version: z.literal(3),
+    version: z.literal(4),
     categories: z.array(categorySchema).max(200),
     products: z.array(productSchema).max(2000),
     posts: z.array(postSchema).max(1000),

@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Admin thumbnails display already optimized local assets. */
 import { useEffect, useMemo, useState } from "react";
-import { AdminCustomers } from "./customers";
 import { AdminOrders } from "./orders";
+import { AdminUsers } from "./users";
 import { SocialEditor, SupportEditor } from "./support-editor";
 import {
   contentSchema,
@@ -33,8 +33,8 @@ const tabs = [
   ["settings", "Site ayarları", "⚙"],
   ["legal", "Yasal metinler", "§"],
   ["support", "Bilgilendirme", "?"],
-  ["customers", "Müşteri üyelikleri", "♧"],
   ["orders", "Siparişler", "▣"],
+  ["users", "Yetkili kullanıcılar", "♧"],
   ["account", "Hesabım", "○"],
 ] as const;
 type Tab = (typeof tabs)[number][0];
@@ -45,10 +45,12 @@ const labels = { products: "Ürün", categories: "Kategori", posts: "Yazı" };
 
 export function AdminPanel({
   username,
+  role,
   initial,
   uploadedMedia,
 }: {
   username: string;
+  role: "owner" | "editor";
   initial: CmsSnapshot;
   uploadedMedia: MediaItem[];
 }) {
@@ -322,11 +324,11 @@ export function AdminPanel({
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <a className="admin-brand" href="/admin">
-          MD<span>İÇERİK YÖNETİMİ</span>
+          MD<span>MAĞAZA YÖNETİMİ</span>
         </a>
         <span className="admin-sidebar-label">ÇALIŞMA ALANINIZ</span>
         <nav aria-label="Yönetim menüsü">
-          {tabs.map(([key, name, icon]) => (
+          {tabs.filter(([key]) => key !== "users" || role === "owner").map(([key, name, icon]) => (
             <button
               key={key}
               type="button"
@@ -377,7 +379,7 @@ export function AdminPanel({
             >
               Siteyi görüntüle ↗
             </a>
-            {tab !== "account" && tab !== "customers" && tab !== "orders" && (
+            {tab !== "account" && tab !== "users" && tab !== "orders" && (
               <button
                 className="admin-button primary"
                 form="cms-editor"
@@ -388,7 +390,7 @@ export function AdminPanel({
                   ? "Kaydediliyor…"
                   : uploads
                     ? "Görsel yükleniyor…"
-                    : "Değişiklikleri kaydet"}
+                    : "Kaydet ve siteyi güncelle"}
               </button>
             )}
           </div>
@@ -420,8 +422,8 @@ export function AdminPanel({
           )}
           {tab === "account" ? (
             <AccountEditor username={username} onLogout={() => void logout()} />
-          ) : tab === "customers" ? (
-            <AdminCustomers />
+          ) : tab === "users" ? (
+            <AdminUsers />
           ) : tab === "orders" ? (
             <AdminOrders />
           ) : (
@@ -623,6 +625,12 @@ export function AdminPanel({
                                   ? "Yayında"
                                   : "Taslak"}
                               </small>
+                              {"priceCents" in item && (
+                                <small className="admin-product-meta">
+                                  {(item.priceCents / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
+                                  {item.trackStock ? ` · ${item.stock} stok` : " · Stok takibi kapalı"}
+                                </small>
+                              )}
                             </span>
                             <span aria-hidden="true">›</span>
                           </button>
@@ -891,7 +899,7 @@ export function AdminPanel({
             </form>
           )}
           <footer className="admin-bottom-note">
-            <span>Mikrofiber Deposu · İçerik yönetimi</span>
+            <span>Mikrofiber Deposu · Mağaza yönetimi</span>
             <button
               type="button"
               className="admin-text-button"

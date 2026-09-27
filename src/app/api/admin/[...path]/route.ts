@@ -12,6 +12,8 @@ import {
 } from "@/server/cms-store";
 import {
   assertSameOrigin,
+  adminRoleSchema,
+  createAdminUser,
   credentialsSchema,
   createSession,
   currentAdmin,
@@ -20,6 +22,7 @@ import {
   limitAttempt,
   login,
   requireAdmin,
+  requireOwner,
   sessionCookie,
   sessionLifetime,
   setupAdmin,
@@ -72,7 +75,14 @@ async function handle(request: Request, context: Context) {
     if (request.method === "GET") {
       if (route === "session")
         return json({ configured: await isConfigured(), user: await currentAdmin() });
-      await requireAdmin();
+      const admin = await requireAdmin();
+      if (route === "users") {
+        await requireOwner(admin);
+        const users = await database().prepare(
+          'SELECT id, username, role, active, created_at AS "createdAt" FROM admin_users ORDER BY CASE role WHEN \'owner\' THEN 0 ELSE 1 END, created_at',
+        ).all();
+        return json({ users, currentId: admin.id });
+      }
       if (route === "customers") {
         const query = (new URL(request.url).searchParams.get("q") || "").trim().slice(0,100).toLowerCase();
         const pattern = `%${query}%`;
@@ -92,15 +102,15 @@ async function handle(request: Request, context: Context) {
       const body = await bodyJson(request);
       const parsed = credentialsSchema.safeParse(body);
       if (!parsed.success) throw new CmsError(parsed.error.issues[0].message);
-      if (route === "setup")
-        await setupAdmin(
+      const admin = route === "setup"
+        ? await setupAdmin(
           parsed.data.username,
           parsed.data.password,
           z.string().max(128).parse(body.token),
-        );
-      else await login(parsed.data.username, parsed.data.password);
+        )
+        : await login(parsed.data.username, parsed.data.password);
       const response = json({ ok: true });
-      response.cookies.set(sessionCookie, await createSession(), {
+      response.cookies.set(sessionCookie, await createSession(admin.id), {
         httpOnly: true,
         secure,
         sameSite: "strict",
@@ -109,7 +119,34 @@ async function handle(request: Request, context: Context) {
       });
       return response;
     }
-    await requireAdmin();
+    const current = await requireAdmin();
+    if (request.method === "POST" && route === "users") {
+      await requireOwner(current);
+      const data = credentialsSchema.extend({ role: adminRoleSchema }).strict().parse(await bodyJson(request));
+      await createAdminUser(data.username, data.password, data.role);
+      return json({ ok: true }, 201);
+    }
+    if (request.method === "POST" && route === "users/status") {
+      await requireOwner(current);
+      const data = z.object({ id: z.uuid(), active: z.boolean() }).strict().parse(await bodyJson(request));
+      if (data.id === current.id)
+        throw new CmsError("Kendi hesabınızı buradan duraklatamazsınız.");
+      const result = await database().batch([
+        { sql: "UPDATE admin_users SET active=? WHERE id=? RETURNING id", params: [data.active ? 1 : 0, data.id] },
+        { sql: "DELETE FROM admin_user_sessions WHERE admin_id=?", params: [data.id] },
+      ]);
+      if (!result[0].rows.length) throw new CmsError("Yetkili bulunamadı.", 404);
+      return json({ ok: true });
+    }
+    if (request.method === "POST" && route === "users/delete") {
+      await requireOwner(current);
+      const data = z.object({ id: z.uuid() }).strict().parse(await bodyJson(request));
+      if (data.id === current.id)
+        throw new CmsError("Kendi hesabınızı silemezsiniz.");
+      const deleted = await database().prepare("DELETE FROM admin_users WHERE id=? RETURNING id").get(data.id);
+      if (!deleted) throw new CmsError("Yetkili bulunamadı.", 404);
+      return json({ ok: true });
+    }
     if (request.method === "POST" && route === "customers/status") {
       const data = z.object({id:z.uuid(), active:z.boolean()}).strict().parse(await bodyJson(request));
       const updated = await database().batch([
@@ -127,9 +164,10 @@ async function handle(request: Request, context: Context) {
     if (request.method === "POST" && route === "logout") {
       const token = (await cookies()).get(sessionCookie)?.value;
       if (token)
-        await database()
-          .prepare("DELETE FROM sessions WHERE token_hash=?")
-          .run(tokenHash(token));
+        await database().batch([
+          { sql: "DELETE FROM admin_user_sessions WHERE token_hash=?", params: [tokenHash(token)] },
+          { sql: "DELETE FROM sessions WHERE token_hash=?", params: [tokenHash(token)] },
+        ]);
       const response = json({ ok: true });
       response.cookies.set(sessionCookie, "", {
         httpOnly: true,
@@ -149,17 +187,20 @@ async function handle(request: Request, context: Context) {
         })
         .parse(await bodyJson(request));
       const admin = (await database()
-        .prepare("SELECT password_hash FROM admin WHERE id=1")
-        .get())!;
+        .prepare("SELECT password_hash FROM admin_users WHERE id=?")
+        .get(current.id))!;
       if (!(await verifyPassword(body.current, String(admin.password_hash))))
         throw new CmsError("Mevcut şifre hatalı.", 400);
       const passwordHash = await hashPassword(body.password);
       await database().batch([
-        { sql: "UPDATE admin SET password_hash=? WHERE id=1", params: [passwordHash] },
-        { sql: "DELETE FROM sessions" },
+        { sql: "UPDATE admin_users SET password_hash=? WHERE id=?", params: [passwordHash, current.id] },
+        { sql: "DELETE FROM admin_user_sessions WHERE admin_id=?", params: [current.id] },
+        ...(current.id === "owner"
+          ? [{ sql: "UPDATE admin SET password_hash=? WHERE id=1", params: [passwordHash] }]
+          : []),
       ]);
       const response = json({ ok: true });
-      response.cookies.set(sessionCookie, await createSession(), {
+      response.cookies.set(sessionCookie, await createSession(current.id), {
         httpOnly: true,
         secure,
         sameSite: "strict",

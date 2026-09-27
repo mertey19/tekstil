@@ -1,4 +1,4 @@
-import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, randomUUID, scrypt, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { CmsError, database } from "./cms-store";
@@ -18,6 +18,12 @@ export const credentialsSchema = z.object({
     ),
   password: z.string().min(12, "Şifreniz en az 12 karakter olmalı.").max(128),
 });
+export const adminRoleSchema = z.enum(["owner", "editor"]);
+export type AdminUser = {
+  id: string;
+  username: string;
+  role: z.infer<typeof adminRoleSchema>;
+};
 export const tokenHash = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 const derive = (password: string, salt: string) =>
@@ -42,15 +48,35 @@ export async function verifyPassword(password: string, saved: string) {
   return key.length === expected.length && timingSafeEqual(key, expected);
 }
 export const isConfigured = async () =>
-  !!(await database().prepare("SELECT id FROM admin WHERE id=1").get());
+  !!(await database()
+    .prepare("SELECT id FROM admin_users WHERE active=1 LIMIT 1")
+    .get());
 export async function adminFromToken(token: string | undefined) {
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const row = await database()
     .prepare(
-      "SELECT admin.username FROM sessions CROSS JOIN admin WHERE sessions.token_hash=? AND sessions.expires_at>? AND admin.id=1",
+      "SELECT u.id, u.username, u.role FROM admin_user_sessions s JOIN admin_users u ON u.id=s.admin_id WHERE s.token_hash=? AND s.expires_at>? AND u.active=1",
     )
     .get(tokenHash(token), Date.now());
-  return row ? { username: String(row.username) } : null;
+  if (row)
+    return {
+      id: String(row.id),
+      username: String(row.username),
+      role: adminRoleSchema.parse(row.role),
+    } satisfies AdminUser;
+  // Existing sessions remain usable during the first deployment of team accounts.
+  const legacy = await database()
+    .prepare(
+      "SELECT u.id, u.username, u.role FROM sessions s JOIN admin_users u ON u.id='owner' WHERE s.token_hash=? AND s.expires_at>? AND u.active=1",
+    )
+    .get(tokenHash(token), Date.now());
+  return legacy
+    ? ({
+        id: String(legacy.id),
+        username: String(legacy.username),
+        role: adminRoleSchema.parse(legacy.role),
+      } satisfies AdminUser)
+    : null;
 }
 export async function currentAdmin() {
   return adminFromToken((await cookies()).get(sessionCookie)?.value);
@@ -63,6 +89,12 @@ export async function requireAdmin() {
       401,
     );
   return admin;
+}
+export async function requireOwner(admin?: AdminUser) {
+  const user = admin ?? (await requireAdmin());
+  if (user.role !== "owner")
+    throw new CmsError("Bu işlem yalnızca hesap sahibi tarafından yapılabilir.", 403);
+  return user;
 }
 export async function limitAttempt(key: string, maximum: number, minutes = 15) {
   const db = database();
@@ -106,12 +138,12 @@ export function assertSameOrigin(
     );
   return origin.protocol === "https:";
 }
-export async function createSession() {
+export async function createSession(adminId: string) {
   const token = randomBytes(32).toString("hex");
   const db = database();
   await db.batch([
-    { sql: "DELETE FROM sessions WHERE expires_at<=?", params: [Date.now()] },
-    { sql: "INSERT INTO sessions VALUES (?, ?)", params: [tokenHash(token), Date.now() + sessionLifetime * 1000] },
+    { sql: "DELETE FROM admin_user_sessions WHERE expires_at<=?", params: [Date.now()] },
+    { sql: "INSERT INTO admin_user_sessions VALUES (?, ?, ?)", params: [tokenHash(token), adminId, Date.now() + sessionLifetime * 1000] },
   ]);
   return token;
 }
@@ -119,19 +151,24 @@ export async function login(username: string, password: string) {
   await limitAttempt("login:global", 100);
   await limitAttempt(`login:${username}`, 8);
   const saved = await database()
-    .prepare("SELECT username, password_hash FROM admin WHERE id=1")
-    .get();
+    .prepare("SELECT id, username, password_hash, role FROM admin_users WHERE username=? AND active=1")
+    .get(username);
   // Match the password cost even when the username does not exist.
   const dummy = `${"0".repeat(32)}:${"0".repeat(128)}`;
   const matches = await verifyPassword(
     password,
     saved ? String(saved.password_hash) : dummy,
   );
-  if (!saved || saved.username !== username || !matches)
+  if (!saved || !matches)
     throw new CmsError("Kullanıcı adı veya şifre hatalı.", 401);
   await database()
     .prepare("DELETE FROM attempts WHERE key=?")
     .run(`login:${username}`);
+  return {
+    id: String(saved.id),
+    username: String(saved.username),
+    role: adminRoleSchema.parse(saved.role),
+  } satisfies AdminUser;
 }
 export async function setupAdmin(
   username: string,
@@ -159,5 +196,31 @@ export async function setupAdmin(
     "INSERT INTO admin (id, username, password_hash) SELECT 1, ?, ? FROM setup WHERE id=1 AND token_hash=? AND expires_at>? ON CONFLICT(id) DO NOTHING RETURNING id",
   ).get(username, passwordHash, hash, Date.now());
   if (!created) throw new CmsError("Kurulum anahtarı artık geçerli değil.", 409);
-  await db.prepare("DELETE FROM setup WHERE token_hash=?").run(hash);
+  await db.batch([
+    {
+      sql: "INSERT INTO admin_users (id, username, password_hash, role, active, created_at) VALUES (?, ?, ?, 'owner', 1, ?)",
+      params: ["owner", username, passwordHash, new Date().toISOString()],
+    },
+    { sql: "DELETE FROM setup WHERE token_hash=?", params: [hash] },
+  ]);
+  return { id: "owner", username, role: "owner" } satisfies AdminUser;
+}
+
+export async function createAdminUser(
+  username: string,
+  password: string,
+  role: z.infer<typeof adminRoleSchema>,
+) {
+  const passwordHash = await hashPassword(password);
+  const id = randomUUID();
+  try {
+    await database()
+      .prepare(
+        "INSERT INTO admin_users (id, username, password_hash, role, active, created_at) VALUES (?, ?, ?, ?, 1, ?)",
+      )
+      .run(id, username, passwordHash, role, new Date().toISOString());
+  } catch {
+    throw new CmsError("Bu kullanıcı adı zaten kullanılıyor.", 409);
+  }
+  return id;
 }
