@@ -71,12 +71,14 @@ export function AdminPanel({
   const [error, setError] = useState("");
   const [mediaSelection, setMediaSelection] = useState("");
   const dirty = JSON.stringify(content) !== JSON.stringify(saved.content);
-  const change = (update: (d: CmsContent) => void) =>
+  const change = (update: (d: CmsContent) => void) => {
+    setMessage("");
     setContent((current) => {
       const next = structuredClone(current);
       update(next);
       return next;
     });
+  };
   useEffect(() => {
     if (!dirty) return;
     const warn = (e: BeforeUnloadEvent) => {
@@ -460,7 +462,9 @@ export function AdminPanel({
                   ? "Kaydediliyor…"
                   : uploads
                     ? "Görsel yükleniyor…"
-                    : "Kaydet ve siteyi güncelle"}
+                    : message && !dirty
+                      ? "Kaydedildi ✓"
+                      : "Kaydet ve siteyi güncelle"}
               </button>
             )}
           </div>
@@ -481,8 +485,19 @@ export function AdminPanel({
             </button>
           </div>
           {message && (
-            <div className="admin-success" role="status">
-              ✓ {message}
+            <div className="admin-success admin-save-toast" role="status">
+              <span className="admin-save-toast-icon" aria-hidden="true">✓</span>
+              <div>
+                <strong>İşlem tamamlandı</strong>
+                <p>{message}</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Bildirimi kapat"
+                onClick={() => setMessage("")}
+              >
+                ×
+              </button>
             </div>
           )}
           {error && (
@@ -745,7 +760,9 @@ export function AdminPanel({
                                     type="submit"
                                     disabled={!dirty || busy || uploads > 0}
                                   >
-                                    Değişiklikleri kaydet
+                                    {message && !dirty
+                                      ? "Kaydedildi ✓"
+                                      : "Değişiklikleri kaydet"}
                                   </button>
                                   <button
                                     className="admin-button primary"

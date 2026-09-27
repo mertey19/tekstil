@@ -251,6 +251,10 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await expect(page.getByRole("status")).toContainText(
     "Değişiklikler kaydedildi",
   );
+  await expect(page.locator(".admin-save-toast")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Kaydedildi ✓", exact: true }).first(),
+  ).toBeDisabled();
   let state = await snapshot(page);
   const product = state.content.products.find(
     (p) => p.slug === "yonetim-test-bezi",
