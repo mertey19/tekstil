@@ -435,12 +435,12 @@ test("Görsel yükleme gerçek dosya türünü ve boyut sınırını doğrular",
   ).toBe(404);
 });
 
-test("Büyük bilgisayar görseli yüklemeden önce 4 MB altına küçültülür", async ({ page }) => {
+test("30 MB altındaki büyük bilgisayar görseli yüklemeden önce 4 MB altına küçültülür", async ({ page }) => {
   await login(page);
   await page.getByRole("navigation", { name: "Yönetim menüsü" }).getByRole("button", { name: "Görsel kütüphanesi" }).click();
-  const buffer = await sharp(randomBytes(1400 * 1400 * 3), { raw: { width: 1400, height: 1400, channels: 3 } }).png().toBuffer();
-  expect(buffer.length).toBeGreaterThan(4 * 1024 * 1024);
-  expect(buffer.length).toBeLessThan(8 * 1024 * 1024);
+  const buffer = await sharp(randomBytes(2000 * 2000 * 3), { raw: { width: 2000, height: 2000, channels: 3 } }).png().toBuffer();
+  expect(buffer.length).toBeGreaterThan(8 * 1024 * 1024);
+  expect(buffer.length).toBeLessThan(30 * 1024 * 1024);
   const uploaded = page.waitForResponse((response) => response.url().endsWith("/api/admin/media") && response.request().method() === "POST");
   await page.locator('input[type="file"]').setInputFiles({ name: "buyuk-fotograf.png", mimeType: "image/png", buffer });
   const response = await uploaded;

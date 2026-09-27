@@ -259,7 +259,7 @@ async function handle(request: Request, context: Context) {
           .toBuffer({ resolveWithObject: true });
       } catch {
         throw new CmsError(
-          "Görsel okunamadı. En fazla 4 MB, 25 megapiksel boyutunda JPG, PNG veya WebP seçin. Hareketli görseller desteklenmiyor.",
+          "Görsel okunamadı. JPG, PNG veya WebP biçiminde başka bir fotoğraf deneyin.",
           415,
         );
       }

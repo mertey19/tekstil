@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Upload previews and private media library do not need the public image optimizer. */
 import { useId, useRef, useState } from "react";
 import type { MediaItem } from "@/lib/cms-model";
-import { prepareUpload } from "@/lib/prepare-upload";
+import { maxSourceUploadBytes, prepareUpload } from "@/lib/prepare-upload";
 
 export async function adminRequest<T>(
   path: string,
@@ -49,8 +49,8 @@ export function ImagePicker({
   async function upload(file: File | undefined) {
     if (!file) return;
     setError("");
-    if (file.size > 8 * 1024 * 1024) {
-      setError("En fazla 8 MB büyüklüğünde bir görsel seçin.");
+    if (file.size > maxSourceUploadBytes) {
+      setError("Fotoğraf en fazla 30 MB olabilir.");
       return;
     }
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
@@ -133,9 +133,9 @@ export function ImagePicker({
             </button>
           )}
           <small>
-            JPG, PNG, WebP · en fazla 8 MB
+            JPG, PNG, WebP · en fazla 30 MB
             <br />
-            Görsel otomatik olarak optimize edilir.
+            Büyük fotoğraflar otomatik olarak küçültülür.
           </small>
         </div>
       </div>

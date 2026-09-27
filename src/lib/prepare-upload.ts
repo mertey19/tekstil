@@ -1,12 +1,22 @@
 const maxUploadBytes = 4 * 1024 * 1024;
+export const maxSourceUploadBytes = 30 * 1024 * 1024;
+const maxSourcePixels = 50_000_000;
 
 // Keep requests below the hosting limit while accepting full-size camera images.
 export async function prepareUpload(file: File): Promise<Blob> {
-  if (file.size <= maxUploadBytes) return file;
-  const bitmap = await createImageBitmap(file);
+  if (file.size > maxSourceUploadBytes)
+    throw new Error("Fotoğraf en fazla 30 MB olabilir.");
+  let bitmap: ImageBitmap;
   try {
-    if (bitmap.width * bitmap.height > 25_000_000)
-      throw new Error("En fazla 25 megapiksel büyüklüğünde bir görsel seçin.");
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new Error("Fotoğraf açılamadı. JPG, PNG veya WebP dosyası seçin.");
+  }
+  try {
+    const pixels = bitmap.width * bitmap.height;
+    if (pixels > maxSourcePixels)
+      throw new Error("Fotoğraf çözünürlüğü çok yüksek. En fazla 50 megapiksel kullanın.");
+    if (file.size <= maxUploadBytes && pixels <= 25_000_000) return file;
     const scale = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round(bitmap.width * scale));
@@ -18,7 +28,7 @@ export async function prepareUpload(file: File): Promise<Blob> {
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", quality));
       if (blob && blob.size <= maxUploadBytes) return blob;
     }
-    throw new Error("Görsel küçültülemedi. Daha küçük bir dosya seçin.");
+    throw new Error("Fotoğraf otomatik olarak küçültülemedi. Başka bir fotoğraf deneyin.");
   } finally {
     bitmap.close();
   }
