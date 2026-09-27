@@ -305,7 +305,7 @@ test("Bilgisayardan görsel, yeni ürün, taslak, yayın, düzenleme ve silme", 
   await publicPage.close();
 });
 
-test("Art arda eklenen ürünler birbirinin üzerine yazılmaz", async ({ page }) => {
+test("Aynı isimli ürünler art arda eklenir ve birbirinin üzerine yazılmaz", async ({ page }) => {
   test.setTimeout(60_000);
   await login(page);
   await page
@@ -313,12 +313,13 @@ test("Art arda eklenen ürünler birbirinin üzerine yazılmaz", async ({ page }
     .getByRole("button", { name: "Ürünler" })
     .click();
 
-  for (const name of ["Ardışık Birinci Bez", "Ardışık İkinci Bez"]) {
+  for (const size of ["40 × 40 cm · 3'lü", "40 × 40 cm · 20'li", "50 × 70 cm"]) {
+    const name = "Aynı Ürün Test Bezi";
     await page.getByRole("button", { name: "+ Ürün ekle", exact: true }).click();
     await page.getByLabel("Ürün adı", { exact: true }).fill(name);
     await page
       .getByLabel("Ürün açıklaması", { exact: true })
-      .fill(`${name} için ürün açıklaması.`);
+      .fill(`${size} için ürün açıklaması.`);
     await page
       .getByLabel("Kullanım alanları", { exact: true })
       .fill("Günlük temizlik");
@@ -327,17 +328,24 @@ test("Art arda eklenen ürünler birbirinin üzerine yazılmaz", async ({ page }
       .setInputFiles("public/images/products/cam-bezi.webp");
     await page
       .getByLabel("Görsel 1 açıklaması", { exact: true })
-      .fill(`${name} görseli`);
+      .fill(`${size} ürün görseli`);
+    await page.getByLabel("Ölçüler", { exact: true }).fill(size);
     await page.getByRole("button", { name: "Ürünü kaydet", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Ürün kaydedildi." })).toBeVisible();
   }
 
   const state = await snapshot(page);
-  expect(
-    state.content.products.filter((product) =>
-      product.name.startsWith("Ardışık "),
-    ).map((product) => product.name),
-  ).toEqual(expect.arrayContaining(["Ardışık Birinci Bez", "Ardışık İkinci Bez"]));
+  const products = state.content.products.filter(
+    (product) => product.name === "Aynı Ürün Test Bezi",
+  );
+  expect(products).toHaveLength(3);
+  expect(new Set(products.map((product) => product.slug))).toEqual(
+    new Set([
+      "ayni-urun-test-bezi",
+      "ayni-urun-test-bezi-2",
+      "ayni-urun-test-bezi-3",
+    ]),
+  );
 });
 
 test("Blog, kategori, sayfa bölümü ve WhatsApp ayarı sitede güncellenir", async ({

@@ -226,8 +226,17 @@ async function handle(request: Request, context: Context) {
       const index = next.products.findIndex(
         (product) => product.id === body.product.id,
       );
-      if (index === -1) next.products.unshift(body.product);
-      else next.products[index] = body.product;
+      const product = structuredClone(body.product);
+      if (index === -1) {
+        const usedSlugs = new Set(next.products.map((item) => item.slug));
+        const baseSlug = product.slug;
+        let suffix = 2;
+        while (usedSlugs.has(product.slug)) {
+          product.slug = `${baseSlug}-${suffix}`;
+          suffix += 1;
+        }
+        next.products.unshift(product);
+      } else next.products[index] = product;
       return json(await saveContent(next, snapshot.revision));
     }
     if (request.method === "POST" && route === "media") {
