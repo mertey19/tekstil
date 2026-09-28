@@ -112,7 +112,7 @@
 .payment-security-copy span { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .payment-brands { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .payment-brand { display: inline-flex; align-items: center; justify-content: center; min-width: 64px; height: 34px; padding: 0 10px; border: 1px solid #e1e6ed; border-radius: 6px; background: #fff; font-weight: 800; line-height: 1; }
-.iyzico-brand { color: #14a683; letter-spacing: -.8px; }
+.iyzico-brand { min-width: 104px; color: #14a683; letter-spacing: -.5px; white-space: nowrap; }
 .visa-brand { color: #1434cb; font-style: italic; letter-spacing: -.5px; }
 .mastercard-brand { position: relative; min-width: 76px; padding-bottom: 9px; }
 .mastercard-brand i { position: absolute; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: #eb001b; }

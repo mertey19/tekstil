@@ -66,7 +66,7 @@ export const defaultSupport = {
       {
         id: "belgeler",
         title: "Sipariş koşullarına nereden ulaşabilirim?",
-        text: "Bilgilendirme menüsünde sipariş, teslimat, iptal, iade, ön bilgilendirme ve mesafeli satış sözleşmesi konularını bulabilirsiniz. Siparişe özel ürün, fiyat, teslimat ve satıcı bilgilerini ayrıca yazılı olarak isteyin ve saklayın.",
+        text: "Bilgilendirme menüsünde sipariş, teslimat, iptal, iade, ön bilgilendirme ve mesafeli satış sözleşmesi konularını bulabilirsiniz. Siparişe özel ürün, adet, fiyat, kargo, toplam ve satıcı bilgileri ödeme ekranında gösterilir; başarılı ödemeden sonra sipariş numaranızı saklayın.",
       },
     ],
   },
