@@ -50,7 +50,9 @@ test("Misafir müşteri ürün, sepet, teslimat ve sanal POS akışını tamamla
   await expect(page.getByText("₺229,80")).toBeVisible();
   await page.getByRole("link", { name: /Güvenli ödemeye geç/ }).click();
   await page.getByLabel("Ad soyad").fill("Mert Bayhan");
+  await page.getByLabel("E-posta").fill("mert@example.com");
   await page.getByLabel("WhatsApp / telefon").fill("+905305482660");
+  await page.getByLabel("T.C. kimlik numarası").fill("11111111111");
   await page.getByLabel("Açık adres").fill("Topraklık Mahallesi örnek teslimat adresi No 1");
   await page.getByLabel("İlçe").fill("Pamukkale");
   await page.getByLabel("Posta kodu").fill("20000");

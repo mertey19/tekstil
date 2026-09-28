@@ -32,6 +32,14 @@ export function releaseIssues(
       issues.push("Mağaza açık ancak sanal POS sağlayıcısı yapılandırılmamış.");
     if (env.PAYMENT_PROVIDER === "mock")
       issues.push("Mock ödeme sağlayıcısı canlı mağazada kullanılamaz.");
+    if (env.PAYMENT_PROVIDER && !["mock", "iyzico"].includes(env.PAYMENT_PROVIDER))
+      issues.push("Desteklenmeyen sanal POS sağlayıcısı yapılandırılmış.");
+    if (env.PAYMENT_PROVIDER === "iyzico") {
+      if (env.IYZICO_ENVIRONMENT !== "production")
+        issues.push("Canlı mağazada IYZICO_ENVIRONMENT=production olmalıdır.");
+      if (!env.IYZICO_API_KEY || !env.IYZICO_SECRET_KEY)
+        issues.push("iyzico API anahtarı veya gizli anahtarı eksik.");
+    }
   }
   const live = products.filter((p) => p.isPublished && !p.isDemo);
   if (!live.length) issues.push("Yayımlanmış gerçek ürün bulunmuyor.");

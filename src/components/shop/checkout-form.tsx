@@ -7,6 +7,8 @@ import { useCart, useCartTotals } from "./cart-provider";
 
 type FormState = {
   customerName: string;
+  email: string;
+  identityNumber: string;
   phone: string;
   address: string;
   district: string;
@@ -21,7 +23,7 @@ type FormState = {
   website: string;
 };
 const initial: FormState = {
-  customerName: "", phone: "+90", address: "", district: "", city: "Denizli", postalCode: "", invoiceType: "individual", company: "", taxOffice: "", taxNumber: "", notes: "", legalAccepted: false, website: "",
+  customerName: "", email: "", identityNumber: "", phone: "+90", address: "", district: "", city: "Denizli", postalCode: "", invoiceType: "individual", company: "", taxOffice: "", taxNumber: "", notes: "", legalAccepted: false, website: "",
 };
 
 export function CheckoutForm() {
@@ -56,7 +58,6 @@ export function CheckoutForm() {
             });
             const result = await response.json().catch(() => ({ error: "Sunucu yanıtı alınamadı." }));
             if (!response.ok) throw new Error(result.error || "Ödeme başlatılamadı.");
-            cart.clear();
             window.location.assign(result.redirectUrl);
           } catch (error) {
             setError(error instanceof Error ? error.message : "Ödeme başlatılamadı.");
@@ -74,7 +75,9 @@ export function CheckoutForm() {
           <section className="checkout-section">
             <h2>İletişim</h2>
             <label><span>Ad soyad</span><input required autoComplete="name" maxLength={120} value={form.customerName} onChange={(e) => update("customerName", e.target.value)} /></label>
+            <label><span>E-posta</span><input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(e) => update("email", e.target.value)} /><small>Yalnızca ödeme ve sipariş işlemi için kullanılır.</small></label>
             <label><span>WhatsApp / telefon</span><input required type="tel" autoComplete="tel" inputMode="tel" maxLength={13} value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/[\s()-]/g, ""))} /><small>Örnek: +905305482660</small></label>
+            <label><span>T.C. kimlik numarası</span><input required inputMode="numeric" autoComplete="off" pattern="[0-9]{11}" maxLength={11} value={form.identityNumber} onChange={(e) => update("identityNumber", e.target.value.replace(/\D/g, ""))} /><small>iyzico ödeme doğrulaması için gereklidir.</small></label>
           </section>
           <section className="checkout-section">
             <h2>Teslimat adresi</h2>

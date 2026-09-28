@@ -2,7 +2,7 @@
 
 Next.js App Router, TypeScript strict ve Tailwind CSS ile geliştirilmiş Türkçe ürün kataloğu. Ana marka **Mikrofiber Deposu**, alt satır **Siliver Silen Temizlik Bezleri Dünyası** olarak korunmuştur.
 
-İletişim WhatsApp üzerinden yapılır; kullanıcıdan e-posta istenmez. Kullanıcının verdiği numara: **+90 530 548 26 60**. E-ticaret altyapısı misafir alışverişi olarak çalışır: üyelik gerekmeden ürün sepete eklenir, teslimat ve fatura bilgileri alınır, sipariş kaydedilir ve kart ödemesi yapılandırılmış sanal POS sağlayıcısının güvenli sayfasında tamamlanır. Kart numarası uygulamanın sunucusuna veya veritabanına girmez.
+İletişim WhatsApp üzerinden yapılır; e-posta mesajlaşma sistemi yoktur. Kullanıcının verdiği numara: **+90 530 548 26 60**. E-ticaret altyapısı misafir alışverişi olarak çalışır: üyelik gerekmeden ürün sepete eklenir, teslimat ve fatura bilgileri alınır, sipariş kaydedilir ve kart ödemesi iyzico'nun güvenli sayfasında tamamlanır. iyzico'nun zorunlu tuttuğu e-posta ve T.C. kimlik numarası yalnızca ödeme isteğinde kullanılır; sipariş veritabanına kaydedilmez. Kart numarası uygulamanın sunucusuna veya veritabanına girmez.
 
 ## Kurulum ve çalıştırma
 
@@ -102,9 +102,9 @@ Yerel yedek için uygulamayı durdurup veri dizininin tamamını kopyalayın. Ne
 
 ## Misafir alışverişi
 
-Satın alma için hesap açma veya giriş zorunluluğu yoktur. Sepet yalnızca ürün kimliği ve adediyle tarayıcının `localStorage` alanında tutulur; fiyat, stok, kargo ve toplam ödeme başlamadan önce sunucuda güncel CMS verisiyle yeniden hesaplanır. Teslimat/fatura bilgileri sipariş kaydına yazılır. E-posta alanı ve e-posta gönderimi yoktur.
+Satın alma için hesap açma veya giriş zorunluluğu yoktur. Sepet yalnızca ürün kimliği ve adediyle tarayıcının `localStorage` alanında tutulur; fiyat, stok, kargo ve toplam ödeme başlamadan önce sunucuda güncel CMS verisiyle yeniden hesaplanır. Teslimat/fatura bilgileri sipariş kaydına yazılır. E-posta ve T.C. kimlik numarası iyzico ödeme isteği için alınır ve sipariş veritabanına yazılmaz; e-posta gönderimi yapılmaz.
 
-Mağaza panelde **Site ayarları → E-ticaret ayarları** bölümünden açılır. Ürün ayrıca geçerli bir fiyatla “internetten satışa açık” olmalıdır. Sanal POS hesabı sunucu ortamında yapılandırılmadan `/api/siparis` tahsilat başlatmaz ve sepeti silmez. `mock` ödeme yalnızca `PAYMENT_TEST_MODE=true` olan yerel otomatik testlerde kullanılabilir.
+Mağaza panelde **Site ayarları → E-ticaret ayarları** bölümünden açılır. Ürün ayrıca geçerli bir fiyatla “internetten satışa açık” olmalıdır. Sanal POS hesabı sunucu ortamında yapılandırılmadan `/api/siparis` tahsilat başlatmaz ve sepeti silmez. iyzico için `PAYMENT_PROVIDER=iyzico`, `IYZICO_ENVIRONMENT=sandbox|production`, `IYZICO_API_KEY` ve `IYZICO_SECRET_KEY` yalnızca sunucu ortamında tanımlanır. iyzico panelindeki HPP webhook adresi `https://alan-adiniz/api/odeme/iyzico/bildirim` olmalıdır ve hesapta `X-IYZ-SIGNATURE-V3` etkinleştirilmelidir. Dönüş isteğinde iyzico sonucu yeniden sorgulanır; imza, sipariş, tutar ve para birimi doğrulanmadan sipariş ödenmiş sayılmaz veya stok düşülmez. `mock` ödeme yalnızca `PAYMENT_TEST_MODE=true` olan yerel otomatik testlerde kullanılabilir.
 
 ## Eski müşteri üyeliği altyapısı
 
@@ -148,6 +148,8 @@ Firma, WhatsApp, tanıtım görseli ve yasal metinler panelden yönetilir. `src/
 | `TRUSTED_CLIENT_IP_HEADER` | İsteğe bağlı; yalnızca bu başlığı üzerine yazan güvenilir proxy varsa |
 | `PAYMENT_PROVIDER` | Canlı sanal POS sağlayıcısı; sağlayıcı entegrasyonu tamamlanmadan boş bırakılır |
 | `PAYMENT_TEST_MODE` | Yalnızca yerel otomatik testlerde `true`; Production’da her zaman `false` |
+| `IYZICO_ENVIRONMENT` | `sandbox` test API'si, `production` canlı iyzico API'si |
+| `IYZICO_API_KEY` / `IYZICO_SECRET_KEY` | iyzico panelinden alınan sunucu tarafı gizli anahtarlar |
 
 SITE_URL boşken canonical veya ürün mesajına uydurma alan adı yazılmaz. Gerçek URL eklendiğinde WhatsApp mesajı ürün bağlantısını da içerir. Sosyal hesap, adres, harita ve başka iletişim kanalı üretilmez.
 

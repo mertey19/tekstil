@@ -27,6 +27,11 @@ export const checkoutSchema = z
       .min(1, "Sepetiniz boş.")
       .max(50),
     customerName: cleanText(2, 120, "Adınızı ve soyadınızı yazın."),
+    email: z.email("Geçerli bir e-posta adresi yazın.").trim().toLowerCase().max(254),
+    identityNumber: z
+      .string()
+      .trim()
+      .regex(/^\d{11}$/, "T.C. kimlik numarası 11 haneli olmalıdır."),
     phone: z
       .string()
       .trim()

@@ -35,7 +35,10 @@ export async function priceCheckout(input: unknown) {
   return { checkout, totals, products };
 }
 
-export async function createPendingOrder(input: CheckoutInput) {
+export async function createPendingOrder(
+  input: CheckoutInput,
+  paymentProvider: "mock" | "iyzico" = "mock",
+) {
   const { checkout, totals, products } = await priceCheckout(input);
   const id = randomUUID();
   const publicToken = randomBytes(32).toString("hex");
@@ -50,7 +53,7 @@ export async function createPendingOrder(input: CheckoutInput) {
         tokenHash(publicToken),
         "payment_pending",
         "pending",
-        "mock",
+        paymentProvider,
         "",
         totals.subtotalCents,
         totals.shippingCents,
@@ -89,44 +92,137 @@ export async function createPendingOrder(input: CheckoutInput) {
       ],
     };}),
   ]);
-  return { id, publicToken, orderNumber, totalCents: totals.totalCents };
+  return {
+    id,
+    publicToken,
+    orderNumber,
+    subtotalCents: totals.subtotalCents,
+    shippingCents: totals.shippingCents,
+    totalCents: totals.totalCents,
+    items: totals.items.map((item) => ({
+      productId: item.product.id,
+      name: item.product.name,
+      lineTotalCents: item.lineTotalCents,
+    })),
+  };
 }
 
-export async function completeMockPayment(orderId: string) {
-  const current = await database()
-    .prepare("SELECT payment_status FROM orders WHERE id=?")
-    .get(orderId);
-  if (!current || text(current.payment_status) !== "pending") return;
+export async function setPaymentReference(
+  orderId: string,
+  provider: "iyzico",
+  reference: string,
+) {
+  const result = await database()
+    .prepare(
+      "UPDATE orders SET payment_reference=?, updated_at=? WHERE id=? AND payment_provider=? AND payment_status='pending' RETURNING id",
+    )
+    .get(reference, new Date().toISOString(), orderId, provider);
+  if (!result) throw new CmsError("Ödeme kaydı güncellenemedi.", 409);
+}
+
+export async function markPaymentFailed(
+  orderId: string,
+  provider: "mock" | "iyzico",
+) {
+  await database()
+    .prepare(
+      "UPDATE orders SET status='payment_failed', payment_status='failed', updated_at=? WHERE id=? AND payment_provider=? AND payment_status='pending'",
+    )
+    .run(new Date().toISOString(), orderId, provider);
+}
+
+export async function completePayment(
+  orderId: string,
+  provider: "mock" | "iyzico",
+  paymentReference: string,
+) {
+  const claimed = await database()
+    .prepare(
+      "UPDATE orders SET payment_status='processing', updated_at=? WHERE id=? AND payment_provider=? AND payment_status='pending' RETURNING id",
+    )
+    .get(new Date().toISOString(), orderId, provider);
+  if (!claimed) {
+    const current = await database()
+      .prepare("SELECT payment_status FROM orders WHERE id=?")
+      .get(orderId);
+    return text(current?.payment_status) === "paid";
+  }
   const items = await database()
     .prepare("SELECT product_id, quantity FROM order_items WHERE order_id=?")
     .all(orderId);
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const snapshot = await readContent();
-    const next = structuredClone(snapshot.content);
-    for (const item of items) {
-      const product = next.products.find((candidate) => candidate.id === text(item.product_id));
-      if (!product || !product.salesEnabled)
-        throw new CmsError("Siparişteki ürün artık satışta değil.", 409);
-      if (product.trackStock) {
-        const quantity = number(item.quantity);
-        if (product.stock < quantity)
-          throw new CmsError(`${product.name} için yeterli stok bulunmuyor.`, 409);
-        product.stock -= quantity;
+  try {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const snapshot = await readContent();
+      const next = structuredClone(snapshot.content);
+      for (const item of items) {
+        const product = next.products.find((candidate) => candidate.id === text(item.product_id));
+        if (!product || !product.salesEnabled)
+          throw new CmsError("Siparişteki ürün artık satışta değil.", 409);
+        if (product.trackStock) {
+          const quantity = number(item.quantity);
+          if (product.stock < quantity)
+            throw new CmsError(`${product.name} için yeterli stok bulunmuyor.`, 409);
+          product.stock -= quantity;
+        }
+      }
+      try {
+        await saveContent(next, snapshot.revision);
+        break;
+      } catch (error) {
+        if (!(error instanceof CmsError) || error.status !== 409 || attempt === 2) throw error;
       }
     }
-    try {
-      await saveContent(next, snapshot.revision);
-      break;
-    } catch (error) {
-      if (!(error instanceof CmsError) || error.status !== 409 || attempt === 2) throw error;
-    }
+    await database()
+      .prepare(
+        "UPDATE orders SET status='paid', payment_status='paid', payment_reference=?, updated_at=? WHERE id=? AND payment_status='processing'",
+      )
+      .run(paymentReference, new Date().toISOString(), orderId);
+    return true;
+  } catch (error) {
+    await database()
+      .prepare(
+        "UPDATE orders SET payment_status='pending', updated_at=? WHERE id=? AND payment_status='processing'",
+      )
+      .run(new Date().toISOString(), orderId);
+    throw error;
   }
-  const now = new Date().toISOString();
-  await database()
+}
+
+export async function completeMockPayment(orderId: string) {
+  return completePayment(orderId, "mock", `mock-${orderId}`);
+}
+
+export async function getPaymentOrderByPublicToken(token: string) {
+  if (!/^[a-f0-9]{64}$/.test(token)) return null;
+  const order = await database()
     .prepare(
-      "UPDATE orders SET status='paid', payment_status='paid', payment_provider='mock', payment_reference=?, updated_at=? WHERE id=? AND payment_status='pending'",
+      "SELECT id, payment_status, payment_provider, payment_reference, total_cents, currency FROM orders WHERE public_token_hash=?",
     )
-    .run(`mock-${orderId}`, now, orderId);
+    .get(tokenHash(token));
+  if (!order) return null;
+  return paymentOrder(order);
+}
+
+export async function getPaymentOrderById(id: string) {
+  if (!/^[a-f0-9-]{36}$/.test(id)) return null;
+  const order = await database()
+    .prepare(
+      "SELECT id, payment_status, payment_provider, payment_reference, total_cents, currency FROM orders WHERE id=?",
+    )
+    .get(id);
+  if (!order) return null;
+  return paymentOrder(order);
+}
+
+function paymentOrder(order: Record<string, unknown>) {
+  return {
+    id: text(order.id),
+    paymentStatus: text(order.payment_status),
+    paymentProvider: text(order.payment_provider),
+    paymentReference: text(order.payment_reference),
+    totalCents: number(order.total_cents),
+    currency: text(order.currency),
+  };
 }
 
 export async function getOrderByPublicToken(token: string): Promise<PublicOrder | null> {

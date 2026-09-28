@@ -3,7 +3,16 @@ import { z } from "zod";
 import { assertSameOrigin, limitAttempt, tokenHash } from "@/server/admin-auth";
 import { CmsError } from "@/server/cms-store";
 import { checkoutSchema } from "@/lib/order-model";
-import { completeMockPayment, createPendingOrder } from "@/server/order-store";
+import {
+  completeMockPayment,
+  createPendingOrder,
+  markPaymentFailed,
+  setPaymentReference,
+} from "@/server/order-store";
+import {
+  initializeIyzicoCheckout,
+  isIyzicoConfigured,
+} from "@/server/iyzico";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,12 +31,28 @@ export async function POST(request: Request) {
     await limitAttempt(`shop:checkout:${tokenHash(ip)}`, 20, 15);
     const provider = process.env.PAYMENT_PROVIDER || "";
     const mockAllowed = provider === "mock" && process.env.PAYMENT_TEST_MODE === "true";
-    if (!mockAllowed)
+    const iyzicoAllowed = provider === "iyzico" && isIyzicoConfigured();
+    if (!mockAllowed && !iyzicoAllowed)
       throw new CmsError("Sanal POS hesabı henüz bağlanmadı. Sepetiniz korunuyor; ödeme sağlayıcısı bağlandıktan sonra tekrar deneyin.", 503);
     const input = checkoutSchema.parse(await readBody(request));
-    const order = await createPendingOrder(input);
-    await completeMockPayment(order.id);
-    return json({ redirectUrl: `/siparis/${order.publicToken}?odeme=basarili` }, 201);
+    if (mockAllowed) {
+      const order = await createPendingOrder(input, "mock");
+      await completeMockPayment(order.id);
+      return json({ redirectUrl: `/siparis/${order.publicToken}?odeme=basarili` }, 201);
+    }
+    const order = await createPendingOrder(input, "iyzico");
+    try {
+      const callbackUrl = new URL(
+        `/api/odeme/iyzico/sonuc?siparis=${order.publicToken}`,
+        new URL(request.headers.get("origin")!).origin,
+      ).toString();
+      const payment = await initializeIyzicoCheckout(order, input, callbackUrl);
+      await setPaymentReference(order.id, "iyzico", `token:${payment.token}`);
+      return json({ redirectUrl: payment.paymentPageUrl }, 201);
+    } catch (error) {
+      await markPaymentFailed(order.id, "iyzico");
+      throw error;
+    }
   } catch (error) {
     if (error instanceof CmsError) return json({ error: error.message }, error.status);
     if (error instanceof z.ZodError) return json({ error: error.issues[0]?.message || "Alanları kontrol edin." }, 400);

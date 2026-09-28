@@ -47,6 +47,8 @@ test("Sepet toplamı, sipariş kaydı ve başarılı ödeme sonrası stok güven
     const order = await createPendingOrder({
       items: [{ productId: product.id, quantity: 2 }],
       customerName: "Deneme Müşteri",
+      email: "musteri@example.com",
+      identityNumber: "11111111111",
       phone: "+905305482660",
       address: "Topraklık Mahallesi örnek teslimat adresi",
       district: "Pamukkale",
@@ -60,6 +62,7 @@ test("Sepet toplamı, sipariş kaydı ve başarılı ödeme sonrası stok güven
       legalAccepted: true,
       website: "",
     });
+    await completeMockPayment(order.id);
     await completeMockPayment(order.id);
     const savedOrder = await getOrderByPublicToken(order.publicToken);
     assert.equal(savedOrder?.status, "paid");

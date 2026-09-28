@@ -91,6 +91,10 @@ export function CartProvider({
           )
         : [...current, { productId, quantity: safeQuantity }];
     }), [allowed]);
+  const clear = useCallback(() => {
+    localStorage.setItem(storageKey, "[]");
+    setLines([]);
+  }, []);
   const value = useMemo<CartContextValue>(
     () => ({
       products,
@@ -106,9 +110,9 @@ export function CartProvider({
         setLines((current) =>
           current.filter((line) => line.productId !== productId),
         ),
-      clear: () => setLines([]),
+      clear,
     }),
-    [lines, products, shop, update],
+    [clear, lines, products, shop, update],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

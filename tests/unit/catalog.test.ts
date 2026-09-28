@@ -180,6 +180,14 @@ test("Eksik canlı ayarlar ve yanlış alan adları yayını engeller", () => {
   );
   assert.ok(shopIssues.some((i) => i.includes("PAYMENT_TEST_MODE")));
   assert.ok(shopIssues.some((i) => i.includes("Mock ödeme")));
+  const iyzicoIssues = releaseIssues(
+    { ...siteConfig, shop: { enabled: true } },
+    products,
+    categories,
+    { PAYMENT_PROVIDER: "iyzico", IYZICO_ENVIRONMENT: "sandbox" },
+  );
+  assert.ok(iyzicoIssues.some((i) => i.includes("IYZICO_ENVIRONMENT=production")));
+  assert.ok(iyzicoIssues.some((i) => i.includes("iyzico API anahtarı")));
   for (const url of [
     "http://localhost:3000",
     "https://example.com",
