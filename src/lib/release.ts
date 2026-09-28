@@ -3,8 +3,9 @@ import type { Category, Product } from "./catalog";
 import { normalizePhone } from "./contact";
 import { isPublicSiteUrl } from "./site-origin";
 import { productImages } from "../data/product-images";
+import type { Merchant } from "./support-model";
 export function releaseIssues(
-  config: typeof siteConfig & { shop?: { enabled: boolean } },
+  config: typeof siteConfig & { shop?: { enabled: boolean }; merchant?: Merchant },
   products: Product[],
   categories: Category[],
   env: Record<string, string | undefined>,
@@ -28,6 +29,24 @@ export function releaseIssues(
   if (env.VERCEL_ENV === "production" && env.PAYMENT_TEST_MODE === "true")
     issues.push("Production ortamında PAYMENT_TEST_MODE kapatılmalıdır.");
   if (config.shop?.enabled) {
+    const merchant = config.merchant;
+    if (!merchant)
+      issues.push("Canlı mağaza için resmî satıcı bilgileri eksik.");
+    else {
+      for (const [field, label] of [
+        ["legalName", "resmî unvan"],
+        ["address", "kayıtlı adres"],
+        ["email", "e-posta"],
+        ["kepAddress", "KEP adresi"],
+        ["phone", "telefon"],
+        ["taxNumber", "vergi / T.C. kimlik numarası"],
+        ["returnAddress", "iade adresi"],
+        ["returnCarrier", "iade taşıyıcısı"],
+      ] as const)
+        if (!merchant[field].trim()) issues.push(`Satıcı ${label} bilgisi eksik.`);
+      if (merchant.type === "company" && !merchant.mersisNumber.trim())
+        issues.push("Şirket için MERSİS numarası eksik.");
+    }
     if (!env.PAYMENT_PROVIDER)
       issues.push("Mağaza açık ancak sanal POS sağlayıcısı yapılandırılmamış.");
     if (env.PAYMENT_PROVIDER === "mock")

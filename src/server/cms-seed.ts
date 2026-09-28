@@ -3,10 +3,11 @@ import { blogPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
 import { contentSchema, pageDefinitions, pageKeys } from "@/lib/cms-model";
 import { commerceProductDrafts } from "@/data/commerce-products";
+import { disclosureDraft, privacyDraft } from "@/data/legal-defaults";
 
 export function initialContent() {
   return contentSchema.parse({
-    version: 4,
+    version: 5,
     categories: categories.map((c) => ({ ...c, status: "published" })),
     products: [
       ...products.map((p) => ({ ...p, status: "published" as const })),
@@ -23,8 +24,8 @@ export function initialContent() {
         ...siteConfig.visuals.hero,
       },
       legal: {
-        privacy: { approved: false, text: "" },
-        disclosure: { approved: false, text: "" },
+        privacy: { approved: false, text: privacyDraft },
+        disclosure: { approved: false, text: disclosureDraft },
       },
       shop: {
         enabled: false,

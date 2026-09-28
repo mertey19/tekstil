@@ -61,7 +61,7 @@ npm run test:performance
 | `/sepet` | Kalıcı tarayıcı sepeti, adet/stok ve kargo toplamı |
 | `/odeme` | Üyeliksiz teslimat, fatura, sözleşme onayı ve sanal POS başlangıcı |
 | `/siparis/[token]` | Tahmin edilemez bağlantıyla sipariş ve teslimat durumu |
-| `/gizlilik`, `/aydinlatma` | Onaylı içerik için altyapı; mevcut durumda eksik metin bildirimi |
+| `/gizlilik`, `/aydinlatma` | Panelde işletmeye göre gözden geçirilip onaylanan gizlilik ve KVKK metinleri |
 | `/api/teklif` | POST: doğrulama ve WhatsApp bağlantısı hazırlama; mesaj göndermez |
 | `/sitemap.xml`, `/robots.txt` | Ortama ve yayımlanmış gerçek içeriğe göre SEO |
 
@@ -76,7 +76,7 @@ Panel `/admin` adresindedir. İlk hesabı oluşturmak için sunucuda `npm run ad
 - **Blog:** Başlık, özet, tarih, kapak, giriş metni; sıralanabilir yazı bölümleri, maddeler ve kaynaklar.
 - **Sayfalar:** Ana sayfa, hakkımızda, ürün listesi, blog, iletişim, teklif, alt bilgi ve iletişim bandındaki metinler. Her alana görsel ve sıralanabilir metin/görsel/buton bölümleri eklenebilir.
 - **Görseller:** Bilgisayardan JPG, PNG veya WebP yükleme, önizleme ve ortak kütüphaneden tekrar kullanma. En fazla 8 MB/25 megapiksel dosya seçilebilir. 4 MB üzerindeki dosyalar tarayıcıda küçültülür; sunucu en fazla 4 MB kabul eder, gerçek dosya türünü kontrol edip metadata bilgisini kaldırarak en fazla 2400 px WebP üretir. SVG kabul edilmez; görseller tek kare olarak saklanır.
-- **Ayarlar:** Firma adı, alt başlık, tüm butonlarda kullanılan WhatsApp numarası, yasal metinler ve şifre değiştirme.
+- **Ayarlar:** Firma adı, alt başlık, WhatsApp numarası, yasal metinler ve şifre değiştirme. **Bilgilendirme** sekmesinde şirket/şahıs türü, resmî unvan, marka, kayıtlı adres, e-posta, KEP, telefon, vergi/MERSİS ve iade bilgileri yönetilir.
 - **Siparişler:** Sipariş numarası, müşteri/telefon, tutar, ödeme durumu ve hazırlama–kargo–teslimat durumu. Ödeme sonucu panelden elle başarılıya çevrilemez.
 
 İçerik değişiklikleri üstteki **Değişiklikleri kaydet** düğmesiyle kaydedilir. Taslak kayıtlar doğrudan adresleriyle de ziyaretçilere görünmez. Taslak kategorinin ürünleri gizlenir. Görsel yükleme dosyayı kütüphaneye hemen kaydeder; siteye eklemek için bir içerikte seçip içeriği de kaydedin. Başka sekmede daha yeni bir kayıt varsa panel eski verinin üzerine yazmaz; çalışmanızı kopyalayıp **Güncel içeriği yükle** ile tekrar düzenleyin.
@@ -105,6 +105,8 @@ Yerel yedek için uygulamayı durdurup veri dizininin tamamını kopyalayın. Ne
 Satın alma için hesap açma veya giriş zorunluluğu yoktur. Sepet yalnızca ürün kimliği ve adediyle tarayıcının `localStorage` alanında tutulur; fiyat, stok, kargo ve toplam ödeme başlamadan önce sunucuda güncel CMS verisiyle yeniden hesaplanır. Teslimat/fatura bilgileri sipariş kaydına yazılır. E-posta ve T.C. kimlik numarası iyzico ödeme isteği için alınır ve sipariş veritabanına yazılmaz; e-posta gönderimi yapılmaz.
 
 Mağaza panelde **Site ayarları → E-ticaret ayarları** bölümünden açılır. Ürün ayrıca geçerli bir fiyatla “internetten satışa açık” olmalıdır. Sanal POS hesabı sunucu ortamında yapılandırılmadan `/api/siparis` tahsilat başlatmaz ve sepeti silmez. iyzico için `PAYMENT_PROVIDER=iyzico`, `IYZICO_ENVIRONMENT=sandbox|production`, `IYZICO_API_KEY` ve `IYZICO_SECRET_KEY` yalnızca sunucu ortamında tanımlanır. iyzico panelindeki HPP webhook adresi `https://alan-adiniz/api/odeme/iyzico/bildirim` olmalıdır ve hesapta `X-IYZ-SIGNATURE-V3` etkinleştirilmelidir. Dönüş isteğinde iyzico sonucu yeniden sorgulanır; imza, sipariş, tutar ve para birimi doğrulanmadan sipariş ödenmiş sayılmaz veya stok düşülmez. `mock` ödeme yalnızca `PAYMENT_TEST_MODE=true` olan yerel otomatik testlerde kullanılabilir.
+
+Mağaza açılmadan önce panelde resmî unvan/ad soyad, kayıtlı adres, e-posta, KEP, telefon, vergi veya T.C. kimlik numarası, şirketlerde MERSİS, iade adresi ve taşıyıcısı doldurulmalı; gizlilik ve aydınlatma taslakları işletmeye göre kontrol edilip onaylanmalıdır. Uygulama bunlar eksikken mağazanın açılmasını reddeder. İletişim sayfası ve alt bilgi satıcı bilgilerini; ödeme ve alt bilgi iyzico, Visa ve Mastercard göstergelerini yayımlar. Ön bilgilendirme ve sözleşme onayı, kabul zamanı, satıcı, alıcı, ürün ve tutar anlık görüntüsüyle `order_consents` tablosunda saklanır.
 
 ## Eski müşteri üyeliği altyapısı
 
@@ -155,9 +157,9 @@ SITE_URL boşken canonical veya ürün mesajına uydurma alan adı yazılmaz. Ge
 
 ## Bilgilendirme ve üst şerit
 
-`/sss`, `/siparis-ve-teslimat`, `/iptal-ve-iade`, `/on-bilgilendirme` ve `/mesafeli-satis-sozlesmesi` sayfaları panelin **Bilgilendirme** sekmesinden düzenlenir. Soru/bölüm ekleme, sıralama, kaldırma ve resmî satıcı bilgileri desteklenir. **Site ayarları** içindeki Facebook, Instagram ve LinkedIn alanlarına geçerli HTTPS hesap bağlantıları girildiğinde üst şeritte görünürler. WhatsApp ve numara bağlantısı mevcut WhatsApp hattını kullanır.
+`/sss`, `/siparis-ve-teslimat`, `/iptal-ve-iade`, `/on-bilgilendirme` ve `/mesafeli-satis-sozlesmesi` sayfaları panelin **Bilgilendirme** sekmesinden düzenlenir. Soru/bölüm ekleme, sıralama, kaldırma ve iyzico başvurusunda istenen resmî satıcı/iletişim/iade bilgileri desteklenir. **Site ayarları** içindeki Facebook, Instagram ve LinkedIn alanlarına geçerli HTTPS hesap bağlantıları girildiğinde üst şeritte görünürler. WhatsApp ve numara bağlantısı mevcut WhatsApp hattını kullanır.
 
-Yeni ayarlar eski CMS kayıtları okunurken varsayılanlarla tamamlanır; mevcut içerik veya hesaplar yeniden oluşturulmaz. İlk panel kaydında ayarlar mevcut içerikle birlikte kalıcı kaydedilir. Başlangıç metinleri `src/data/support.ts` içindedir. Bireysel tüketici ve ticari alım ayrımı açıklanır; sözleşme ve ön bilgilendirme sayfaları genel rehberdir, siparişe özel doldurulmuş belge veya kabul akışı değildir. Resmî unvan, adres ve vergi bilgileri doğrulanıp panelden girilmelidir. Tüketici bilgileri 9 Eylül 2026 tarihinde Ticaret Bakanlığının bağlantı verilen güncel rehberleriyle kontrol edildi.
+Yeni ayarlar eski CMS kayıtları okunurken varsayılanlarla tamamlanır; mevcut içerik veya hesaplar yeniden oluşturulmaz. İlk panel kaydında ayarlar mevcut içerikle birlikte kalıcı kaydedilir. Başlangıç metinleri `src/data/support.ts`, hukuk taslakları `src/data/legal-defaults.ts` içindedir. Taslaklar işletme bilgileri ve hukuk danışmanı kontrolü olmadan onaylanmamalıdır. Resmî unvan, adres ve vergi bilgileri doğrulanıp panelden girilmelidir.
 
 ## WhatsApp akışı ve veri işleme
 

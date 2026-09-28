@@ -32,18 +32,46 @@ export async function priceCheckout(input: unknown) {
   for (const item of totals.items)
     if (item.product.trackStock && item.quantity > item.product.stock)
       throw new CmsError(`${item.product.name} için yeterli stok bulunmuyor.`, 409);
-  return { checkout, totals, products };
+  return { checkout, totals, products, site };
 }
 
 export async function createPendingOrder(
   input: CheckoutInput,
   paymentProvider: "mock" | "iyzico" = "mock",
 ) {
-  const { checkout, totals, products } = await priceCheckout(input);
+  const { checkout, totals, products, site } = await priceCheckout(input);
   const id = randomUUID();
   const publicToken = randomBytes(32).toString("hex");
   const now = new Date().toISOString();
   const orderNumber = `SLV-${now.slice(0, 10).replaceAll("-", "")}-${id.slice(0, 6).toUpperCase()}`;
+  const legalSnapshot = JSON.stringify({
+    version: "commerce-legal-v1",
+    acceptedAt: now,
+    seller: site.merchant,
+    buyer: {
+      name: checkout.customerName,
+      phone: checkout.phone,
+      address: checkout.address,
+      district: checkout.district,
+      city: checkout.city,
+      postalCode: checkout.postalCode,
+    },
+    totals: {
+      subtotalCents: totals.subtotalCents,
+      shippingCents: totals.shippingCents,
+      totalCents: totals.totalCents,
+      currency: "TRY",
+    },
+    items: totals.items.map((item) => ({
+      productId: item.product.id,
+      name: item.product.name,
+      quantity: item.quantity,
+      unitPriceCents: item.product.priceCents,
+      lineTotalCents: item.lineTotalCents,
+    })),
+    preinformation: site.support.preinformation,
+    contract: site.support.contract,
+  });
   await database().batch([
     {
       sql: "INSERT INTO orders (id, order_number, public_token_hash, status, payment_status, payment_provider, payment_reference, subtotal_cents, shipping_cents, total_cents, currency, customer_name, phone, address, district, city, postal_code, invoice_type, company, tax_office, tax_number, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -73,6 +101,10 @@ export async function createPendingOrder(
         now,
         now,
       ],
+    },
+    {
+      sql: "INSERT INTO order_consents (order_id, accepted_at, document_version, document_snapshot) VALUES (?, ?, ?, ?)",
+      params: [id, now, "commerce-legal-v1", legalSnapshot],
     },
     ...totals.items.map((item) => {
       const product = products.find((candidate) => candidate.id === item.product.id)!;

@@ -30,10 +30,16 @@ export async function SupportPage({ page }: { page: SupportKey }) {
   const merchant = site.merchant;
   const merchantFields = [
     ["Resmî unvan", merchant.legalName],
+    ["İşletme / marka adı", merchant.tradeName],
     ["Adres", merchant.address],
+    ["E-posta", merchant.email],
+    ["KEP adresi", merchant.kepAddress],
+    ["Telefon", merchant.phone],
     ["Vergi dairesi", merchant.taxOffice],
-    ["Vergi numarası", merchant.taxNumber],
+    ["Vergi / T.C. kimlik numarası", merchant.taxNumber],
     ["MERSİS numarası", merchant.mersisNumber],
+    ["İade adresi", merchant.returnAddress],
+    ["İade taşıyıcısı", merchant.returnCarrier],
   ].filter(([, value]) => value);
   const isDocument = ["preinformation", "contract", "cancellation"].includes(
     page,

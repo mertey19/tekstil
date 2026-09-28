@@ -4,6 +4,7 @@ import { getSiteConfig } from "@/lib/content";
 import { mapLocation } from "@/lib/contact";
 import { CmsSections } from "./cms-sections";
 import { getPageContent, getCategories } from "@/lib/content";
+import { PaymentSecurity } from "./payment-security";
 export async function Footer() {
   const siteConfig = (await getSiteConfig());
   const fields = (await getPageContent("footer")).fields;
@@ -51,6 +52,17 @@ export async function Footer() {
       </div>
       <div className="container">
         <CmsSections page="footer" />
+      </div>
+      <div className="container footer-commerce">
+        <PaymentSecurity compact />
+        {(siteConfig.merchant.legalName || siteConfig.merchant.address) && (
+          <div className="footer-merchant">
+            <strong>{siteConfig.merchant.legalName || siteConfig.name}</strong>
+            {siteConfig.merchant.address && <span>{siteConfig.merchant.address}</span>}
+            {siteConfig.merchant.phone && <a href={`tel:${siteConfig.merchant.phone}`}>{siteConfig.merchant.phone}</a>}
+            {siteConfig.merchant.email && <a href={`mailto:${siteConfig.merchant.email}`}>{siteConfig.merchant.email}</a>}
+          </div>
+        )}
       </div>
       <div className="container footer-bottom">
         <span>

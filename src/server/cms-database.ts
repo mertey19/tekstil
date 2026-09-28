@@ -35,6 +35,7 @@ const schema = (remote: boolean) => [
   "CREATE INDEX IF NOT EXISTS customer_sessions_owner ON customer_sessions(customer_id)",
   "CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, order_number TEXT NOT NULL UNIQUE, public_token_hash TEXT NOT NULL UNIQUE, status TEXT NOT NULL, payment_status TEXT NOT NULL, payment_provider TEXT NOT NULL, payment_reference TEXT NOT NULL, subtotal_cents INTEGER NOT NULL, shipping_cents INTEGER NOT NULL, total_cents INTEGER NOT NULL, currency TEXT NOT NULL, customer_name TEXT NOT NULL, phone TEXT NOT NULL, address TEXT NOT NULL, district TEXT NOT NULL, city TEXT NOT NULL, postal_code TEXT NOT NULL, invoice_type TEXT NOT NULL, company TEXT NOT NULL, tax_office TEXT NOT NULL, tax_number TEXT NOT NULL, notes TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)",
   "CREATE TABLE IF NOT EXISTS order_items (order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE, product_id TEXT NOT NULL, slug TEXT NOT NULL, name TEXT NOT NULL, sku TEXT NOT NULL, image TEXT NOT NULL, unit_price_cents INTEGER NOT NULL, vat_rate INTEGER NOT NULL, quantity INTEGER NOT NULL, line_total_cents INTEGER NOT NULL, PRIMARY KEY(order_id, product_id))",
+  "CREATE TABLE IF NOT EXISTS order_consents (order_id TEXT PRIMARY KEY REFERENCES orders(id) ON DELETE CASCADE, accepted_at TEXT NOT NULL, document_version TEXT NOT NULL, document_snapshot TEXT NOT NULL)",
   "CREATE INDEX IF NOT EXISTS orders_created_at ON orders(created_at)",
   "CREATE INDEX IF NOT EXISTS orders_phone ON orders(phone)",
 ];

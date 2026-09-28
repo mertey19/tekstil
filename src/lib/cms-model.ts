@@ -298,7 +298,7 @@ const pageSchema = z.object({
 });
 export const contentSchema = z
   .object({
-    version: z.literal(4),
+    version: z.literal(5),
     categories: z.array(categorySchema).max(200),
     products: z.array(productSchema).max(2000),
     posts: z.array(postSchema).max(1000),
@@ -383,6 +383,39 @@ export const contentSchema = z
           path: ["settings", "legal"],
           message: "Yayımlanacak metin boş bırakılamaz.",
         });
+    if (v.settings.shop.enabled) {
+      const merchant = v.settings.merchant;
+      const required = [
+        ["legalName", "Resmî unvan veya ad soyad"],
+        ["address", "Kayıtlı açık adres"],
+        ["email", "E-posta adresi"],
+        ["kepAddress", "KEP adresi"],
+        ["phone", "Telefon numarası"],
+        ["taxNumber", "Vergi veya T.C. kimlik numarası"],
+        ["returnAddress", "İade adresi"],
+        ["returnCarrier", "İade taşıyıcısı"],
+      ] as const;
+      for (const [field, label] of required)
+        if (!merchant[field].trim())
+          ctx.addIssue({
+            code: "custom",
+            path: ["settings", "merchant", field],
+            message: `Mağazayı açmak için ${label} zorunludur.`,
+          });
+      if (merchant.type === "company" && !merchant.mersisNumber.trim())
+        ctx.addIssue({
+          code: "custom",
+          path: ["settings", "merchant", "mersisNumber"],
+          message: "Şirket mağazası için MERSİS numarası zorunludur.",
+        });
+      for (const [key, document] of Object.entries(v.settings.legal))
+        if (!document.approved || !document.text.trim())
+          ctx.addIssue({
+            code: "custom",
+            path: ["settings", "legal", key],
+            message: "Mağazayı açmadan önce hukuki metni doldurup onaylayın.",
+          });
+    }
   });
 export type CmsContent = z.infer<typeof contentSchema>;
 export type CmsProduct = z.infer<typeof productSchema>;

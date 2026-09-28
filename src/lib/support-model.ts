@@ -65,22 +65,40 @@ const mapCoord = (limit: number, fallback: string) =>
     }, "Geçerli bir koordinat girin.")
     .default(fallback);
 const merchantDefaults = {
+  type: "company" as const,
   legalName: "",
+  tradeName: "",
   address: "",
+  email: "",
+  kepAddress: "",
+  phone: "",
   taxOffice: "",
   taxNumber: "",
   mersisNumber: "",
+  returnAddress: "",
+  returnCarrier: "",
   mapLatitude: "37.7841269",
   mapLongitude: "29.0876543",
   mapLabel: "Topraklık Mahallesi, Pamukkale / Denizli",
 };
 export const merchantSchema = z
   .object({
-    legalName: optional,
-    address: z.string().trim().max(2000),
-    taxOffice: optional,
-    taxNumber: optional,
-    mersisNumber: optional,
+    type: z.enum(["company", "soleProprietor"]).default("company"),
+    legalName: optional.default(""),
+    tradeName: optional.default(""),
+    address: z.string().trim().max(2000).default(""),
+    email: z.union([z.literal(""), z.email("Geçerli bir e-posta adresi girin.")]).default(""),
+    kepAddress: z.union([z.literal(""), z.email("Geçerli bir KEP adresi girin.")]).default(""),
+    phone: z
+      .string()
+      .trim()
+      .refine((value) => !value || /^\+[1-9]\d{7,14}$/.test(value), "Telefonu ülke koduyla girin.")
+      .default(""),
+    taxOffice: optional.default(""),
+    taxNumber: optional.default(""),
+    mersisNumber: optional.default(""),
+    returnAddress: z.string().trim().max(2000).default(""),
+    returnCarrier: optional.default(""),
     mapLatitude: mapCoord(90, merchantDefaults.mapLatitude),
     mapLongitude: mapCoord(180, merchantDefaults.mapLongitude),
     mapLabel: z.string().trim().max(240).default(merchantDefaults.mapLabel),
@@ -90,3 +108,4 @@ export const merchantSchema = z
     path: ["mapLatitude"],
   })
   .default(merchantDefaults);
+export type Merchant = z.infer<typeof merchantSchema>;

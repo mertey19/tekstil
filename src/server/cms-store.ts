@@ -8,6 +8,8 @@ import {
 import { initialContent } from "./cms-seed";
 import { districtBlogPosts } from "@/data/district-blog";
 import { commerceProductDrafts } from "@/data/commerce-products";
+import { disclosureDraft, privacyDraft } from "@/data/legal-defaults";
+import { defaultSupport } from "@/data/support";
 
 import { database } from "./cms-database";
 export { database, dataDirectory } from "./cms-database";
@@ -62,6 +64,14 @@ export async function readContent(): Promise<CmsSnapshot> {
       ),
     );
     versioned.version = 4;
+  }
+  if (versioned.version === 4) {
+    content.settings.support = structuredClone(defaultSupport);
+    if (!content.settings.legal.privacy.text.trim())
+      content.settings.legal.privacy.text = privacyDraft;
+    if (!content.settings.legal.disclosure.text.trim())
+      content.settings.legal.disclosure.text = disclosureDraft;
+    versioned.version = 5;
   }
   // Defaults keep existing installations compatible without rewriting saved content.
   content.settings = settingsSchema.parse(content.settings);

@@ -27,6 +27,7 @@ export async function getSiteConfig() {
     legal: settings.legal,
     social: settings.social,
     merchant: settings.merchant,
+    support: settings.support,
     shop: settings.shop,
   };
 }

@@ -102,6 +102,27 @@
 .checkout-consent input { margin-top: 5px; }
 .checkout-consent a { color: var(--accent); text-decoration: underline; }
 .checkout-submit { justify-self: start; min-width: 270px; }
+.checkout-seller dl, .contact-merchant { display: grid; gap: 10px; margin: 0; }
+.checkout-seller dl div, .contact-merchant div { display: grid; grid-template-columns: minmax(120px, .35fr) 1fr; gap: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.checkout-seller dt, .contact-merchant dt { color: var(--muted); font-size: 12px; font-weight: 700; }
+.checkout-seller dd, .contact-merchant dd { margin: 0; overflow-wrap: anywhere; }
+.payment-security { display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid #d9e1eb; border-radius: 10px; padding: 18px; background: #fff; }
+.payment-security-copy { display: grid; gap: 4px; max-width: 440px; }
+.payment-security-copy strong { color: #10254a; }
+.payment-security-copy span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.payment-brands { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.payment-brand { display: inline-flex; align-items: center; justify-content: center; min-width: 64px; height: 34px; padding: 0 10px; border: 1px solid #e1e6ed; border-radius: 6px; background: #fff; font-weight: 800; line-height: 1; }
+.iyzico-brand { color: #14a683; letter-spacing: -.8px; }
+.visa-brand { color: #1434cb; font-style: italic; letter-spacing: -.5px; }
+.mastercard-brand { position: relative; min-width: 76px; padding-bottom: 9px; }
+.mastercard-brand i { position: absolute; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: #eb001b; }
+.mastercard-brand i:first-child { left: 20px; }
+.mastercard-brand i:nth-child(2) { left: 32px; background: #f79e1b; opacity: .92; }
+.mastercard-brand b { position: absolute; bottom: 2px; color: #222; font-size: 7px; font-weight: 700; }
+.footer-commerce { display: flex; align-items: stretch; justify-content: space-between; gap: 28px; padding-top: 26px; padding-bottom: 26px; border-top: 1px solid rgba(255,255,255,.12); }
+.footer-commerce .payment-security { flex: 1; max-width: 700px; }
+.footer-merchant { display: grid; align-content: center; gap: 4px; max-width: 420px; font-size: 12px; line-height: 1.5; }
+.footer-merchant span, .footer-merchant a { color: var(--muted); overflow-wrap: anywhere; }
 .shop-honeypot { position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; }
 .order-page { padding-block: 70px 90px; }
 .order-success { text-align: center; max-width: 720px; margin: 0 auto 45px; }
@@ -137,6 +158,8 @@
   .checkout-section { grid-template-columns: 1fr; padding: 22px 18px; }
   .checkout-section h2, .checkout-section label.full { grid-column: 1; }
   .checkout-submit { width: 100%; min-width: 0; }
+  .payment-security, .footer-commerce { align-items: flex-start; flex-direction: column; }
+  .checkout-seller dl div, .contact-merchant div { grid-template-columns: 1fr; gap: 3px; }
   .order-detail-grid { grid-template-columns: 1fr; }
   .order-item { grid-template-columns: 58px 1fr; }
   .order-item-image { width: 58px; height: 58px; }

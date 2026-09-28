@@ -60,6 +60,16 @@ export function SupportEditor({ content, change }: Props) {
   return (
     <div className="admin-editor-stack">
       <EditorCard
+        title="iyzico başvuru kontrolü"
+        description="Site tarafındaki alanları bu sekmeden tamamlayın. Bilgiler iyzico başvurunuz ve resmî belgelerinizle birebir aynı olmalıdır."
+      >
+        <div className="admin-guidance">
+          <p>Site için: ürün ve fiyatlar, Hakkımızda, İletişim, gizlilik/KVKK, ön bilgilendirme, mesafeli satış, teslimat ve iade sayfaları hazır olmalıdır.</p>
+          <p>iyzico’ya ayrıca vergi levhası, imza sirküleri, şirket ortağı kimlikleri ve IBAN kanıtı iletilir. Bu belgeler güvenlik nedeniyle siteye yüklenmez.</p>
+          <a className="admin-text-button" href="https://www.iyzico.com/en/business/signup" target="_blank" rel="noopener noreferrer">iyzico resmî başvuru koşullarını aç ↗</a>
+        </div>
+      </EditorCard>
+      <EditorCard
         title="Bilgilendirme sayfaları"
         description="SSS yanıtlarını ve sipariş metinlerini düzenleyin; yeni bölümler ekleyin. Değişiklikleri kaydettiğinizde içerik sitede güncellenir."
       >
@@ -186,23 +196,46 @@ export function SupportEditor({ content, change }: Props) {
       </button>
       <EditorCard
         title="Resmî satıcı bilgileri"
-        description="Yalnızca işletmenize ait doğrulanmış bilgileri girin. Doldurulan alanlar sözleşme, ön bilgilendirme ve iade sayfalarında görünür. Harita koordinatları iletişim sayfasında gösterilir; açık adres boş bırakılabilir."
+        description="iyzico başvurunuzdaki doğrulanmış işletme bilgilerini girin. Bu bilgiler iletişim, sözleşme, ön bilgilendirme ve iade sayfalarında yayımlanır. Mağaza bu zorunlu bilgiler tamamlanmadan açılamaz."
       >
+        <label className="admin-field">
+          <span>İşletme türü</span>
+          <select
+            value={content.settings.merchant.type}
+            onChange={(event) =>
+              change((draft) => {
+                draft.settings.merchant.type = event.target.value as
+                  | "company"
+                  | "soleProprietor";
+              })
+            }
+          >
+            <option value="company">Şirket</option>
+            <option value="soleProprietor">Şahıs işletmesi</option>
+          </select>
+        </label>
         {(
           [
-            ["legalName", "Resmî unvan"],
+            ["legalName", "Resmî unvan / şahıs işletmesinde ad soyad"],
+            ["tradeName", "İşletme veya marka adı (varsa)"],
             ["address", "Açık adres"],
+            ["email", "E-posta adresi"],
+            ["kepAddress", "KEP adresi"],
+            ["phone", "Telefon (+90 ile)"],
             ["taxOffice", "Vergi dairesi"],
-            ["taxNumber", "Vergi numarası"],
-            ["mersisNumber", "MERSİS numarası"],
+            ["taxNumber", "Vergi / T.C. kimlik numarası"],
+            ["mersisNumber", "MERSİS numarası (şirket için)"],
+            ["returnAddress", "İade adresi"],
+            ["returnCarrier", "İade taşıyıcısı ve gönderim bilgisi"],
           ] as const
         ).map(([key, label]) => (
           <Field
             key={key}
             label={label}
             value={content.settings.merchant[key]}
-            multiline={key === "address"}
-            maxLength={key === "address" ? 2000 : 500}
+            multiline={key === "address" || key === "returnAddress"}
+            type={key === "email" || key === "kepAddress" ? "email" : undefined}
+            maxLength={key === "address" || key === "returnAddress" ? 2000 : 500}
             onChange={(v) =>
               change((d) => {
                 d.settings.merchant[key] = v;

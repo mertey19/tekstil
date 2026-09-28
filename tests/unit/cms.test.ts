@@ -129,7 +129,7 @@ test("Eski içerik sürümü ilçe yazıları ve e-ticaret alanlarıyla bir kez 
       .prepare("UPDATE content SET body=? WHERE id=1")
       .run(JSON.stringify(legacy));
     const migrated = await readContent();
-    assert.equal(migrated.content.version, 4);
+    assert.equal(migrated.content.version, 5);
     assert.ok(
       migrated.content.products.some(
         (product) => product.id === "baklava-desen-mikrofiber-40x40-3lu",

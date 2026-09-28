@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { OrderSummary } from "./cart-page";
 import { useCart, useCartTotals } from "./cart-provider";
+import { PaymentSecurity } from "@/components/payment-security";
+import type { Merchant } from "@/lib/support-model";
 
 type FormState = {
   customerName: string;
@@ -26,7 +28,7 @@ const initial: FormState = {
   customerName: "", email: "", identityNumber: "", phone: "+90", address: "", district: "", city: "Denizli", postalCode: "", invoiceType: "individual", company: "", taxOffice: "", taxNumber: "", notes: "", legalAccepted: false, website: "",
 };
 
-export function CheckoutForm() {
+export function CheckoutForm({ merchant }: { merchant: Merchant }) {
   const cart = useCart();
   const totals = useCartTotals();
   const [form, setForm] = useState(initial);
@@ -99,10 +101,21 @@ export function CheckoutForm() {
             </>}
             <label className="full"><span>Sipariş notu (isteğe bağlı)</span><textarea rows={3} maxLength={1000} value={form.notes} onChange={(e) => update("notes", e.target.value)} /></label>
           </section>
+          <section className="checkout-section checkout-seller">
+            <h2>Satıcı ve iade bilgileri</h2>
+            <dl className="full">
+              <div><dt>Satıcı</dt><dd>{merchant.legalName}</dd></div>
+              <div><dt>Kayıtlı adres</dt><dd>{merchant.address}</dd></div>
+              <div><dt>İade adresi</dt><dd>{merchant.returnAddress}</dd></div>
+              <div><dt>İade taşıyıcısı</dt><dd>{merchant.returnCarrier}</dd></div>
+              <div><dt>İletişim</dt><dd>{merchant.phone} · {merchant.email}</dd></div>
+            </dl>
+          </section>
           <input className="shop-honeypot" aria-label="Bu alanı boş bırakın" tabIndex={-1} autoComplete="off" name="website" value={form.website} onChange={(e) => update("website", e.target.value)} />
           <label className="checkout-consent"><input required type="checkbox" checked={form.legalAccepted} onChange={(e) => update("legalAccepted", e.target.checked)} /><span><Link href="/on-bilgilendirme" target="_blank">Ön bilgilendirme formunu</Link> ve <Link href="/mesafeli-satis-sozlesmesi" target="_blank">mesafeli satış sözleşmesini</Link> okudum, kabul ediyorum.</span></label>
           {error && <p className="checkout-error" role="alert">{error}</p>}
           <button className="button primary checkout-submit" disabled={busy || !totals.meetsMinimum}>{busy ? "Ödeme hazırlanıyor…" : "Sanal POS ile güvenli öde"}</button>
+          <PaymentSecurity />
         </fieldset>
       </form>
       <OrderSummary />

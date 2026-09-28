@@ -18,6 +18,7 @@ export default async function ContactPage() {
   const siteConfig = (await getSiteConfig());
   const whatsapp = whatsappLink(siteConfig.whatsapp);
   const map = mapLocation(siteConfig.merchant);
+  const merchant = siteConfig.merchant;
   return (
     <div className="container whatsapp-context">
       <Breadcrumbs items={[{ label: "İletişim" }]} />
@@ -30,6 +31,23 @@ export default async function ContactPage() {
         <section className="contact-information">
           <h2>{siteConfig.name}</h2>
           <p>{siteConfig.subtitle}</p>
+          {(merchant.legalName || merchant.address) && (
+            <dl className="contact-merchant">
+              {[
+                ["Resmî unvan", merchant.legalName],
+                ["İşletme / marka", merchant.tradeName],
+                ["Kayıtlı adres", merchant.address],
+                ["Vergi dairesi", merchant.taxOffice],
+                ["Vergi / T.C. kimlik no", merchant.taxNumber],
+                ["MERSİS", merchant.mersisNumber],
+              ].filter(([, value]) => value).map(([label, value]) => (
+                <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+              ))}
+            </dl>
+          )}
+          {merchant.email && <div className="contact-item"><Icon name="mail" /><div><h3>E-posta</h3><a className="text-link" href={`mailto:${merchant.email}`}>{merchant.email}</a></div></div>}
+          {merchant.kepAddress && <div className="contact-item"><Icon name="mail" /><div><h3>KEP adresi</h3><a className="text-link" href={`mailto:${merchant.kepAddress}`}>{merchant.kepAddress}</a></div></div>}
+          {merchant.phone && <div className="contact-item"><Icon name="phone" /><div><h3>Telefon</h3><a className="text-link" href={`tel:${merchant.phone}`}>{merchant.phone}</a></div></div>}
           {whatsapp ? (
             <div className="contact-item whatsapp-contact">
               <Icon name="phone" />

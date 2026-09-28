@@ -25,32 +25,32 @@ export const defaultSupport = {
   faq: {
     title: "Aklınızdaki sorular.",
     intro:
-      "Ürün seçimi, WhatsApp üzerinden iletişim ve üyelik hakkında merak edilenler bir arada.",
+      "Ürün seçimi, misafir alışverişi, iyzico ile güvenli ödeme, teslimat ve iade hakkında merak edilenler bir arada.",
     sections: [
       {
         id: "teklif",
-        title: "Nasıl bilgi veya teklif alabilirim?",
-        text: "Ürün sayfasındaki Bilgi ve Teklif Al bağlantısını kullanın. İlgilendiğiniz ürünü, tahmini adedi ve sorularınızı ekleyerek mesajınızı hazırlayın. WhatsApp açıldığında mesajı kontrol edip siz gönderirsiniz. Mesaj hazırlamak sipariş veya ödeme oluşturmaz.",
+        title: "Nasıl sipariş verebilirim?",
+        text: "Satışa açık ürünlerde adedi seçip Sepete Ekle düğmesini kullanın. Sepette ürünleri ve toplam tutarı kontrol ettikten sonra üyelik oluşturmadan teslimat bilgilerinizi girin. Ödeme iyzico’nun güvenli ödeme sayfasında tamamlanır. Bilgi veya toplu teklif için ayrıca WhatsApp’tan yazabilirsiniz.",
       },
       {
         id: "fiyat",
-        title: "Fiyatı ve minimum sipariş adedini nasıl öğrenirim?",
-        text: "Ürünün adı, ölçüsü, rengi ve ihtiyaç duyduğunuz adedi WhatsApp üzerinden paylaşın. Güncel fiyat, stok, paket içeriği ve varsa minimum adet koşulunu siparişi kararlaştırmadan önce netleştirin.",
+        title: "Fiyat, stok ve kargo tutarını nerede görürüm?",
+        text: "Satışa açık ürünün vergiler dahil fiyatı ürün sayfasında görünür. Seçtiğiniz adet, ara toplam, kargo bedeli ve ödenecek toplam sepette ve ödeme adımında gösterilir. Toplu alım veya satışa kapalı ürünler için WhatsApp’tan teklif isteyebilirsiniz.",
       },
       {
         id: "uyelik",
         title: "Teklif almak için üye olmam gerekiyor mu?",
-        text: "Hayır. Üye olmadan ürünleri inceleyebilir ve teklif talebi hazırlayabilirsiniz. Üyelik; kayıt, giriş ve profil bilgilerinizi yönetmek içindir. Giriş yaptığınızda adınız ve firma bilginiz teklif formuna aktarılır.",
+        text: "Hayır. Alışveriş misafir olarak tamamlanır; kayıt veya giriş gerekmez. Teslimat ve fatura bilgileri yalnızca siparişin kurulması ve yürütülmesi için alınır.",
       },
       {
-        id: "sifre",
-        title: "Şifremi unuttum; hesabımı nasıl kurtarabilirim?",
-        text: "Giriş sayfasındaki Şifremi unuttum bağlantısını açın. Kullanıcı adınız, hesap oluştururken size gösterilen kurtarma kodunuz ve yeni şifrenizle işlemi tamamlayın. Kod e-posta veya WhatsApp üzerinden gönderilmez; kayıt sırasında gösterilir ve sizin saklamanız gerekir. Kurtarma sonrasında gösterilen yeni kodu da güvenli bir yerde saklayın.",
+        id: "odeme",
+        title: "Ödeme nasıl ve nerede alınır?",
+        text: "Ödeme, iyzico’nun güvenli ödeme altyapısında Visa veya Mastercard kartla yapılır. Kart numarası ve güvenlik kodu bu site tarafından kaydedilmez. Başarılı ödemenin ardından sipariş numaranız ekranda gösterilir.",
       },
       {
         id: "teslimat",
         title: "Teslimat süresi ve kargo ücreti nedir?",
-        text: "Teslimat adresinizi ve ürün adedini paylaşarak hazırlık süresini, taşıyıcıyı ve kargo ücretini teklif aşamasında öğrenin. Site üzerinden kargo takibi veya ödeme yapılmaz. Gönderinizin durumu için WhatsApp üzerinden yazabilirsiniz.",
+        text: "Kargo bedeli ödeme öncesinde sepette gösterilir. Sipariş hazırlandıktan sonra yönetici sipariş durumunu günceller. Teslimat ve takip ayrıntıları için sipariş numaranızla WhatsApp üzerinden bize ulaşabilirsiniz.",
       },
       {
         id: "iptal",
@@ -73,27 +73,27 @@ export const defaultSupport = {
   order: {
     title: "Siparişten teslimata.",
     intro:
-      "İhtiyacınızı paylaşın, ayrıntıları netleştirin. Ürün bilgisi ve teklif görüşmelerimiz WhatsApp üzerinden ilerler.",
+      "Ürününüzü sepete ekleyin, teslimat bilgilerini girin ve iyzico’nun güvenli ödeme sayfasında siparişinizi tamamlayın.",
     sections: [
       {
         id: "urun-secimi",
-        title: "01 · Ürünü ve ihtiyacınızı paylaşın",
-        text: "Katalogdan ürününüzü seçin. Kullanım alanı, ölçü, renk, paket içeriği ve tahmini adet gibi ayrıntıları mesajınıza ekleyin. Size uygun seçeneği görüşmek için Bilgi ve Teklif Al formunu kullanabilirsiniz.",
+        title: "01 · Ürünü seçin ve sepete ekleyin",
+        text: "Ürün sayfasında ölçü, malzeme, paket içeriği, satış fiyatı ve stok bilgisini kontrol edin. Adedi seçip ürünü sepete ekleyin. Satışa kapalı bir ürün veya toplu alım için Bilgi ve Teklif Al bağlantısını kullanabilirsiniz.",
       },
       {
         id: "teklif",
         title: "02 · Teklifin ayrıntılarını kontrol edin",
-        text: "Sipariş vermeden önce ürünün stok durumunu, vergiler dahil toplam bedeli, varsa kargo ve diğer giderleri, ödeme yöntemini ve teslimat süresini yazılı olarak netleştirin. Katalogda fiyat gösterilmeyen bir ürün için güncel teklif isteyin.",
+        text: "Sepette ürünleri, adetleri, vergiler dahil ara toplamı, kargo bedelini ve ödenecek toplamı kontrol edin. Minimum sipariş veya ücretsiz kargo eşiği varsa burada gösterilir.",
       },
       {
         id: "onay",
         title: "03 · Sipariş bilgilerinizi teyit edin",
-        text: "Adet, ürün çeşidi, alıcı, fatura ve teslimat bilgilerini kontrol edin. Site formu yalnızca iletişim talebinizi hazırlar; formu doldurmak veya WhatsApp bağlantısını açmak tek başına sipariş onayı ya da ödeme değildir. Kararlaştırdığınız koşulları ve ödeme belgenizi saklayın.",
+        text: "Üyelik oluşturmadan ad soyad, telefon, teslimat adresi ve fatura bilgilerini girin. Ön bilgilendirme formunu ve mesafeli satış sözleşmesini okuyup onaylayın. Sipariş özeti ödeme düğmesinin yanında kalır.",
       },
       {
         id: "gonderim",
         title: "04 · Gönderi bilgilerini öğrenin",
-        text: "Hazırlık ve gönderim durumunu WhatsApp üzerinden sorabilirsiniz. Kargo firması, takip bilgisi ve teslimat adresiyle ilgili değişiklikleri gönderimden önce görüşün. Teslimat süresi ve giderleri siparişe göre netleştirilir; bu sayfada sabit kargo bedeli veya ücretsiz kargo taahhüdü verilmez.",
+        text: "Kart ödemesi iyzico’nun güvenli sayfasında alınır. Başarılı ödeme sonrasında sipariş numarası oluşturulur. Hazırlık ve gönderim durumunu bu numarayla WhatsApp üzerinden sorabilirsiniz.",
       },
       {
         id: "teslim",
@@ -110,7 +110,7 @@ export const defaultSupport = {
       {
         id: "bildirim",
         title: "Talebinizi nasıl iletebilirsiniz?",
-        text: "Adınızı, sipariş tarihinizi, ürün ve adet bilgisini yazın; iptal, değişiklik veya iade talebinizi açıkça belirtin. Varsa sipariş numaranızı ekleyin. Yazışmanızı saklayın. İade göndermeden önce güncel iade adresini ve anlaşmalı taşıyıcı bilgisini isteyin; kişisel bilgilerinizi herkese açık alanlarda paylaşmayın.",
+        text: "Sipariş numaranızı, adınızı ve talebinizi WhatsApp üzerinden iletin. İade adresi ve anlaşmalı taşıyıcı bilgisi bu sayfanın Satıcı bilgileri bölümünde yer alır. Gönderim yapmadan önce siparişinize uygulanacak taşıyıcı kodunu teyit edin ve gönderi belgesini saklayın.",
       },
       {
         id: "cayma",
@@ -137,7 +137,7 @@ export const defaultSupport = {
   preinformation: {
     title: "Sipariş öncesi bilgilendirme.",
     intro:
-      "Siparişi kararlaştırmadan önce kontrol edeceğiniz bilgiler. Bu rehber, siparişe özel ön bilgilendirme formunun yerine geçmez.",
+      "Ödeme yükümlülüğü doğmadan önce satıcı, ürün, bedel, teslimat, cayma ve iade bilgilerini kontrol edin. Siparişe özel ürün ve tutarlar ödeme ekranında gösterilir.",
     sections: [
       {
         id: "satici",
@@ -147,7 +147,7 @@ export const defaultSupport = {
       {
         id: "urun-bedel",
         title: "Ürün, toplam bedel ve ödeme",
-        text: "Ürün adı, ölçü, malzeme, renk, adet ve paket içeriğini karşılaştırın. Vergiler dahil toplam tutarı, varsa kargo ve diğer giderleri, ödeme yöntemini yazılı teklifte görün. Belirsiz bir kalem varsa ödeme öncesinde sorun.",
+        text: "Ürün adı, ölçü, malzeme, renk, adet ve paket içeriğini karşılaştırın. Vergiler dahil ara toplam, kargo gideri ve ödenecek toplam sipariş özetinde gösterilir. Ödeme iyzico altyapısıyla karttan alınır.",
       },
       {
         id: "teslim-haklar",
@@ -157,19 +157,19 @@ export const defaultSupport = {
       {
         id: "kayit",
         title: "Bilgileri yazılı olarak saklayın",
-        text: "Mesafeli tüketici sözleşmelerinde ödeme yükümlülüğü doğmadan önce ön bilgilendirme gerekir. Size iletilen sipariş özeti, koşullar, yazışmalar, fatura ve ödeme belgesini saklayın. Bu sitedeki teklif formu kendi başına ödeme almaz veya sipariş oluşturmaz.",
+        text: "Ödeme düğmesine basmadan önce ön bilgilendirme ve mesafeli satış sözleşmesi onaylanır. Onay zamanı, satıcı bilgileri, ürünler ve toplamlar sipariş kaydıyla birlikte saklanır. Sipariş ve ödeme belgenizi ayrıca saklayın.",
       },
     ],
   },
   contract: {
     title: "Mesafeli satış sözleşmesi.",
     intro:
-      "Sözleşmenin kapsamı ve siparişe özel belgede bulunacak bilgiler hakkında genel rehber.",
+      "Bu metin, sitede kurulacak mesafeli satışın genel koşullarını açıklar; siparişe özel ürün, alıcı, teslimat ve tutar bilgileri ödeme adımındaki sipariş özetiyle birlikte sözleşmenin ayrılmaz parçasıdır.",
     sections: [
       {
         id: "kapsam",
         title: "Bu sayfanın kapsamı",
-        text: "Bu sayfa genel bilgilendirme sunar. Siparişe özel satıcı, alıcı, ürün, bedel ve teslim bilgileriyle hazırlanan sözleşmenin yerine geçmez. Sayfayı ziyaret etmek, üye olmak veya teklif formunu doldurmak tek başına satış sözleşmesi onayı değildir.",
+        text: "Sözleşme; ödeme adımında gösterilen satıcı, alıcı, ürün, adet, bedel ve teslimat bilgileriyle birlikte kurulur. Sepeti görüntülemek veya teklif formunu doldurmak tek başına satış sözleşmesi onayı değildir; sözleşme kutusunun işaretlenmesi ve ödeme işleminin tamamlanması gerekir.",
       },
       {
         id: "taraflar",
@@ -179,7 +179,7 @@ export const defaultSupport = {
       {
         id: "kosullar",
         title: "Bedel, ödeme ve teslimat",
-        text: "Toplam tutar, ödeme yöntemi, kargo ve diğer giderler ile teslimat koşullarını belgenin içinde netleştirin. Sözlü olarak konuşulan bir ayrıntı belgeye yansımadıysa onay vermeden önce düzeltme isteyin. Site üzerinde ödeme ekranı bulunmaz; teklif görüşmesi WhatsApp üzerinden yürütülür.",
+        text: "Vergiler dahil ürün toplamı, kargo gideri ve ödenecek toplam ödeme adımında gösterilir. Ödeme iyzico altyapısı üzerinden kartla alınır. Satıcı kart verilerini görmez veya saklamaz. Başarılı ödeme sonrasında sipariş numarası oluşturulur.",
       },
       {
         id: "haklar",
