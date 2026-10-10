@@ -163,7 +163,7 @@ test("WhatsApp uluslararası numara ve Türkçe mesajı doğru kodlar", () => {
 });
 test("Eksik canlı ayarlar ve yanlış alan adları yayını engeller", () => {
   const issues = releaseIssues(
-    { ...siteConfig, whatsapp: null },
+    { ...siteConfig, whatsapp: "" },
     products,
     categories,
     {},
