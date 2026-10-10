@@ -125,11 +125,15 @@ test("Eski içerik sürümü ilçe yazıları ve e-ticaret alanlarıyla bir kez 
       (post: { category: string }) =>
         post.category !== "Denizli ilçe rehberleri",
     );
+    legacy.settings.whatsapp = "+905305482660";
+    legacy.settings.merchant.phone = "+905305482660";
     await db
       .prepare("UPDATE content SET body=? WHERE id=1")
       .run(JSON.stringify(legacy));
     const migrated = await readContent();
-    assert.equal(migrated.content.version, 5);
+    assert.equal(migrated.content.version, 6);
+    assert.equal(migrated.content.settings.whatsapp, "+905449790811");
+    assert.equal(migrated.content.settings.merchant.phone, "+905449790811");
     assert.ok(
       migrated.content.products.some(
         (product) => product.id === "baklava-desen-mikrofiber-40x40-3lu",
