@@ -73,6 +73,15 @@ export async function readContent(): Promise<CmsSnapshot> {
       content.settings.legal.disclosure.text = disclosureDraft;
     versioned.version = 5;
   }
+  if (versioned.version === 5) {
+    const previousPhone = "+905305482660";
+    const currentPhone = "+905449790811";
+    if (content.settings.whatsapp === previousPhone)
+      content.settings.whatsapp = currentPhone;
+    if (content.settings.merchant.phone === previousPhone)
+      content.settings.merchant.phone = currentPhone;
+    versioned.version = 6;
+  }
   // Defaults keep existing installations compatible without rewriting saved content.
   content.settings = settingsSchema.parse(content.settings);
   return {
