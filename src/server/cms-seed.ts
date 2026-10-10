@@ -7,7 +7,7 @@ import { disclosureDraft, privacyDraft } from "@/data/legal-defaults";
 
 export function initialContent() {
   return contentSchema.parse({
-    version: 5,
+    version: 6,
     categories: categories.map((c) => ({ ...c, status: "published" })),
     products: [
       ...products.map((p) => ({ ...p, status: "published" as const })),
@@ -18,7 +18,7 @@ export function initialContent() {
       name: siteConfig.name,
       fullName: siteConfig.fullName,
       subtitle: siteConfig.subtitle,
-      whatsapp: siteConfig.whatsapp || "+905305482660",
+      whatsapp: siteConfig.whatsapp || "+905449790811",
       about: siteConfig.about,
       hero: {
         ...siteConfig.visuals.hero,
