@@ -1,5 +1,6 @@
 const optional = (value: string | undefined) => value?.trim() || null;
 const currentWhatsapp = "+905449790811";
+// Existing deployments may still carry the previous number in SITE_WHATSAPP.
 const configuredWhatsapp = optional(process.env.SITE_WHATSAPP);
 export const siteConfig = {
   fullName: "Mikrofiber deposu siliver silen temizlik bezleri dünyası",
