@@ -1,4 +1,6 @@
 const optional = (value: string | undefined) => value?.trim() || null;
+const currentWhatsapp = "+905449790811";
+const configuredWhatsapp = optional(process.env.SITE_WHATSAPP);
 export const siteConfig = {
   fullName: "Mikrofiber deposu siliver silen temizlik bezleri dünyası",
   name: "Mikrofiber Deposu",
@@ -13,9 +15,9 @@ export const siteConfig = {
       "Yılların kazandırdığı tecrübeyle müşteri desteğini ve memnuniyetini çalışmalarımızın merkezinde tutuyoruz. Hizmet sektöründe kendimizi geliştiriyor, yolumuza güçlenerek devam ediyoruz.",
   },
   whatsapp:
-    process.env.SITE_WHATSAPP === undefined
-      ? "+905305482660"
-      : optional(process.env.SITE_WHATSAPP),
+    configuredWhatsapp === "+905305482660"
+      ? currentWhatsapp
+      : configuredWhatsapp ?? currentWhatsapp,
   url: optional(process.env.SITE_URL),
   visuals: {
     hero: {
