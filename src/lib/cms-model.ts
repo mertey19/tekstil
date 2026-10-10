@@ -271,7 +271,7 @@ export const settingsSchema = z.object({
   subtitle: short,
   whatsapp: z
     .string()
-    .regex(/^\+[1-9]\d{7,14}$/, "Ülke koduyla girin. Örnek: +905305482660"),
+    .regex(/^\+[1-9]\d{7,14}$/, "Ülke koduyla girin. Örnek: +905449790811"),
   about: z.object({
     title: short,
     summary: prose,
@@ -298,7 +298,7 @@ const pageSchema = z.object({
 });
 export const contentSchema = z
   .object({
-    version: z.literal(5),
+    version: z.literal(6),
     categories: z.array(categorySchema).max(200),
     products: z.array(productSchema).max(2000),
     posts: z.array(postSchema).max(1000),
