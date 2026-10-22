@@ -636,6 +636,44 @@ main:focus {
 .featured-section {
   background: var(--surface);
 }
+.home-video-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  align-items: center;
+  gap: clamp(40px, 8vw, 110px);
+}
+.home-video-copy {
+  max-width: 470px;
+}
+.home-video-copy h2 {
+  margin: 13px 0 18px;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -1.8px;
+}
+.home-video-copy p {
+  margin-bottom: 28px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.home-video-frame {
+  min-height: 610px;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(145deg, var(--surface), var(--soft-blue));
+}
+.home-video-frame video {
+  display: block;
+  width: min(100%, 330px);
+  aspect-ratio: 478 / 850;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #10131a;
+  box-shadow: 0 22px 55px rgb(18 42 80 / 18%);
+}
 .section-intro {
   font-size: 13px;
   line-height: 1.8;
@@ -1007,6 +1045,12 @@ main:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
   }
+  .home-video-showcase {
+    gap: 42px;
+  }
+  .home-video-frame {
+    min-height: 540px;
+  }
   .steps-section {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1233,6 +1277,26 @@ main:focus {
   }
   .section-intro {
     display: none;
+  }
+  .home-video-showcase {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .home-video-copy h2 {
+    margin-block: 10px 14px;
+    font-size: 34px;
+    letter-spacing: -1.2px;
+  }
+  .home-video-copy p {
+    margin-bottom: 22px;
+    font-size: 14px;
+  }
+  .home-video-frame {
+    min-height: 0;
+    padding: 18px;
+  }
+  .home-video-frame video {
+    width: min(100%, 360px);
   }
   .steps-section h2 {
     font-size: 27px;

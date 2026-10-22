@@ -138,6 +138,38 @@ export default async function Home() {
           </div>
         </section>
       )}
+      <section
+        className="container section home-video-showcase"
+        aria-labelledby="home-video-title"
+      >
+        <div className="home-video-copy">
+          <span className="eyebrow">ÜRÜNLERİMİZİ YAKINDAN TANIYIN</span>
+          <h2 id="home-video-title">Mikrofiber bezleri yakından görün.</h2>
+          <p>
+            Renkli mikrofiber bezlerimizin dokusunu ve kullanımını kısa
+            videomuzda inceleyin. İhtiyacınıza uygun ürün için kataloğumuza göz
+            atın.
+          </p>
+          <Link href="/urunler" className="button primary">
+            Ürünleri İncele
+            <Icon size={18} />
+          </Link>
+        </div>
+        <div className="home-video-frame">
+          <video
+            controls
+            playsInline
+            preload="metadata"
+            aria-label="Renkli mikrofiber temizlik bezleri tanıtım videosu"
+          >
+            <source
+              src="/videos/mikrofiber-bez-tanitim.mp4"
+              type="video/mp4"
+            />
+            Tarayıcınız video oynatmayı desteklemiyor.
+          </video>
+        </div>
+      </section>
       <section className="container section steps-section">
         <div>
           <span className="eyebrow">{fields.stepsEyebrow}</span>
