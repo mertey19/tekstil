@@ -57,7 +57,7 @@ export async function Footer() {
         <PaymentSecurity compact />
         {(siteConfig.merchant.legalName || siteConfig.merchant.address) && (
           <div className="footer-merchant">
-            <strong>{siteConfig.merchant.legalName || siteConfig.name}</strong>
+            <strong>{siteConfig.name}</strong>
             {siteConfig.merchant.address && <span>{siteConfig.merchant.address}</span>}
             {siteConfig.merchant.phone && <a href={`tel:${siteConfig.merchant.phone}`}>{siteConfig.merchant.phone}</a>}
             {siteConfig.merchant.email && <a href={`mailto:${siteConfig.merchant.email}`}>{siteConfig.merchant.email}</a>}
