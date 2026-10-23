@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/content";
 import { getSiteConfig } from "@/lib/content";
 import { ProductImage } from "@/components/product-image";
@@ -168,6 +169,66 @@ export default async function Home() {
             />
             Tarayıcınız video oynatmayı desteklemiyor.
           </video>
+        </div>
+      </section>
+      <section
+        className="media-gallery-section"
+        aria-labelledby="media-gallery-title"
+      >
+        <div className="container section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">MİKROFİBER KOLEKSİYONU</span>
+              <h2 id="media-gallery-title">Renkleri ve dokuları keşfedin.</h2>
+            </div>
+            <p className="section-intro">
+              Evde, iş yerinde ve araç bakımında kullanabileceğiniz mikrofiber
+              seçeneklerine yakından bakın.
+            </p>
+          </div>
+          <div className="media-gallery-grid">
+            <figure className="media-gallery-card">
+              <div className="media-gallery-visual media-gallery-video">
+                <video
+                  controls
+                  playsInline
+                  preload="metadata"
+                  aria-label="Mikrofiber bezlerin günlük kullanım tanıtım videosu"
+                >
+                  <source
+                    src="/videos/mikrofiber-bez-kullanim-tanitim.mp4"
+                    type="video/mp4"
+                  />
+                  Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
+              </div>
+              <figcaption>Günlük kullanımda mikrofiber dokusu</figcaption>
+            </figure>
+            <figure className="media-gallery-card">
+              <div className="media-gallery-visual">
+                <Image
+                  src="/images/toptan-perakende-mikrofiber-secenekleri.jpeg"
+                  alt="Renkli mikrofiber bezlerin toptan ve perakende kullanım seçenekleri"
+                  width={720}
+                  height={1080}
+                  sizes="(max-width: 600px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                />
+              </div>
+              <figcaption>Toptan ve perakende ürün seçenekleri</figcaption>
+            </figure>
+            <figure className="media-gallery-card">
+              <div className="media-gallery-visual">
+                <Image
+                  src="/images/yuksek-emis-gucu-mikrofiber-bez.jpeg"
+                  alt="Su damlaları üzerindeki mavi, pembe ve yeşil yüksek emiş gücüne sahip mikrofiber bezler"
+                  width={720}
+                  height={1080}
+                  sizes="(max-width: 600px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                />
+              </div>
+              <figcaption>Yüksek emiş gücü ve yumuşak doku</figcaption>
+            </figure>
+          </div>
         </div>
       </section>
       <section className="container section steps-section">

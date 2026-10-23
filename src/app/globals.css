@@ -674,6 +674,49 @@ main:focus {
   background: #10131a;
   box-shadow: 0 22px 55px rgb(18 42 80 / 18%);
 }
+.media-gallery-section {
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+}
+.media-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.media-gallery-card {
+  min-width: 0;
+  margin: 0;
+}
+.media-gallery-visual {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+}
+.media-gallery-visual img,
+.media-gallery-visual video {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.media-gallery-visual img {
+  object-fit: cover;
+}
+.media-gallery-video {
+  background: #0e223c;
+}
+.media-gallery-visual video {
+  object-fit: contain;
+}
+.media-gallery-card figcaption {
+  padding: 15px 2px 0;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
 .section-intro {
   font-size: 13px;
   line-height: 1.8;
@@ -1051,6 +1094,14 @@ main:focus {
   .home-video-frame {
     min-height: 540px;
   }
+  .media-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .media-gallery-card:first-child {
+    grid-column: 1 / -1;
+    width: min(100%, 410px);
+    justify-self: center;
+  }
   .steps-section {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1297,6 +1348,24 @@ main:focus {
   }
   .home-video-frame video {
     width: min(100%, 360px);
+  }
+  .media-gallery-grid {
+    display: flex;
+    gap: 16px;
+    margin-inline: -18px;
+    padding-inline: 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .media-gallery-card,
+  .media-gallery-card:first-child {
+    flex: 0 0 min(82vw, 360px);
+    width: auto;
+    scroll-snap-align: start;
+  }
+  .media-gallery-card figcaption {
+    font-size: 12px;
   }
   .steps-section h2 {
     font-size: 27px;
